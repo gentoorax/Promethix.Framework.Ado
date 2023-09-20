@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Promethix.Framework.Ado.Implementation;
+using Promethix.Framework.Ado.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,10 +11,12 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
     [TestClass]
     public class AdoScopeTests
     {
-        [TestMethod]
+        [TestMethod, TestCategory("IntegrationTests")]
         public void SqlLiteAdoScopeTest()
         {
-            // No Implementation
+            IAdoScopeFactory adoScopeFactory = new AdoScopeFactory();
+
+            using IAdoScope adoScope = adoScopeFactory.Create();
         }
     }
 }
