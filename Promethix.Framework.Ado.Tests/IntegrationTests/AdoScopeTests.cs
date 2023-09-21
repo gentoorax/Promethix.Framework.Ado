@@ -1,18 +1,11 @@
-﻿using Promethix.Framework.Ado.Implementation;
-using Promethix.Framework.Ado.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Data.Sqlite;
+﻿using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
+using Promethix.Framework.Ado.Interfaces;
 using Promethix.Framework.Ado.Tests.DependencyInjection;
 using Promethix.Framework.Ado.Tests.TestSupport.DataAccess;
 using Promethix.Framework.Ado.Tests.TestSupport.Entities;
-using SQLitePCL;
+using System.Data;
+using System.Data.Common;
 
 namespace Promethix.Framework.Ado.Tests.IntegrationTests
 {
@@ -23,17 +16,6 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
 
         private readonly IAdoScopeFactory adoScopeFactory;
 
-        [TestInitialize]
-        public void Initialize()
-        {
-            // Delete file mydatabase.db
-            File.Delete("mydatabase.db");
-
-            File.Create("mydatabase.db").Dispose();
-
-            CreateSqlLiteSchema();
-        }
-
         public AdoScopeTests()
         {
             var services = new ServiceCollection();
@@ -42,6 +24,10 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
 
             testRepository = container.GetService<ITestRepository>() ?? throw new InvalidOperationException("Could not create test repository");
             adoScopeFactory = container.GetService<IAdoScopeFactory>() ?? throw new InvalidOperationException("Could not create ado scope factory");
+
+            File.Create("mydatabase.db").Dispose();
+
+            CreateSqlLiteSchema();
         }
 
         [TestMethod, TestCategory("IntegrationTests")]
