@@ -75,6 +75,17 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
         }
 
         [TestMethod, TestCategory("IntegrationTests")]
+        public void SqliteAdoScopeCreateWithTransactionTest()
+        {
+            using IAdoScope adoScope = adoScopeFactory.CreateWithTransaction(IsolationLevel.ReadCommitted);
+            testRepository.Add(new TestEntity { Name = "TransactionTest", Description = "Test Description", Quantity = 1 });
+            testRepository.Add(new TestEntity { Name = "TransactionTest2", Description = "Test Description", Quantity = 1 });
+            adoScope.Complete();
+
+            Assert.IsNotNull(adoScope);
+        }
+
+        [TestMethod, TestCategory("IntegrationTests")]
         public void SqliteAdoScopeNestedAndSequentialTest()
         {
             // Testing nested scopes
@@ -124,6 +135,19 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
             // Assert that the transaction was rolled back
             using IAdoScope adoScope2 = adoScopeFactory.Create();
             Assert.IsNull(testRepository.GetEntityByName("TransactionTest"));
+        }
+
+        [TestMethod, TestCategory("IntegrationTests")]
+        public void SqliteAdoScopeTransactionNestedTest()
+        {
+            using IAdoScope adoScope = adoScopeFactory.CreateWithTransaction(IsolationLevel.ReadCommitted);
+            testRepository.Add(new TestEntity { Name = "TransactionNestedTest", Description = "Nested Transaction Test Description", Quantity = 1 });
+
+            using IAdoScope adoScope1 = adoScopeFactory.Create();
+            testRepository.Add(new TestEntity { Name = "TransactionNestedTest2", Description = "Nested Transaction Test Description", Quantity = 1 });
+            adoScope1.Complete();
+
+            adoScope.Complete();
         }
 
         #region Traditional Sqlite Initialization
