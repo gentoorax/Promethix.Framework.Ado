@@ -22,6 +22,15 @@ namespace Promethix.Framework.Ado.Implementation
 
         public bool IsInTransaction => transaction != null;
 
+        public IDbConnection Connection
+        {
+            get
+            {
+                OpenConnection();
+                return connection;
+            }
+        }
+
         protected AdoContext(string name, string providerName, string connectionString)
         {
             this.name = name;
@@ -32,12 +41,17 @@ namespace Promethix.Framework.Ado.Implementation
             connection.ConnectionString = connectionString;
         }
 
-        public void BeginTransaction(IsolationLevel isolationLevel)
+        private void OpenConnection()
         {
             if (connection.State != ConnectionState.Open)
             {
                 connection.Open();
             }
+        }
+
+        public void BeginTransaction(IsolationLevel isolationLevel)
+        {
+            OpenConnection();
 
             transaction = connection.BeginTransaction(isolationLevel);
         }
@@ -74,7 +88,8 @@ namespace Promethix.Framework.Ado.Implementation
 
         internal void RollbackTransaction()
         {
-            throw new NotImplementedException();
+            transaction.Rollback();
+            transaction.Dispose();
         }
     }
 }

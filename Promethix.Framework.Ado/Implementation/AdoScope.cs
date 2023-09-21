@@ -34,6 +34,8 @@ namespace Promethix.Framework.Ado.Implementation
 
         private static readonly ConditionalWeakTable<InstanceIdentifier, AdoScope> adoScopeInstances = new();
 
+        public IAdoContextGroup AdoContexts => adoContexts;
+
         public AdoScope(IsolationLevel isolationLevel)
             : this(AdoScopeOption.JoinExisting, isolationLevel)
         {

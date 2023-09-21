@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Promethix.Framework.Ado.Implementation
 {
-    internal class InstanceIdentifier : MarshalByRefObject
+    public class InstanceIdentifier : MarshalByRefObject
     {
         // No Implementation
     }

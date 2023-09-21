@@ -5,15 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Promethix.Framework.Ado.Tests.TestSupport
+namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess
 {
     public class SqlLiteContext : AdoContext
     {
         public SqlLiteContext()
                 : base(
                       "SqlLiteIntegration",
-                      "System.Data.SQLite",
-                      "Data Source=mydatabase.db;Version=3;"
+                      "Microsoft.Data.Sqlite",
+                      "Data Source=mydatabase.db"
                       )
         {
             // No Implementation
