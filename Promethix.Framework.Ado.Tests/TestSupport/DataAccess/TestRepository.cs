@@ -20,17 +20,18 @@ namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess
             this.ambientAdoContextLocator = ambientAdoContextLocator;
         }
 
-        private IDbConnection SqlLite => ambientAdoContextLocator.GetContext<SqliteContext>().Connection;
+        private IDbConnection SqliteConnection => ambientAdoContextLocator.GetContext<SqliteContext>().Connection;
 
         public void Add(TestEntity entity)
         {
-            SqlLite.Execute("INSERT INTO TestEntity (Name, Description, Quantity) VALUES (@Name, @Description, @Quantity)", entity);
+            const string query = "INSERT INTO TestEntity (Name, Description, Quantity) VALUES (@Name, @Description, @Quantity)";
+            SqliteConnection.Execute(query, entity);
         }
 
         public TestEntity GetEntityByName(string name)
         {
             const string query = "SELECT * FROM TestEntity WHERE Name = @Name";
-            return SqlLite.QuerySingleOrDefault<TestEntity>(query, new { Name = name });
+            return SqliteConnection.QuerySingleOrDefault<TestEntity>(query, new { Name = name });
         }
     }
 }

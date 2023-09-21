@@ -65,8 +65,8 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
         public void SqliteAdoScopeCreateReadTest()
         {
             using IAdoScope adoScope = adoScopeFactory.Create();
-
             TestEntity existingTestEntity = testRepository.GetEntityByName("Test3");
+            adoScope.Complete();
 
             Assert.IsNotNull(existingTestEntity);
             Assert.AreEqual("Test3", existingTestEntity.Name);
@@ -77,6 +77,7 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
         [TestMethod, TestCategory("IntegrationTests")]
         public void SqliteAdoScopeNestedAndSequentialTest()
         {
+            // Testing nested scopes
             using (IAdoScope adoScope1 = adoScopeFactory.Create())
             {
                 testRepository.Add(new TestEntity { Name = "NestedTest", Description = "Test Description", Quantity = 1 });
@@ -92,12 +93,14 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
                 adoScope1.Complete();
             }
 
+            // Testing sequential
             using (IAdoScope adoScope3 = adoScopeFactory.Create())
             {
                 testRepository.Add(new TestEntity { Name = "NestedTest4", Description = "Test Description", Quantity = 1 });
                 adoScope3.Complete();
             }
 
+            // Assert all created
             using IAdoScope adoScope = adoScopeFactory.Create();
             Assert.IsNotNull(testRepository.GetEntityByName("NestedTest"));
             Assert.IsNotNull(testRepository.GetEntityByName("NestedTest2"));
@@ -107,10 +110,9 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
         }
 
         [TestCategory("IntegrationTests"), TestMethod]
-        public void SqliteAdoScopeTransactionTest()
+        public void SqliteAdoScopeTransactionDisposeTest()
         {
             using IAdoScope adoScope = adoScopeFactory.CreateWithTransaction(IsolationLevel.ReadCommitted);
-
             testRepository.Add(new TestEntity { Name = "TransactionTest", Description = "Test Description", Quantity = 1 });
             testRepository.Add(new TestEntity { Name = "TransactionTest2", Description = "Test Description", Quantity = 1 });
 
@@ -119,6 +121,7 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
             // Don't complete the transaction
             adoScope.Dispose();
 
+            // Assert that the transaction was rolled back
             using IAdoScope adoScope2 = adoScopeFactory.Create();
             Assert.IsNull(testRepository.GetEntityByName("TransactionTest"));
         }
