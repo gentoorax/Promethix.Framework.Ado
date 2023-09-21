@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess
 {
-    public class SqlLiteContext : AdoContext
+    public class SqliteContext : AdoContext
     {
-        public SqlLiteContext()
+        public SqliteContext()
                 : base(
                       "SqlLiteIntegration",
                       "Microsoft.Data.Sqlite",

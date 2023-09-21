@@ -106,6 +106,23 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
             adoScope.Complete();
         }
 
+        [TestCategory("IntegrationTests"), TestMethod]
+        public void SqliteAdoScopeTransactionTest()
+        {
+            using IAdoScope adoScope = adoScopeFactory.CreateWithTransaction(IsolationLevel.ReadCommitted);
+
+            testRepository.Add(new TestEntity { Name = "TransactionTest", Description = "Test Description", Quantity = 1 });
+            testRepository.Add(new TestEntity { Name = "TransactionTest2", Description = "Test Description", Quantity = 1 });
+
+            Assert.IsNotNull(testRepository.GetEntityByName("TransactionTest"));
+
+            // Don't complete the transaction
+            adoScope.Dispose();
+
+            using IAdoScope adoScope2 = adoScopeFactory.Create();
+            Assert.IsNull(testRepository.GetEntityByName("TransactionTest"));
+        }
+
         #region Traditional Sqlite Initialization
 
         /// <summary>

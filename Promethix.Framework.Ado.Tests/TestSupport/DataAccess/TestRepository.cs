@@ -20,7 +20,7 @@ namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess
             this.ambientAdoContextLocator = ambientAdoContextLocator;
         }
 
-        private IDbConnection SqlLite => ambientAdoContextLocator.GetContext<SqlLiteContext>().Connection;
+        private IDbConnection SqlLite => ambientAdoContextLocator.GetContext<SqliteContext>().Connection;
 
         public void Add(TestEntity entity)
         {
