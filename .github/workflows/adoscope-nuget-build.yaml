@@ -7,7 +7,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Setting up build version
-      run: echo "BuildVersion=${{ secrets.MAJOR }}.${{ secrets.MINOR }}.${{ secrets.REVISION }}-alpha" >> $GITHUB_ENV
+      run: echo "BuildVersion=${{ vars.MAJOR }}.${{ vars.MINOR }}.${{ vars.REVISION }}-alpha" >> $GITHUB_ENV
     
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
