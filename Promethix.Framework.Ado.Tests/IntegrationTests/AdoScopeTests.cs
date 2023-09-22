@@ -71,6 +71,25 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
             Assert.IsNotNull(adoScope);
         }
 
+        [TestCategory("IntegrationTests"), TestMethod]
+        public void SqliteAdoScopeTransactionDisposeTest()
+        {
+            using IAdoScope adoScope = adoScopeFactory.CreateWithTransaction(IsolationLevel.ReadCommitted);
+            testRepository.Add(new TestEntity { Name = "TransactionTest", Description = "Test Description", Quantity = 1 });
+            testRepository.Add(new TestEntity { Name = "TransactionTest2", Description = "Test Description", Quantity = 1 });
+
+            Assert.IsNotNull(testRepository.GetEntityByName("TransactionTest"));
+
+            // Don't complete the transaction
+            adoScope.Dispose();
+
+            // Assert that the transaction was rolled back
+            using IAdoScope adoScope2 = adoScopeFactory.Create();
+            Assert.IsNull(testRepository.GetEntityByName("TransactionTest"));
+        }
+
+        #region Nested Scope Tests
+
         [TestMethod, TestCategory("IntegrationTests")]
         public void SqliteAdoScopeNestedAndSequentialTest()
         {
@@ -106,23 +125,6 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
             adoScope.Complete();
         }
 
-        [TestCategory("IntegrationTests"), TestMethod]
-        public void SqliteAdoScopeTransactionDisposeTest()
-        {
-            using IAdoScope adoScope = adoScopeFactory.CreateWithTransaction(IsolationLevel.ReadCommitted);
-            testRepository.Add(new TestEntity { Name = "TransactionTest", Description = "Test Description", Quantity = 1 });
-            testRepository.Add(new TestEntity { Name = "TransactionTest2", Description = "Test Description", Quantity = 1 });
-
-            Assert.IsNotNull(testRepository.GetEntityByName("TransactionTest"));
-
-            // Don't complete the transaction
-            adoScope.Dispose();
-
-            // Assert that the transaction was rolled back
-            using IAdoScope adoScope2 = adoScopeFactory.Create();
-            Assert.IsNull(testRepository.GetEntityByName("TransactionTest"));
-        }
-
         [TestMethod, TestCategory("IntegrationTests")]
         public void SqliteAdoScopeTransactionNestedTest()
         {
@@ -135,6 +137,8 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
 
             adoScope.Complete();
         }
+
+        #endregion
 
         #region Traditional Sqlite Initialization
 
