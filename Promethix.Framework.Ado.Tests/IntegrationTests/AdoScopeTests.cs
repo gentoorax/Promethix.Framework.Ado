@@ -25,14 +25,12 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
             testRepository = container.GetService<ITestRepository>() ?? throw new InvalidOperationException("Could not create test repository");
             adoScopeFactory = container.GetService<IAdoScopeFactory>() ?? throw new InvalidOperationException("Could not create ado scope factory");
 
-            if (File.Exists("mydatabase.db"))
+            if (!File.Exists("mydatabase.db"))
             {
-                File.Delete("mydatabase.db");
+                File.Create("mydatabase.db").Dispose();
             }
 
-            File.Create("mydatabase.db").Dispose();
-
-            CreateSqlLiteSchema();
+            CreateSqliteSchema();
         }
 
         [TestMethod, TestCategory("IntegrationTests")]
@@ -157,7 +155,7 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
         /// It doesn't use AdoScope.
         /// </summary>
         /// <exception cref="InvalidOperationException"></exception>
-        private static void CreateSqlLiteSchema()
+        private static void CreateSqliteSchema()
         {
             // Old school methods to create a database using SQL here.
             // We just want a table to work with.
@@ -168,7 +166,7 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
 
             connection.Open();
 
-            using var command = new SqliteCommand("CREATE TABLE TestEntity (Id INTEGER PRIMARY KEY, Name TEXT, Description TEXT, Quantity INTEGER)", (SqliteConnection)connection);
+            using var command = new SqliteCommand("DROP TABLE TestEntity; CREATE TABLE TestEntity (Id INTEGER PRIMARY KEY, Name TEXT, Description TEXT, Quantity INTEGER)", (SqliteConnection)connection);
             command.ExecuteNonQuery();
 
             // Create three static test entities
@@ -187,6 +185,9 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
                 insertCommand.Parameters.AddWithValue("@Quantity", testEntity.Quantity);
                 insertCommand.ExecuteNonQuery();
             }
+
+            connection.Close();
+            connection.Dispose();
         }
 
         #endregion
