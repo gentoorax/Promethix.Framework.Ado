@@ -21,3 +21,7 @@ jobs:
     - name: Build
       working-directory: .
       run: dotnet build --no-restore
+
+    - name: Run MS Tests
+      working-directory: ./Promethix.Framework.Ado.Tests
+      run: dotnet test --no-restore --verbosity normal
