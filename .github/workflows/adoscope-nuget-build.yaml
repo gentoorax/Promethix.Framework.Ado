@@ -37,3 +37,12 @@ jobs:
     - name: Run Tests
       working-directory: ./Promethix.Framework.Ado.Tests
       run: dotnet test --no-restore --verbosity normal
+
+  versioning:
+    name: Update Minor version
+      uses: hmanzur/actions-set-secret@v2.0.0
+      with:
+        name: 'REVISION'
+        value: $((${{ vars.REVISION }}+1))
+        repository: ${{ github.repository }}
+        token: ${{ secrets.REPO_ACCESS_TOKEN }}
