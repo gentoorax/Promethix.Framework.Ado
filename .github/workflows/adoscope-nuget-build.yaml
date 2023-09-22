@@ -28,11 +28,10 @@ jobs:
     needs:
       - build
     steps:
-    - uses: hmanzur/actions-set-secret@v2.0.0
+    - uses: action-pack/set-secret@v1
       with:
         name: 'REVISION'
         value: $((${{ vars.REVISION }}+1))
-        repository: ${{ github.repository }}
         token: ${{ secrets.REPO_ACCESS_TOKEN }}
 
   test:
