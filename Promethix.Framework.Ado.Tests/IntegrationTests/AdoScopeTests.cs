@@ -143,6 +143,15 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
 
         #endregion
 
+        [AssemblyCleanup]
+        public static void AssemblyCleanup()
+        {
+            if (File.Exists("mydatabase.db"))
+            {
+                File.Delete("mydatabase.db");
+            }
+        }
+
         #region Traditional Sqlite Initialization
 
         /// <summary>
@@ -161,7 +170,7 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
 
             connection.Open();
 
-            using var command = new SqliteCommand("DROP TABLE TestEntity; CREATE TABLE TestEntity (Id INTEGER PRIMARY KEY, Name TEXT, Description TEXT, Quantity INTEGER)", (SqliteConnection)connection);
+            using var command = new SqliteCommand("DROP TABLE IF EXISTS TestEntity; CREATE TABLE TestEntity (Id INTEGER PRIMARY KEY, Name TEXT, Description TEXT, Quantity INTEGER)", (SqliteConnection)connection);
             command.ExecuteNonQuery();
 
             // Create three static test entities
