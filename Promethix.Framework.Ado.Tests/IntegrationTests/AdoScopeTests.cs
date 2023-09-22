@@ -25,6 +25,11 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
             testRepository = container.GetService<ITestRepository>() ?? throw new InvalidOperationException("Could not create test repository");
             adoScopeFactory = container.GetService<IAdoScopeFactory>() ?? throw new InvalidOperationException("Could not create ado scope factory");
 
+            if (File.Exists("mydatabase.db"))
+            {
+                File.Delete("mydatabase.db");
+            }
+
             File.Create("mydatabase.db").Dispose();
 
             CreateSqlLiteSchema();
@@ -136,6 +141,11 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
             adoScope1.Complete();
 
             adoScope.Complete();
+        }
+
+        ~AdoScopeTests()
+        {
+            File.Delete("mydatabase.db");
         }
 
         #endregion

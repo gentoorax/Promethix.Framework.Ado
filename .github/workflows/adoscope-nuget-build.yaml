@@ -1,0 +1,23 @@
+name: adoscope-nuget-build
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setting up build version
+      run: echo "BuildVersion=${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.REVISION }}-alpha" >> $GITHUB_ENV
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+
+    - name: Restore dependencies
+      working-directory: .
+      run: dotnet restore
+
+    - name: Build
+      working-directory: .
+      run: dotnet build --no-restore

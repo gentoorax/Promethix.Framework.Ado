@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Promethix.Framework.Ado.Enums
+﻿namespace Promethix.Framework.Ado.Enums
 {
     public enum AdoScopeOption
     {

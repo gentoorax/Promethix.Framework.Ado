@@ -1,13 +1,7 @@
 ﻿using Dapper;
 using Promethix.Framework.Ado.Interfaces;
 using Promethix.Framework.Ado.Tests.TestSupport.Entities;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess
 {

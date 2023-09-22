@@ -12,7 +12,7 @@
 		<Description>A simple and flexible way to manage your ADO database connections and transactions.
 
 Based on DbContextScope but for general ADO including Dapper.</Description>
-		<Version>$(VersionPrefix)</Version>
+		<Version>$(BuildVersion)</Version>
 		<Authors>Christopher Law</Authors>
 		<Company>Promethix</Company>
 		<Product>$(AssemblyName)</Product>
