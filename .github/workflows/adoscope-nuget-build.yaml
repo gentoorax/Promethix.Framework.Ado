@@ -22,6 +22,19 @@ jobs:
       working-directory: .
       run: dotnet build --no-restore
 
+  versioning:
+    name: Update Minor version
+    runs-on: ubuntu-latest
+    needs:
+      - build
+    steps:
+    - uses: hmanzur/actions-set-secret@v2.0.0
+      with:
+        name: 'REVISION'
+        value: $((${{ vars.REVISION }}+1))
+        repository: ${{ github.repository }}
+        token: ${{ secrets.REPO_ACCESS_TOKEN }}
+
   test:
     name: Run Tests
     runs-on: ubuntu-latest
@@ -37,13 +50,3 @@ jobs:
     - name: Run Tests
       working-directory: ./Promethix.Framework.Ado.Tests
       run: dotnet test --no-restore --verbosity normal
-
-  versioning:
-    name: Update Minor version
-    steps:
-    - uses: hmanzur/actions-set-secret@v2.0.0
-      with:
-        name: 'REVISION'
-        value: $((${{ vars.REVISION }}+1))
-        repository: ${{ github.repository }}
-        token: ${{ secrets.REPO_ACCESS_TOKEN }}
