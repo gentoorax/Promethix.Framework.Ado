@@ -22,6 +22,14 @@ jobs:
       working-directory: .
       run: dotnet build --no-restore
 
+  test:
+    name: Run MS Tests
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
     - name: Run MS Tests
       working-directory: ./Promethix.Framework.Ado.Tests
       run: dotnet test --no-restore --verbosity normal
