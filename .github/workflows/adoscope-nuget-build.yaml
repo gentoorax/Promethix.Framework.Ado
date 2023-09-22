@@ -40,7 +40,8 @@ jobs:
 
   versioning:
     name: Update Minor version
-      uses: hmanzur/actions-set-secret@v2.0.0
+    steps:
+    - uses: hmanzur/actions-set-secret@v2.0.0
       with:
         name: 'REVISION'
         value: $((${{ vars.REVISION }}+1))
