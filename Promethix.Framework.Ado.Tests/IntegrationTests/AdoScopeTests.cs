@@ -141,11 +141,6 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
             adoScope.Complete();
         }
 
-        ~AdoScopeTests()
-        {
-            File.Delete("mydatabase.db");
-        }
-
         #endregion
 
         #region Traditional Sqlite Initialization
