@@ -36,8 +36,6 @@ namespace Promethix.Framework.Ado.Implementation
                 throw new ObjectDisposedException(nameof(AdoContextGroup));
             }
 
-            TAdoContext requestedType = typeof(TAdoContext) as TAdoContext;
-
             if (!initialisedAdoContexts.ContainsKey(typeof(TAdoContext)))
             {
                 // First time we have been asked for this type of context, so create it.

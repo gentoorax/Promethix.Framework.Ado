@@ -8,6 +8,36 @@
 		<CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
+		<Title>Promethix.Framework.AdoScope</Title>
+		<Description>A simple and flexible way to manage your ADO database connections and transactions.
+
+Based on DbContextScope but for general ADO including Dapper.</Description>
+		<Version>$(VersionPrefix)</Version>
+		<Authors>Christopher Law</Authors>
+		<Company>Promethix</Company>
+		<Product>$(AssemblyName)</Product>
+		<Copyright>Copyright (c) 2023 Christopher Law</Copyright>
+		<PackageProjectUrl>https://chrislaw.me/cv</PackageProjectUrl>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageTags>AdoScope; DbContextScope; Dapper; DapperTransaction; AdoTransaction; Promethix</PackageTags>
+		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+		<AnalysisLevel>latest</AnalysisLevel>
+		<PackageLicenseFile>LICENCE</PackageLicenseFile>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="README.md" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="..\LICENCE">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	  <None Include="..\README.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	</ItemGroup>
 
 </Project>
