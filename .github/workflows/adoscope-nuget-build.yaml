@@ -117,9 +117,9 @@ jobs:
         dotnet nuget push ${{ env.NuGetDirectory }}/*.nupkg --api-key ${{ secrets.REPO_ACCESS_TOKEN }} --source "github"
   
   approve-required:
-  - name: Manual Approval
-    id: approval
-    run: echo "Package is ready for approval"
+    - name: Manual Approval
+      id: approval
+      run: echo "Package is ready for approval"
 
   # publish:
   #   name: Publish Promethix.Framework.Ado
