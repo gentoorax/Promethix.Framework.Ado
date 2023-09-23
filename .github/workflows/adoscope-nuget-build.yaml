@@ -39,7 +39,7 @@ jobs:
         encodedString: ${{ secrets.CODE_SIGNING_CERT_PFX }}
 
     - name: Sign NuGet Package
-      run: nuget sign ${{ env.NuGetDirectoryWin }}\*.nupkg -CertificatePath ${{ steps.cert_file.outputs.filePath }} -CertificatePassword ${{ secrets.CODE_SIGNING_PASSWORD }}  -Timestamper http://timestamp.digicert.com –NonInteractive
+      run: nuget sign ${{ env.NuGetDirectoryWin }}\*.nupkg -CertificatePath ${{ steps.cert_file.outputs.filePath }} -CertificatePassword "${{ secrets.CODE_SIGNING_PASSWORD }}"  -Timestamper http://timestamp.digicert.com –NonInteractive
 
     - name: Upload Nuget Package Artifact
       uses: actions/upload-artifact@v3
