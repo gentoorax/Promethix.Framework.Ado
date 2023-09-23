@@ -16,10 +16,15 @@ jobs:
     name: Publish Promethix.Framework.Ado
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/download-artifact@v3
+    - name: Download artifact
+      id: download-artifact
+      uses: dawidd6/action-download-artifact@v2
       with:
-        name: Promethix.Framework.Ado.Nuget
+        name: Promethix.Framework.Ado.NuGet
+        github_token:
+        workflow: adoscope-nuget-build.yaml
         path: ${{ env.NuGetDirectory }}
+        search_artifacts: true
 
     - name: Publish Nuget Package Promethix.Framework.Ado
       working-directory: .
