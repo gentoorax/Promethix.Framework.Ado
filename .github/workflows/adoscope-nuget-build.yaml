@@ -13,9 +13,9 @@ jobs:
     - uses: actions/checkout@v3
     - name: Setting up build version
       run: |
-        $major = $env:MAJOR
-        $minor = $env:MINOR
-        $revision = $env:REVISION
+        $major = ${{ vars.MAJOR }}
+        $minor = ${{ vars.MINOR }}
+        $revision = ${{ secrets.REVISION }}
 
         $buildVersion = "${major}.${minor}.${revision}"
         Write-Host "BUILD_VERSION=${buildVersion}" >> $env:GITHUB_ENV
