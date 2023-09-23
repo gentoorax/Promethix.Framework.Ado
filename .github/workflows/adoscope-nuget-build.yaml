@@ -36,7 +36,7 @@ jobs:
       uses: timheuer/base64-to-file@v1.2
       with:
         fileName: 'certfile.pfx'
-        encodedString: ${{ secrets.SIGNING_CERT }}
+        encodedString: ${{ secrets.CODE_SIGNING_CERT_PFX }}
 
     - name: Sign NuGet Package
       run: |
