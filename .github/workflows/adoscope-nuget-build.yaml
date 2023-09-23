@@ -22,11 +22,9 @@ jobs:
       working-directory: .
       run: dotnet build --no-restore --configuration Release
 
-    - name: Show current directory and list files
-      working-directory: ./Promethix.Framework.Ado
-      run: |
-        echo "Current Directory: $(pwd)"
-        ls ./bin/Release
+    - name: Package
+      working-directory: .
+      run: dotnet pack --no-restore --configuration release
 
     - name: Upload Nuget Package Artifact
       uses: actions/upload-artifact@v3
