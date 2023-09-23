@@ -49,3 +49,10 @@ jobs:
     - name: Run Tests
       working-directory: ./Promethix.Framework.Ado.Tests
       run: dotnet test --no-restore --verbosity normal
+
+  publish:
+    - name: Publish Promethix.Framework.Ado
+      uses: brandedoutcast/publish-nuget@v2.5.2
+      with:
+          PROJECT_FILE_PATH: Promethix.Framework.Ado/Promethix.Framework.Ado/Promethix.Framework.Ado.csproj
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
