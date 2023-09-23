@@ -21,7 +21,7 @@ jobs:
       uses: dawidd6/action-download-artifact@v2
       with:
         name: Promethix.Framework.Ado.NuGet
-        github_token:
+        github_token: ${{ secrets.REPO_ACCESS_TOKEN }}
         workflow: adoscope-nuget-build.yaml
         path: ${{ env.NuGetDirectory }}
         search_artifacts: true
