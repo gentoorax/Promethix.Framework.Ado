@@ -61,7 +61,7 @@ jobs:
     - name: Upload Nuget Package Artifact
       uses: actions/upload-artifact@v3
       with:
-        name: Promethix.Framework.Ado.Nuget
+        name: Promethix.Framework.Ado.NuGet
         if-no-files-found: error
         retention-days: 7
         path: ${{ env.NuGetDirectoryWin }}\*.nupkg
@@ -107,7 +107,7 @@ jobs:
 
     - uses: actions/download-artifact@v3
       with:
-        name: Promethix.Framework.Ado.GitHub
+        name: Promethix.Framework.Ado.NuGet
         path: ${{ env.NuGetDirectory }}
 
     - name: Publish Nuget Package Promethix.Framework.Ado
