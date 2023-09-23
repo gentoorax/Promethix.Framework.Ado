@@ -35,7 +35,7 @@ jobs:
         name: Promethix.Framework.Ado.Nuget
         if-no-files-found: error
         retention-days: 7
-        path: ./Promethix.Framework.Ado/Promethix.Framework.Ado/Promethix.Framework.Ado.Tests/bin/Release/*.nupkg
+        path: ./Promethix.Framework.Ado/Promethix.Framework.Ado/Promethix.Framework.Ado/bin/Release/*.nupkg
 
   versioning:
     name: Update Version - Revision
