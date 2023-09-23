@@ -33,7 +33,7 @@ jobs:
 
     - name: Get code signing certificate
       id: cert_file
-      uses: timheuer/base64-to-file@master
+      uses: timheuer/base64-to-file@v1.2
       with:
         fileName: 'certfile.pfx'
         encodedString: ${{ secrets.CODE_SIGNING_CERT_PFX }}
