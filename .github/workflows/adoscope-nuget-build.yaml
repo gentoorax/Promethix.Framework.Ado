@@ -31,15 +31,14 @@ jobs:
       working-directory: .
       run: dotnet pack --no-restore --configuration release --output ${{ env.NuGetDirectory }}
 
-    - name: Get code signing certificate
-      id: cert_file
-      uses: timheuer/base64-to-file@v1.2
-      with:
-        fileName: 'certfile.pfx'
-        encodedString: ${{ secrets.CODE_SIGNING_CERT_PFX }}
-
     - name: Sign NuGet Package
-      run: nuget sign ${{ env.NuGetDirectoryWin }}\*.nupkg -CertificatePath ${{ steps.cert_file.outputs.filePath }} -CertificatePassword "${{ secrets.CODE_SIGNING_PASSWORD }}"  -Timestamper http://timestamp.digicert.com –NonInteractive
+      run: |
+        # Import the code signing certificate
+        certutil -p ${{ secrets.CODE_SIGNING_PASSWORD }} -importpfx ${{ secrets.CODE_SIGNING_CERT_PFX }} NoExport
+
+        # Sign the NuGet package
+        dotnet sign ${{ env.NuGetDirectory }}\*.nupkg -k ${{ secrets.CODE_SIGNING_PASSWORD }} -s ${{ secrets.CODE_SIGNING_CERT_SUBJECT }}
+      working-directory: .
 
     - name: Upload Nuget Package Artifact
       uses: actions/upload-artifact@v3
