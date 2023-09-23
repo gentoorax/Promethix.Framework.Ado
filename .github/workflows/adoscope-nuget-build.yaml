@@ -40,8 +40,12 @@ jobs:
 
     - name: Sign NuGet Package
       run: |
+        # Import the CA certificate chain
+        echo ${{ secrets.CODE_SIGNING_PASSWORD }} >> .\ca-chain.cer
+        CERTUTIL -addstore -enterprise -f -v root "ca-chain.cer"
+        
         # Import the code signing certificate
-        #certutil -f -p "${{ secrets.CODE_SIGNING_PASSWORD }}" -importpfx ${{ steps.cert_file.outputs.filePath }} NoExport
+        certutil -f -p "${{ secrets.CODE_SIGNING_PASSWORD }}" -importpfx ${{ steps.cert_file.outputs.filePath }} NoExport
 
         # Sign the NuGet package
         dotnet nuget sign ${{ env.NuGetDirectoryWin }}\*.nupkg --certificate-path ${{ steps.cert_file.outputs.filePath }} --certificate-password "${{ secrets.CODE_SIGNING_PASSWORD }}" --timestamper http://timestamp.digicert.com
