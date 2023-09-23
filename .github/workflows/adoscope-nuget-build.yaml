@@ -20,7 +20,7 @@ jobs:
 
     - name: Build
       working-directory: .
-      run: dotnet build --no-restore
+      run: dotnet build --no-restore --configuration Release
 
   versioning:
     name: Update Minor version
@@ -51,12 +51,19 @@ jobs:
       run: dotnet test --no-restore --verbosity normal
 
   publish:
-      name: Publish Promethix.Framework.Ado
-      uses: brandedoutcast/publish-nuget@v2.5.2
-      needs:
-        - build
-        - test
-        - versioning
-      with:
-          PROJECT_FILE_PATH: Promethix.Framework.Ado/Promethix.Framework.Ado/Promethix.Framework.Ado.csproj
-          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    name: Publish Promethix.Framework.Ado
+    needs:
+      - build
+      - test
+      - versioning
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Publish Promethix.Framework.Ado
+      run: |
+        # Set the NuGet API key
+        echo "//nuget.org/api/v2/package:$(secrets.NUGET_API_KEY)" > nuget.config
+        # Publish the NuGet package
+        dotnet nuget push Promethix.Framework.Ado/Promethix.Framework.Ado/bin/Release/*.nupkg --configfile nuget.config --skip-duplicate
