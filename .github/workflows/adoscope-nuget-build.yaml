@@ -82,6 +82,14 @@ jobs:
         name: Promethix.Framework.Ado.Nuget
         path: ${{ env.NuGetDirectory }}
 
-    - name: Publish Promethix.Framework.Ado
+    - name: Sign NuGet Package
+      run: |
+        # Import the code signing certificate
+        certutil -p ${{ secrets.CODE_SIGNING_PASSWORD }} -importpfx ${{ secrets.CODE_SIGNING_CERT_PFX }} NoExport
+
+        # Sign the NuGet package
+        dotnet sign ${{ env.NuGetDirectory }}/*.nupkg -k ${{ secrets.CODE_SIGNING_PASSWORD }} -s ${{ secrets.CODE_SIGNING_CERT_SUBJECT }}
+
+    - name: Publish Nuget Package Promethix.Framework.Ado
       working-directory: .
       run: dotnet nuget push ${{ env.NuGetDirectory }}/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
