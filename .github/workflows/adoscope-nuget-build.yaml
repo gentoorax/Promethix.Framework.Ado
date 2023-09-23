@@ -118,8 +118,8 @@ jobs:
   
   approve-required:
   - name: Manual Approval
-        id: approval
-        run: echo "Package is ready for approval"
+    id: approval
+    run: echo "Package is ready for approval"
 
   # publish:
   #   name: Publish Promethix.Framework.Ado
