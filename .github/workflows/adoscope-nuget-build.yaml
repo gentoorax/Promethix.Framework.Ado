@@ -12,7 +12,13 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Setting up build version
-      run: echo "BuildVersion=${{ vars.MAJOR }}.${{ vars.MINOR }}.${{ secrets.REVISION }}-alpha" >> $GITHUB_ENV
+      run: |
+        $major = $env:MAJOR
+        $minor = $env:MINOR
+        $revision = $env:REVISION
+
+        $buildVersion = "${major}.${minor}.${revision}"
+        Write-Host "BUILD_VERSION=${buildVersion}" >> $env:GITHUB_ENV
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
@@ -103,6 +109,6 @@ jobs:
         name: Promethix.Framework.Ado.Nuget
         path: ${{ env.NuGetDirectory }}
 
-    - name: Publish Nuget Package Promethix.Framework.Ado
-      working-directory: .
-      run: dotnet nuget push ${{ env.NuGetDirectory }}/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
+    # - name: Publish Nuget Package Promethix.Framework.Ado
+    #   working-directory: .
+    #   run: dotnet nuget push ${{ env.NuGetDirectory }}/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
