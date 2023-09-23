@@ -62,8 +62,4 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Publish Promethix.Framework.Ado
-      run: |
-        # Set the NuGet API key
-        echo "//nuget.org/api/v2/package:$(secrets.NUGET_API_KEY)" > nuget.config
-        # Publish the NuGet package
-        dotnet nuget push Promethix.Framework.Ado/Promethix.Framework.Ado/bin/Release/*.nupkg --configfile nuget.config --skip-duplicate
+      run: dotnet nuget push ./Promethix.Framework.Ado/Promethix.Framework.Ado/bin/Release/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
