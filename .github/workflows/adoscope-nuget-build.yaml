@@ -1,7 +1,8 @@
 name: adoscope-nuget-build
 on: [push, pull_request, workflow_dispatch]
 
-NuGetDirectory: ${{ github.workspace}}/nuget
+env:
+  NuGetDirectory: ${{ github.workspace}}/nuget
 
 jobs:
   build:
