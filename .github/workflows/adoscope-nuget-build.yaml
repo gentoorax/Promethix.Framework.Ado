@@ -26,14 +26,6 @@ jobs:
       working-directory: .
       run: dotnet pack --no-restore --configuration release
 
-    - name: Upload Nuget Package Artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: Promethix.Framework.Ado.Nuget
-        if-no-files-found: error
-        retention-days: 7
-        path: ./bin/Release/*.nupkg
-
     - name: Show current directory and list files
       working-directory: ./Promethix.Framework.Ado
       run: |
@@ -41,6 +33,14 @@ jobs:
         ls .
         echo "Subdir"
         ls ./bin/Release
+
+    - name: Upload Nuget Package Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: Promethix.Framework.Ado.Nuget
+        if-no-files-found: error
+        retention-days: 7
+        path: ./bin/Release/*.nupkg
 
   versioning:
     name: Update Version - Revision
