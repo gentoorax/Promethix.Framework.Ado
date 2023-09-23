@@ -24,12 +24,11 @@ jobs:
 
     - name: Upload Nuget Package Artifact
       uses: actions/upload-artifact@v3
-      working-directory: ./Promethix.Framework.Ado
       with:
         name: Promethix.Framework.Ado.Nuget
         if-no-files-found: error
         retention-days: 7
-        path: ./bin/Release/*.nupkg
+        path: ./Promethix.Framework.Ado/bin/Release/*.nupkg
 
   versioning:
     name: Update Version - Revision
