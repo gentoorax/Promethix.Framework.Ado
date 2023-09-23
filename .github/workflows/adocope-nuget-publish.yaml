@@ -1,0 +1,35 @@
+name: adoscope-nuget-build
+on:
+  workflow_dispatch:
+    inputs:
+      package_version:
+        description: 'NuGet package version to approve'
+        required: true
+        default: '1.0.0'
+
+env:
+  NuGetDirectory: ${{ github.workspace}}/nuget
+  NuGetDirectoryWin: ${{ github.workspace}}\nuget
+
+jobs:
+  publish:
+    name: Publish Promethix.Framework.Ado
+    needs:
+      - build
+      - test
+      - versioning
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - uses: actions/download-artifact@v3
+      with:
+        name: Promethix.Framework.Ado.Nuget
+        path: ${{ env.NuGetDirectory }}
+
+    - name: Publish Nuget Package Promethix.Framework.Ado
+      working-directory: .
+      run: |
+        PACKAGE_VERSION=${{ inputs.package_version }}
+        dotnet nuget push ${{ env.NuGetDirectory }}/Promethix.Framework.Ado.${PACKAGE_VERSION}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
