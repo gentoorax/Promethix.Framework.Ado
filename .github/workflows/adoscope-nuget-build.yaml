@@ -41,10 +41,10 @@ jobs:
     - name: Sign NuGet Package
       run: |
         # Import the code signing certificate
-        certutil -f -p ${{ secrets.CODE_SIGNING_PASSWORD }} -importpfx ${{ steps.cert_file.outputs.filePath }} NoExport
+        certutil -f -p "${{ secrets.CODE_SIGNING_PASSWORD }}" -importpfx ${{ steps.cert_file.outputs.filePath }} NoExport
 
         # Sign the NuGet package
-        dotnet sign ${{ env.NuGetDirectory }}\*.nupkg -k ${{ secrets.CODE_SIGNING_PASSWORD }} -s ${{ secrets.CODE_SIGNING_CERT_SUBJECT }}
+        dotnet sign ${{ env.NuGetDirectory }}\*.nupkg -k "${{ secrets.CODE_SIGNING_PASSWORD }}" -s ${{ secrets.CODE_SIGNING_CERT_SUBJECT }}
       working-directory: .
 
     - name: Upload Nuget Package Artifact
