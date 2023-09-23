@@ -18,7 +18,7 @@ jobs:
         $revision = ${{ secrets.REVISION }}
 
         $buildVersion = "${major}.${minor}.${revision}"
-        Write-Host "BUILD_VERSION=${buildVersion}" >> $env:GITHUB_ENV
+        Write-Host "BuildVersion=${buildVersion}" >> $env:GITHUB_ENV
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
