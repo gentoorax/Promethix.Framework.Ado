@@ -22,6 +22,15 @@ jobs:
       working-directory: .
       run: dotnet build --no-restore --configuration Release
 
+    - name: Upload Nuget Package Artifact
+      uses: actions/upload-artifact@v3
+      working-directory: ./Promethix.Framework.Ado
+      with:
+        name: Promethix.Framework.Ado.Nuget
+        if-no-files-found: error
+        retention-days: 7
+        path: ./bin/Release/*.nupkg
+
   versioning:
     name: Update Version - Revision
     runs-on: ubuntu-latest
@@ -61,6 +70,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
+    - uses: actions/download-artifact@v3
+      with:
+        name: Promethix.Framework.Ado.Nuget
+        path: .
+
     - name: Show current directory and list files
       working-directory: ./Promethix.Framework.Ado
       run: |
@@ -68,5 +82,5 @@ jobs:
         ls .
 
     - name: Publish Promethix.Framework.Ado
-      working-directory: ./Promethix.Framework.Ado
-      run: dotnet nuget push ./bin/Release/net6.0/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
+      working-directory: .
+      run: dotnet nuget push *.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
