@@ -26,8 +26,7 @@ jobs:
       working-directory: ./Promethix.Framework.Ado
       run: |
         echo "Current Directory: $(pwd)"
-        ls .
-        ls ./Promethix.Framework.Ado
+        ls ./bin/Release
 
     - name: Upload Nuget Package Artifact
       uses: actions/upload-artifact@v3
@@ -35,7 +34,7 @@ jobs:
         name: Promethix.Framework.Ado.Nuget
         if-no-files-found: error
         retention-days: 7
-        path: ./Promethix.Framework.Ado/Promethix.Framework.Ado/Promethix.Framework.Ado/bin/Release/*.nupkg
+        path: ./bin/Release/*.nupkg
 
   versioning:
     name: Update Version - Revision
