@@ -44,18 +44,19 @@ jobs:
         fileName: 'certfile.pfx'
         encodedString: ${{ secrets.CODE_SIGNING_CERT_PFX }}
 
-    - name: Sign NuGet Package
-      run: |
-        # Import the CA certificate chain
-        echo "${{ secrets.CODE_SIGNING_CA_CHAIN }}" >> .\ca-chain.cer
-        CERTUTIL -addstore -enterprise -f -v root "ca-chain.cer"
+    # Private CA not working at the moment.
+    # - name: Sign NuGet Package
+    #   run: |
+    #     # Import the CA certificate chain
+    #     echo "${{ secrets.CODE_SIGNING_CA_CHAIN }}" >> .\ca-chain.cer
+    #     CERTUTIL -addstore -enterprise -f -v root "ca-chain.cer"
 
-        # Import the code signing certificate
-        certutil -f -p "${{ secrets.CODE_SIGNING_PASSWORD }}" -importpfx ${{ steps.cert_file.outputs.filePath }} NoExport
+    #     # Import the code signing certificate
+    #     certutil -f -p "${{ secrets.CODE_SIGNING_PASSWORD }}" -importpfx ${{ steps.cert_file.outputs.filePath }} NoExport
 
-        # Sign the NuGet package
-        dotnet nuget sign ${{ env.NuGetDirectoryWin }}\*.nupkg --certificate-path ${{ steps.cert_file.outputs.filePath }} --certificate-password "${{ secrets.CODE_SIGNING_PASSWORD }}" --timestamper http://timestamp.digicert.com
-      working-directory: .
+    #     # Sign the NuGet package
+    #     dotnet nuget sign ${{ env.NuGetDirectoryWin }}\*.nupkg --certificate-path ${{ steps.cert_file.outputs.filePath }} --certificate-password "${{ secrets.CODE_SIGNING_PASSWORD }}" --timestamper http://timestamp.digicert.com
+    #   working-directory: .
 
     - name: Upload Nuget Package Artifact
       uses: actions/upload-artifact@v3
@@ -106,9 +107,36 @@ jobs:
 
     - uses: actions/download-artifact@v3
       with:
-        name: Promethix.Framework.Ado.Nuget
+        name: Promethix.Framework.Ado.GitHub
         path: ${{ env.NuGetDirectory }}
 
     - name: Publish Nuget Package Promethix.Framework.Ado
       working-directory: .
-      run: dotnet nuget push ${{ env.NuGetDirectory }}/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
+      run: |
+        dotnet nuget add source --username gentoorax --password ${{ secrets.REPO_ACCESS_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/gentoorax/index.json"
+        dotnet nuget push ${{ env.NuGetDirectory }}/*.nupkg --api-key ${{ secrets.REPO_ACCESS_TOKEN }} --source "github"
+  
+  approve-required:
+  - name: Manual Approval
+        id: approval
+        run: echo "Package is ready for approval"
+
+  # publish:
+  #   name: Publish Promethix.Framework.Ado
+  #   needs:
+  #     - build
+  #     - test
+  #     - versioning
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - name: Checkout code
+  #     uses: actions/checkout@v3
+
+  #   - uses: actions/download-artifact@v3
+  #     with:
+  #       name: Promethix.Framework.Ado.Nuget
+  #       path: ${{ env.NuGetDirectory }}
+
+  #   - name: Publish Nuget Package Promethix.Framework.Ado
+  #     working-directory: .
+  #     run: dotnet nuget push ${{ env.NuGetDirectory }}/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
