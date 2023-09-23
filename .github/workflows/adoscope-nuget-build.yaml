@@ -34,6 +34,14 @@ jobs:
         retention-days: 7
         path: ./bin/Release/*.nupkg
 
+    - name: Show current directory and list files
+      working-directory: ./Promethix.Framework.Ado
+      run: |
+        echo "Current Directory: $(pwd)"
+        ls .
+        echo "Subdir"
+        ls ./bin/Release
+
   versioning:
     name: Update Version - Revision
     runs-on: ubuntu-latest
