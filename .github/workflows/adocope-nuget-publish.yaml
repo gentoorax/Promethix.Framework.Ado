@@ -1,4 +1,4 @@
-name: adoscope-nuget-build
+name: adoscope-nuget-publish
 on:
   workflow_dispatch:
     inputs:
@@ -14,15 +14,8 @@ env:
 jobs:
   publish:
     name: Publish Promethix.Framework.Ado
-    needs:
-      - build
-      - test
-      - versioning
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
     - uses: actions/download-artifact@v3
       with:
         name: Promethix.Framework.Ado.Nuget
