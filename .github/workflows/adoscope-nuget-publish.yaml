@@ -20,7 +20,7 @@ jobs:
       id: download-artifact
       uses: dawidd6/action-download-artifact@v2
       with:
-        name: Promethix.Framework.Ado.NuGet
+        name: Promethix.Framework.Ado.NuGet.${{ inputs.package_version }}
         github_token: ${{ secrets.REPO_ACCESS_TOKEN }}
         workflow: adoscope-nuget-build.yaml
         path: ${{ env.NuGetDirectory }}
