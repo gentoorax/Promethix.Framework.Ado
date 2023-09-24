@@ -17,8 +17,8 @@ jobs:
         $minor = ${{ vars.MINOR }}
         $revision = ${{ secrets.REVISION }}
 
-        $buildVersion = "${major}.${minor}.${revision}"
-        echo "BuildVersion=${buildVersion}-alpha" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+        $buildVersion = "${major}.${minor}.${revision}-alpha"
+        echo "BuildVersion=${buildVersion}" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
@@ -61,7 +61,7 @@ jobs:
     - name: Upload Nuget Package Artifact
       uses: actions/upload-artifact@v3
       with:
-        name: Promethix.Framework.Ado.NuGet
+        name: Promethix.Framework.Ado.NuGet.${buildVersion}
         if-no-files-found: error
         retention-days: 7
         path: ${{ env.NuGetDirectoryWin }}\*.nupkg
@@ -107,7 +107,7 @@ jobs:
 
     - uses: actions/download-artifact@v3
       with:
-        name: Promethix.Framework.Ado.NuGet
+        name: Promethix.Framework.Ado.NuGet.${buildVersion}
         path: ${{ env.NuGetDirectory }}
 
     - name: Publish Nuget Package Promethix.Framework.Ado
