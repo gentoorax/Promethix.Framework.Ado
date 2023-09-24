@@ -64,7 +64,7 @@ namespace Promethix.Framework.Ado.Implementation
             {
                 if (disposing)
                 {
-                    // TODO: dispose managed state (managed objects)
+                    // Dispose managed state (managed objects) here
                 }
 
                 transaction?.Dispose();

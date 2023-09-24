@@ -14,7 +14,7 @@ namespace Promethix.Framework.Ado.Implementation
         private bool completed;
 
 #pragma warning disable IDE0079 // Remove unnecessary suppression - Unnecessary suppression for .NET 4.8 only - we are multi-targeting.
-#pragma warning disable CA2213 // Disposable fields should be disposed - Disposed of through other means.
+#pragma warning disable CA2213 // Disposable fields should be disposed - This is disposed of through other means.
         private readonly AdoScope parentScope;
 #pragma warning restore CA2213 // Disposable fields should be disposed
 #pragma warning restore IDE0079 // Remove unnecessary suppression
@@ -154,6 +154,9 @@ namespace Promethix.Framework.Ado.Implementation
             ambientDbContextScopeKey.Value = null;
         }
 
+        /// <summary>
+        /// Surpresses the ambient scope for the current async control flow.
+        /// </summary>
         internal static void HideAmbientScope()
         {
             ambientDbContextScopeKey.Value = null;
@@ -206,8 +209,8 @@ namespace Promethix.Framework.Ado.Implementation
                     }
                 }
 
-                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-                // TODO: set large fields to null
+                // Unmanaged resources are disposed of here. If we have any
+
                 disposed = true;
             }
         }
