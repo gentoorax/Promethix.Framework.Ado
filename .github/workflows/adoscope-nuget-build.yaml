@@ -108,6 +108,7 @@ jobs:
         minor="${{ vars.MINOR }}"
         revision="${{ secrets.REVISION }}"
         buildVersion="${major}.${minor}.${revision}-alpha"
+        echo "buildVersion=${buildVersion}" >> $GITHUB_ENV
 
     - uses: actions/download-artifact@v3
       with:
