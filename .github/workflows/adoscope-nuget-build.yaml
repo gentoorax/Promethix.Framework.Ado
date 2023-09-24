@@ -6,9 +6,21 @@ env:
   NuGetDirectoryWin: ${{ github.workspace}}\nuget
 
 jobs:
+  versioning:
+    name: Update Version - Revision
+    runs-on: ubuntu-latest
+    steps:
+    - uses: action-pack/set-secret@v1
+      with:
+        name: 'REVISION'
+        value: $((${{ secrets.REVISION }}+1))
+        token: ${{ secrets.REPO_ACCESS_TOKEN }}
+
   build:
     name: Build
     runs-on: windows-latest
+    needs:
+      - versioning
     steps:
     - uses: actions/checkout@v3
     - name: Setting up build version
@@ -66,18 +78,6 @@ jobs:
         retention-days: 7
         path: ${{ env.NuGetDirectoryWin }}\*.nupkg
 
-  versioning:
-    name: Update Version - Revision
-    runs-on: ubuntu-latest
-    needs:
-      - build
-    steps:
-    - uses: action-pack/set-secret@v1
-      with:
-        name: 'REVISION'
-        value: $((${{ secrets.REVISION }}+1))
-        token: ${{ secrets.REPO_ACCESS_TOKEN }}
-
   test:
     name: Run Tests
     runs-on: ubuntu-latest
@@ -102,8 +102,12 @@ jobs:
       - versioning
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+    - name: Set up build version
+      run: |
+        major="${{ vars.MAJOR }}"
+        minor="${{ vars.MINOR }}"
+        revision="${{ secrets.REVISION }}"
+        buildVersion="${major}.${minor}.${revision}-alpha"
 
     - uses: actions/download-artifact@v3
       with:
