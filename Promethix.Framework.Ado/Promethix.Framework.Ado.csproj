@@ -9,7 +9,7 @@
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<Title>Promethix.Framework.AdoScope</Title>
-		<Description>A simple and flexible way to manage your ADO database connections and transactions.
+		<Description>AdoScope (Official): A simple and flexible way to manage your ADO database connections and transactions.
 
 Based on DbContextScope but for general ADO including Dapper.</Description>
 		<Version>$(BuildVersion)</Version>
@@ -17,7 +17,7 @@ Based on DbContextScope but for general ADO including Dapper.</Description>
 		<Company>Promethix</Company>
 		<Product>$(AssemblyName)</Product>
 		<Copyright>Copyright (c) 2023 Christopher Law</Copyright>
-		<PackageProjectUrl>https://chrislaw.me/cv</PackageProjectUrl>
+		<PackageProjectUrl>https://github.com/gentoorax/Promethix.Framework.Ado</PackageProjectUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageTags>AdoScope; DbContextScope; Dapper; DapperTransaction; AdoTransaction; Promethix</PackageTags>
 		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
