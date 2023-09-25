@@ -1,4 +1,9 @@
-﻿using Promethix.Framework.Ado.Implementation;
+﻿/*
+ * MIT License
+ * Copyright (c) 2023 Christopher Law
+ * https://chrislaw.me
+ */
+using Promethix.Framework.Ado.Implementation;
 using System;
 
 namespace Promethix.Framework.Ado.Interfaces

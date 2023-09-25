@@ -1,0 +1,6 @@
+﻿extensions: designer.cs generated.cs .cs .cpp .h .aspx .ascx .vb .xml .config .xsd
+/*
+ * MIT License
+ * Copyright (c) 2023 Christopher Law
+ * https://chrislaw.me
+ */

@@ -1,4 +1,9 @@
-﻿using System;
+﻿/*
+ * MIT License
+ * Copyright (c) 2023 Christopher Law
+ * https://chrislaw.me
+ */
+using System;
 using System.Data;
 using System.Data.Common;
 

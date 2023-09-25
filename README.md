@@ -1,9 +1,14 @@
 ﻿# AdoScope (Pre-Release Alpha)
 
-A simple and flexible way to manage your ADO.NET connections and transactions. 
+AdoScope offers a simple and flexible solution for managing your ADO.NET connections and transactions. It draws inspiration
+from the remarkable work in DbContextScope by Mehdime El Gueddari, whose DbContextScope library has been a source of
+great inspiration for the creation of AdoScope.
 
-Based on the impressive contributions to DbContextScope by Mehdime El Gueddari, I have great admiration for their brilliant work which inspired me to create AdoScope.
+While AdoScope is compatible with any ADO.NET provider, it was specifically designed with Dapper in mind. Having extensive
+experience with Entity Framework and DbContextScope, the goal was to provide a similar solution tailored to the requirements
+of Dapper.
 
-AdoScope will work with any ADO.NET provider however, I created it for Dapper. Having worked a great deal with Entity Framework and DbContextScope I wanted to create something similar for Dapper.
+Unlike Entity Framework, Dapper lacks a DbContext, which can lead to challenges in managing DbConnection and DbTransaction.
+To address this, AdoScope introduces the concept of an AdoContext—a wrapper around DbConnection and DbTransaction, simplifying their management.
 
-Dapper of course don't have a DbContext, but there are significant issues managing DbConnection and DbTransaction, so I created an AdoContext which is a wrapper around a DbConnection and DbTransaction.
+If you are seeking a Unit of Work pattern for Dapper with minimal coding overhead, AdoScope provides an elegant solution.

@@ -1,4 +1,9 @@
-﻿using Promethix.Framework.Ado.Enums;
+﻿/*
+ * MIT License
+ * Copyright (c) 2023 Christopher Law
+ * https://chrislaw.me
+ */
+using Promethix.Framework.Ado.Enums;
 using Promethix.Framework.Ado.Interfaces;
 using System.Data;
 
