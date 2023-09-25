@@ -1,4 +1,5 @@
-﻿using Promethix.Framework.Ado.Implementation;
+﻿using Promethix.Framework.Ado.Enums;
+using Promethix.Framework.Ado.Implementation;
 
 namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess
 {
@@ -8,7 +9,8 @@ namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess
                 : base(
                       "SqlLiteIntegration",
                       "Microsoft.Data.Sqlite",
-                      "Data Source=mydatabase.db"
+                      "Data Source=mydatabase.db",
+                      AdoContextExecutionOption.Transactional
                       )
         {
             // No Implementation

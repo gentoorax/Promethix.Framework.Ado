@@ -3,6 +3,7 @@
  * Copyright (c) 2023 Christopher Law
  * https://chrislaw.me
  */
+using Promethix.Framework.Ado.Enums;
 using Promethix.Framework.Ado.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -51,6 +52,10 @@ namespace Promethix.Framework.Ado.Implementation
                 if (isolationLevel.HasValue)
                 {
                     adoContext.BeginTransaction(isolationLevel.Value);
+                }
+                else if (adoContext.AdoContextExecution == AdoContextExecutionOption.Transactional)
+                {
+                    adoContext.BeginTransaction();
                 }
             }
 

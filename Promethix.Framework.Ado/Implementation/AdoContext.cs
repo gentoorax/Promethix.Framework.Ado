@@ -3,6 +3,7 @@
  * Copyright (c) 2023 Christopher Law
  * https://chrislaw.me
  */
+using Promethix.Framework.Ado.Enums;
 using System;
 using System.Data;
 using System.Data.Common;
@@ -15,6 +16,10 @@ namespace Promethix.Framework.Ado.Implementation
 
         private readonly string name;
 
+        private readonly AdoContextExecutionOption adoContextExecutionOption;
+
+        private readonly IsolationLevel? overrideDefaultIsolationLevel;
+
         private readonly IDbConnection connection;
 
         private IDbTransaction transaction;
@@ -22,6 +27,8 @@ namespace Promethix.Framework.Ado.Implementation
         public string Name => name;
 
         public bool IsInTransaction => transaction != null;
+
+        public AdoContextExecutionOption AdoContextExecution => adoContextExecutionOption;
 
         public IDbConnection Connection
         {
@@ -32,9 +39,21 @@ namespace Promethix.Framework.Ado.Implementation
             }
         }
 
-        protected AdoContext(string name, string providerName, string connectionString)
+        protected AdoContext(
+            string name,
+            string providerName,
+            string connectionString,
+            AdoContextExecutionOption adoContextExecutionOption,
+            IsolationLevel? overrideDefaultIsolationLevel = null)
         {
+            if (adoContextExecutionOption == AdoContextExecutionOption.NonTransactional && overrideDefaultIsolationLevel.HasValue)
+            {
+                throw new ArgumentException("Cannot set an override default isolation level for a non-transactional context.", nameof(overrideDefaultIsolationLevel));
+            }
+
             this.name = name;
+            this.adoContextExecutionOption = adoContextExecutionOption;
+            this.overrideDefaultIsolationLevel = overrideDefaultIsolationLevel;
 
             DbProviderFactory factory = DbProviderFactories.GetFactory(providerName);
 
@@ -55,6 +74,13 @@ namespace Promethix.Framework.Ado.Implementation
             OpenConnection();
 
             transaction = connection.BeginTransaction(isolationLevel);
+        }
+
+        public void BeginTransaction()
+        {
+            OpenConnection();
+
+            transaction = overrideDefaultIsolationLevel.HasValue ? connection.BeginTransaction(overrideDefaultIsolationLevel.Value) : connection.BeginTransaction();
         }
 
         public void CommitTransaction()
