@@ -34,6 +34,7 @@ namespace Promethix.Framework.Ado.Tests.DependencyInjection
             _ = services.AddScoped<ISimpleTestRepository, SimpleTestRepository>();
             _ = services.AddScoped<IMultiTestRepository, MultiTestRepository>();
 
+            // Register your ADO contexts
             var adoContextConfiguration = new AdoContextConfigurationBuilder()
                 .AddAdoContext<SqliteContextExample1>(options =>
                 {
