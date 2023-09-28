@@ -11,12 +11,28 @@
 		<Title>Promethix.Framework.AdoScope</Title>
 		<Description>AdoScope (Official): A simple and flexible way to manage your ADO database connections and transactions.
 
-Based on DbContextScope but for general ADO including Dapper.</Description>
+Based on DbContextScope but for general ADO including Dapper.
+
+Please README.md for usage details.
+
+public void ServiceLayerAddTestEntity()
+{
+    using IAdoScope adoScope = adoScopeFactory.Create();
+
+    // Create a test entity
+    var newTestEntity = new TestEntity { Name = "CreateTest", Description = "Test Description", Quantity = 1 };
+
+    // Call our repository to add the entity
+    simpleTestRepository.Add(newTestEntity);
+
+    // Commit the unit of work / transaction (if using ExecutionOption.Transactional)
+    adoScope.Complete();
+}</Description>
 		<Version>$(BuildVersion)</Version>
 		<Authors>Christopher Law</Authors>
 		<Company>Promethix</Company>
 		<Product>$(AssemblyName)</Product>
-		<Copyright>Copyright (c) 2023 Christopher Law</Copyright>
+		<Copyright>Copyright (c) 2023 Christopher Law (chris@chrislaw.me)</Copyright>
 		<PackageProjectUrl>https://github.com/gentoorax/Promethix.Framework.Ado</PackageProjectUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageTags>AdoScope; DbContextScope; Dapper; DapperTransaction; AdoTransaction; Promethix</PackageTags>
