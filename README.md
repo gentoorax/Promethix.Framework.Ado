@@ -104,3 +104,33 @@ var adoContextConfiguration = new AdoContextConfigurationBuilder()
 
 _ = services.AddScoped(provider => adoContextConfiguration);  
 ```
+
+To use appsettings.json for configuration, you can use the following code:
+```csharp
+// Register your ADO contexts
+var adoContextConfiguration = new AdoContextConfigurationBuilder()
+.AddAdoContext<SqliteContextExample1>(options =>
+{
+    _ = options.WithNamedConnection("SqliteContextExample1", configuration);
+})
+.Build();
+
+_ = services.AddScoped(provider => adoContextConfiguration);  
+```
+
+appsettings.json as follows (see unit test project for more examples):
+```json
+{
+  "AdoContextOptions": {
+    "SqliteContextExample1": {
+      "ProviderName": "Microsoft.Data.Sqlite",
+      "ExecutionOption": "Transactional"
+    }
+  },
+  "ConnectionStrings": {
+    "SqliteContextExample1": "Data Source=mydatabase.db",
+  }
+}
+```
+
+For MS SQL Server the Provider Name should be `System.Data.SqlClient`
