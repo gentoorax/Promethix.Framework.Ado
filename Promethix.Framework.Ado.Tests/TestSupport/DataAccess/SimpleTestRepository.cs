@@ -5,16 +5,16 @@ using System.Data;
 
 namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess
 {
-    public class TestRepository : ITestRepository
+    public class SimpleTestRepository : ISimpleTestRepository
     {
         private readonly IAmbientAdoContextLocator ambientAdoContextLocator;
 
-        public TestRepository(IAmbientAdoContextLocator ambientAdoContextLocator)
+        public SimpleTestRepository(IAmbientAdoContextLocator ambientAdoContextLocator)
         {
             this.ambientAdoContextLocator = ambientAdoContextLocator;
         }
 
-        private IDbConnection SqliteConnection => ambientAdoContextLocator.GetContext<SqliteContext>().Connection;
+        private IDbConnection SqliteConnection => ambientAdoContextLocator.GetContext<SqliteContextExample1>().Connection;
 
         public void Add(TestEntity entity)
         {

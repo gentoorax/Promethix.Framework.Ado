@@ -3,6 +3,7 @@
  * Copyright (c) 2023 Christopher Law
  * https://chrislaw.me
  */
+using Microsoft.Extensions.Configuration;
 using Promethix.Framework.Ado.Enums;
 using System;
 using System.Data;
@@ -14,21 +15,19 @@ namespace Promethix.Framework.Ado.Implementation
     {
         private bool disposedValue;
 
-        private readonly string name;
+        private IDbConnection connection;
 
-        private readonly AdoContextExecutionOption adoContextExecutionOption;
+        private AdoContextOptionsBuilder adoContextOptions;
 
-        private readonly IsolationLevel? overrideDefaultIsolationLevel;
-
-        private readonly IDbConnection connection;
+        public bool IsConfigured { get; private set; }
 
         private IDbTransaction transaction;
 
-        public string Name => name;
+        public string Name => adoContextOptions?.Name;
 
         public bool IsInTransaction => transaction != null;
 
-        public AdoContextExecutionOption AdoContextExecution => adoContextExecutionOption;
+        public AdoContextExecutionOption AdoContextExecution => adoContextOptions.ExecutionOption;
 
         public IDbConnection Connection
         {
@@ -39,6 +38,16 @@ namespace Promethix.Framework.Ado.Implementation
             }
         }
 
+        protected AdoContext()
+        {
+            // No Implementation
+        }
+
+        protected AdoContext(AdoContextOptionsBuilder adoContextOptions)
+        {
+            ConfigureContext(adoContextOptions);
+        }
+
         protected AdoContext(
             string name,
             string providerName,
@@ -46,19 +55,14 @@ namespace Promethix.Framework.Ado.Implementation
             AdoContextExecutionOption adoContextExecutionOption,
             IsolationLevel? overrideDefaultIsolationLevel = null)
         {
-            if (adoContextExecutionOption == AdoContextExecutionOption.NonTransactional && overrideDefaultIsolationLevel.HasValue)
-            {
-                throw new ArgumentException("Cannot set an override default isolation level for a non-transactional context.", nameof(overrideDefaultIsolationLevel));
-            }
+            adoContextOptions = new AdoContextOptionsBuilder()
+                .WithNamedConnection(name)
+                .WithProviderName(providerName)
+                .WithConnectionString(connectionString)
+                .WithExecutionOption(adoContextExecutionOption)
+                .WithDefaultIsolationLevel(overrideDefaultIsolationLevel);
 
-            this.name = name;
-            this.adoContextExecutionOption = adoContextExecutionOption;
-            this.overrideDefaultIsolationLevel = overrideDefaultIsolationLevel;
-
-            DbProviderFactory factory = DbProviderFactories.GetFactory(providerName);
-
-            connection = factory.CreateConnection();
-            connection.ConnectionString = connectionString;
+            ConfigureContext(adoContextOptions);
         }
 
         private void OpenConnection()
@@ -80,13 +84,34 @@ namespace Promethix.Framework.Ado.Implementation
         {
             OpenConnection();
 
-            transaction = overrideDefaultIsolationLevel.HasValue ? connection.BeginTransaction(overrideDefaultIsolationLevel.Value) : connection.BeginTransaction();
+            transaction = adoContextOptions.OverrideDefaultIsolationLevel.HasValue ? connection.BeginTransaction(adoContextOptions.OverrideDefaultIsolationLevel.Value) : connection.BeginTransaction();
         }
 
         public void CommitTransaction()
         {
             transaction.Commit();
             transaction.Dispose();
+        }
+
+        protected internal void ConfigureContext(AdoContextOptionsBuilder adoContextOptions)
+        {
+            if (adoContextOptions == null)
+            {
+                throw new ArgumentNullException(nameof(adoContextOptions));
+            }
+
+            if (adoContextOptions.ExecutionOption == AdoContextExecutionOption.NonTransactional && adoContextOptions.OverrideDefaultIsolationLevel.HasValue)
+            {
+                throw new ArgumentException("Cannot set an override default isolation level for a non-transactional context.");
+            }
+
+            this.adoContextOptions = adoContextOptions;
+            IsConfigured = true;
+
+            DbProviderFactory factory = DbProviderFactories.GetFactory(adoContextOptions.ProviderName);
+
+            connection = factory.CreateConnection();
+            connection.ConnectionString = adoContextOptions.ConnectionString;
         }
 
         protected virtual void Dispose(bool disposing)

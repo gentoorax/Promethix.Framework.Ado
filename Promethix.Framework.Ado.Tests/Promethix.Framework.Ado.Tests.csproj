@@ -16,6 +16,8 @@
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.0.151" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.11" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
@@ -26,6 +28,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Promethix.Framework.Ado\Promethix.Framework.Ado.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

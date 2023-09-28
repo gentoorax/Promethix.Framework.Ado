@@ -11,5 +11,9 @@ namespace Promethix.Framework.Ado.Interfaces
     public interface IAdoContextGroup : IDisposable
     {
         TAdoContext GetContext<TAdoContext>() where TAdoContext : AdoContext;
+
+        void Commit();
+
+        void Rollback();
     }
 }

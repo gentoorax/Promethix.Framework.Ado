@@ -12,7 +12,9 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
     [TestClass]
     public class AdoScopeTests
     {
-        private readonly ITestRepository testRepository;
+        private readonly ISimpleTestRepository simpleTestRepository;
+
+        private readonly IMultiTestRepository multiTestRepository;
 
         private readonly IAdoScopeFactory adoScopeFactory;
 
@@ -22,7 +24,8 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
             services.AddIntegrationDependencyInjection();
             var container = services.BuildServiceProvider();
 
-            testRepository = container.GetService<ITestRepository>() ?? throw new InvalidOperationException("Could not create test repository");
+            simpleTestRepository = container.GetService<ISimpleTestRepository>() ?? throw new InvalidOperationException("Could not create test repository");
+            multiTestRepository = container.GetService<IMultiTestRepository>() ?? throw new InvalidOperationException("Could not create test repository");
             adoScopeFactory = container.GetService<IAdoScopeFactory>() ?? throw new InvalidOperationException("Could not create ado scope factory");
 
             if (!File.Exists("mydatabase.db"))
@@ -34,7 +37,7 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
         }
 
         [TestMethod, TestCategory("IntegrationTests")]
-        public void SqlLiteAdoScopeCreateTest()
+        public void SqliteAdoScopeCreateTest()
         {
             using IAdoScope adoScope = adoScopeFactory.Create();
 
@@ -42,7 +45,29 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
             var newTestEntity = new TestEntity { Name = "CreateTest", Description = "Test Description", Quantity = 1 };
 
             // Call our repository to add the entity
-            testRepository.Add(newTestEntity);
+            simpleTestRepository.Add(newTestEntity);
+
+            // Complete data related work
+            adoScope.Complete();
+
+            Assert.IsNotNull(adoScope);
+        }
+
+        /// <summary>
+        /// Please note that currently we do not have distributed transactions implemented.
+        /// So this is best effort, as per DbContextScope. However, I do plan to implement this in the future.
+        /// It's unlikely you would have multiple contexts all with different settings in the same repository
+        /// like this, but this is just to demonstrate the different configuration options.
+        /// </summary>
+        public void SqliteMultiContextAdoScopeCreateTest()
+        {
+            using IAdoScope adoScope = adoScopeFactory.Create();
+
+            // Create a test entity
+            var newTestEntity = new TestEntity { Name = "CreateTest", Description = "Test Description", Quantity = 1 };
+
+            // Call our repository to add the entity
+            multiTestRepository.Add(newTestEntity);
 
             // Complete data related work
             adoScope.Complete();
@@ -54,7 +79,7 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
         public void SqliteAdoScopeCreateReadTest()
         {
             using IAdoScope adoScope = adoScopeFactory.Create();
-            TestEntity existingTestEntity = testRepository.GetEntityByName("Test3");
+            TestEntity existingTestEntity = simpleTestRepository.GetEntityByName("Test3");
             adoScope.Complete();
 
             Assert.IsNotNull(existingTestEntity);
@@ -63,12 +88,16 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
             Assert.AreEqual(3, existingTestEntity.Quantity);    
         }
 
+        /// <summary>
+        /// Please note as per DbContextScope this creates a dedicated connection for an explicit transaction.
+        /// So be careful, there are transaction options that can be set on the ADO context.
+        /// </summary>
         [TestMethod, TestCategory("IntegrationTests")]
         public void SqliteAdoScopeCreateWithTransactionTest()
         {
             using IAdoScope adoScope = adoScopeFactory.CreateWithTransaction(IsolationLevel.ReadCommitted);
-            testRepository.Add(new TestEntity { Name = "TransactionTest", Description = "Test Description", Quantity = 1 });
-            testRepository.Add(new TestEntity { Name = "TransactionTest2", Description = "Test Description", Quantity = 1 });
+            simpleTestRepository.Add(new TestEntity { Name = "TransactionTest", Description = "Test Description", Quantity = 1 });
+            simpleTestRepository.Add(new TestEntity { Name = "TransactionTest2", Description = "Test Description", Quantity = 1 });
             adoScope.Complete();
 
             Assert.IsNotNull(adoScope);
@@ -78,17 +107,17 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
         public void SqliteAdoScopeTransactionDisposeTest()
         {
             using IAdoScope adoScope = adoScopeFactory.CreateWithTransaction(IsolationLevel.ReadCommitted);
-            testRepository.Add(new TestEntity { Name = "TransactionTest", Description = "Test Description", Quantity = 1 });
-            testRepository.Add(new TestEntity { Name = "TransactionTest2", Description = "Test Description", Quantity = 1 });
+            simpleTestRepository.Add(new TestEntity { Name = "TransactionTest", Description = "Test Description", Quantity = 1 });
+            simpleTestRepository.Add(new TestEntity { Name = "TransactionTest2", Description = "Test Description", Quantity = 1 });
 
-            Assert.IsNotNull(testRepository.GetEntityByName("TransactionTest"));
+            Assert.IsNotNull(simpleTestRepository.GetEntityByName("TransactionTest"));
 
             // Don't complete the transaction
             adoScope.Dispose();
 
             // Assert that the transaction was rolled back
             using IAdoScope adoScope2 = adoScopeFactory.Create();
-            Assert.IsNull(testRepository.GetEntityByName("TransactionTest"));
+            Assert.IsNull(simpleTestRepository.GetEntityByName("TransactionTest"));
         }
 
         #region Nested Scope Tests
@@ -99,15 +128,15 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
             // Testing nested scopes
             using (IAdoScope adoScope1 = adoScopeFactory.Create())
             {
-                testRepository.Add(new TestEntity { Name = "NestedTest", Description = "Test Description", Quantity = 1 });
+                simpleTestRepository.Add(new TestEntity { Name = "NestedTest", Description = "Test Description", Quantity = 1 });
 
                 using (IAdoScope adoScope2 = adoScopeFactory.Create())
                 {
-                    testRepository.Add(new TestEntity { Name = "NestedTest2", Description = "Test Description", Quantity = 1 });
+                    simpleTestRepository.Add(new TestEntity { Name = "NestedTest2", Description = "Test Description", Quantity = 1 });
                     adoScope2.Complete();
                 }
 
-                testRepository.Add(new TestEntity { Name = "NestedTest3", Description = "Test Description", Quantity = 1 });
+                simpleTestRepository.Add(new TestEntity { Name = "NestedTest3", Description = "Test Description", Quantity = 1 });
 
                 adoScope1.Complete();
             }
@@ -115,16 +144,16 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
             // Testing sequential
             using (IAdoScope adoScope3 = adoScopeFactory.Create())
             {
-                testRepository.Add(new TestEntity { Name = "NestedTest4", Description = "Test Description", Quantity = 1 });
+                simpleTestRepository.Add(new TestEntity { Name = "NestedTest4", Description = "Test Description", Quantity = 1 });
                 adoScope3.Complete();
             }
 
             // Assert all created
             using IAdoScope adoScope = adoScopeFactory.Create();
-            Assert.IsNotNull(testRepository.GetEntityByName("NestedTest"));
-            Assert.IsNotNull(testRepository.GetEntityByName("NestedTest2"));
-            Assert.IsNotNull(testRepository.GetEntityByName("NestedTest3"));
-            Assert.IsNotNull(testRepository.GetEntityByName("NestedTest4"));
+            Assert.IsNotNull(simpleTestRepository.GetEntityByName("NestedTest"));
+            Assert.IsNotNull(simpleTestRepository.GetEntityByName("NestedTest2"));
+            Assert.IsNotNull(simpleTestRepository.GetEntityByName("NestedTest3"));
+            Assert.IsNotNull(simpleTestRepository.GetEntityByName("NestedTest4"));
             adoScope.Complete();
         }
 
@@ -132,10 +161,10 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
         public void SqliteAdoScopeTransactionNestedTest()
         {
             using IAdoScope adoScope = adoScopeFactory.CreateWithTransaction(IsolationLevel.ReadCommitted);
-            testRepository.Add(new TestEntity { Name = "TransactionNestedTest", Description = "Nested Transaction Test Description", Quantity = 1 });
+            simpleTestRepository.Add(new TestEntity { Name = "TransactionNestedTest", Description = "Nested Transaction Test Description", Quantity = 1 });
 
             using IAdoScope adoScope1 = adoScopeFactory.Create();
-            testRepository.Add(new TestEntity { Name = "TransactionNestedTest2", Description = "Nested Transaction Test Description", Quantity = 1 });
+            simpleTestRepository.Add(new TestEntity { Name = "TransactionNestedTest2", Description = "Nested Transaction Test Description", Quantity = 1 });
             adoScope1.Complete();
 
             adoScope.Complete();
@@ -149,6 +178,26 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
             if (File.Exists("mydatabase.db"))
             {
                 File.Delete("mydatabase.db");
+            }
+
+            if (File.Exists("mydatabase2.db"))
+            {
+                File.Delete("mydatabase2.db");
+            }
+
+            if (File.Exists("mydatabase3.db"))
+            {
+                File.Delete("mydatabase3.db");
+            }
+
+            if (File.Exists("mydatabase4.db"))
+            {
+                File.Delete("mydatabase4.db");
+            }
+
+            if (File.Exists("mydatabase5.db"))
+            {
+                File.Delete("mydatabase5.db");
             }
         }
 

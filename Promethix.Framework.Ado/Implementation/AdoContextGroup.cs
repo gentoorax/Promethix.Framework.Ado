@@ -18,17 +18,20 @@ namespace Promethix.Framework.Ado.Implementation
 
         private readonly Dictionary<Type, AdoContext> initialisedAdoContexts;
 
+        private readonly IAdoContextOptionsRegistry adoContextOptionsRegistry;
+
         private readonly IsolationLevel? isolationLevel;
 
         private bool completed;
 
         private ExceptionDispatchInfo lastError;
 
-        public AdoContextGroup(IsolationLevel? isolationLevel = null)
+        public AdoContextGroup(IAdoContextOptionsRegistry adoContextOptionsRegistry, IsolationLevel? isolationLevel = null)
         {
             disposed = false;
             completed = false;
             initialisedAdoContexts = new Dictionary<Type, AdoContext>();
+            this.adoContextOptionsRegistry = adoContextOptionsRegistry;
             this.isolationLevel = isolationLevel;
         }
 
@@ -44,6 +47,11 @@ namespace Promethix.Framework.Ado.Implementation
                 // First time we have been asked for this type of context, so create it.
                 // Create one, cache it and start its database transaction if needed.
                 TAdoContext adoContext = Activator.CreateInstance<TAdoContext>();
+                
+                if ((adoContextOptionsRegistry?.TryGetContextOptions<TAdoContext>(out AdoContextOptionsBuilder options) != null) && options != null)
+                {
+                    adoContext.ConfigureContext(options);
+                }
 
                 initialisedAdoContexts.Add(typeof(TAdoContext), adoContext);
 
@@ -60,7 +68,6 @@ namespace Promethix.Framework.Ado.Implementation
             }
 
             return initialisedAdoContexts[typeof(TAdoContext)] as TAdoContext;
-
         }
 
         public void Commit()

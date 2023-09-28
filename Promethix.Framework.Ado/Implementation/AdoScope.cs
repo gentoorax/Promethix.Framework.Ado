@@ -24,7 +24,7 @@ namespace Promethix.Framework.Ado.Implementation
 #pragma warning restore CA2213 // Disposable fields should be disposed
 #pragma warning restore IDE0079 // Remove unnecessary suppression
 
-        private readonly AdoContextGroup adoContexts;
+        private readonly IAdoContextGroup adoContexts;
 
         private readonly InstanceIdentifier instanceIdentifier = new();
 
@@ -36,25 +36,25 @@ namespace Promethix.Framework.Ado.Implementation
 
         public IAdoContextGroup AdoContexts => adoContexts;
 
-        public AdoScope(IsolationLevel isolationLevel)
-            : this(AdoScopeOption.JoinExisting, isolationLevel)
+        public AdoScope(IsolationLevel isolationLevel, IAdoContextGroupFactory adoContextGroupFactory)
+            : this(AdoScopeOption.JoinExisting, isolationLevel, adoContextGroupFactory)
         {
             // No Implementation
         }
 
-        public AdoScope(AdoScopeOption joiningOption)
-            : this(joiningOption, null)
+        public AdoScope(AdoScopeOption joiningOption, IAdoContextGroupFactory adoContextGroupFactory = null)
+            : this(joiningOption, null, adoContextGroupFactory)
         {
             // No Implementation
         }
 
-        public AdoScope()
-            : this(AdoScopeOption.JoinExisting, null)
+        public AdoScope(IAdoContextGroupFactory adoContextGroupFactory = null)
+            : this(AdoScopeOption.JoinExisting, null, adoContextGroupFactory)
         {
             // No Implementation
         }
 
-        public AdoScope(AdoScopeOption joiningOption, IsolationLevel? isolationLevel)
+        public AdoScope(AdoScopeOption joiningOption, IsolationLevel? isolationLevel, IAdoContextGroupFactory adoContextGroupFactory = null)
         {
             if (isolationLevel.HasValue && joiningOption == AdoScopeOption.JoinExisting)
             {
@@ -74,7 +74,7 @@ namespace Promethix.Framework.Ado.Implementation
             else
             {
                 nested = false;
-                adoContexts = new AdoContextGroup(isolationLevel);
+                adoContexts = adoContextGroupFactory?.CreateContextGroup(isolationLevel);
             }
 
             SetAmbientScope(this);
