@@ -1,5 +1,18 @@
 name: adoscope-nuget-build
 on: [push, pull_request, workflow_dispatch]
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '.github/**'
+      - 'README.md'
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - '.github/**'
+      - 'README.md'
+
 
 env:
   NuGetDirectory: ${{ github.workspace}}/nuget
