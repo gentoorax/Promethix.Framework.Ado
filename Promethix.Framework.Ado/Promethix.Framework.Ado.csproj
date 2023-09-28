@@ -35,7 +35,7 @@ public void ServiceLayerAddTestEntity()
 		<Copyright>Copyright (c) 2023 Christopher Law (chris@chrislaw.me)</Copyright>
 		<PackageProjectUrl>https://github.com/gentoorax/Promethix.Framework.Ado</PackageProjectUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageTags>AdoScope; DbContextScope; Dapper; DapperTransaction; AdoTransaction; Promethix</PackageTags>
+		<PackageTags>AdoScope; DbContextScope; Dapper; DapperTransaction; AdoTransaction; Promethix; AdoConnection; AdoConnectionManager; ConnectionManager; DatabaseConnectionManager; AdoUnitOfWork; DapperUnitOfWork; AutomaticUnitOfWork; UnitOfWorkManager</PackageTags>
 		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
 		<AnalysisLevel>latest</AnalysisLevel>
 		<PackageLicenseFile>LICENCE</PackageLicenseFile>
