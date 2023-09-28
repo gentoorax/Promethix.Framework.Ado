@@ -60,7 +60,7 @@ Create a Service making use of this repository and AdoScope.
 
 When the ADO Context is configured with a transactional execution option, this will behave as a Unit of Work. It will commit when Complete() is called.
 
-You can also coonfigure the ADO Context to be non-transactional, in which case it will behave as a simple connection manager, executing queries as they are called.
+You can also configure the ADO Context to be non-transactional, in which case it will behave as a simple connection manager, executing queries as they are called.
 ```csharp
 public void ServiceLayerAddTestEntity()
 {
