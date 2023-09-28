@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.VisualStudio.TestPlatform.Utilities;
 using Promethix.Framework.Ado.Interfaces;
 using Promethix.Framework.Ado.Tests.DependencyInjection;
 using Promethix.Framework.Ado.Tests.TestSupport.DataAccess;
@@ -59,9 +60,13 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
         /// It's unlikely you would have multiple contexts all with different settings in the same repository
         /// like this, but this is just to demonstrate the different configuration options.
         /// </summary>
+        [TestMethod, TestCategory("IntegrationTests")]
         public void SqliteMultiContextAdoScopeCreateTest()
         {
             using IAdoScope adoScope = adoScopeFactory.Create();
+
+            // Create the database if it doesn't exist
+            multiTestRepository.CreateDatabase();
 
             // Create a test entity
             var newTestEntity = new TestEntity { Name = "CreateTest", Description = "Test Description", Quantity = 1 };

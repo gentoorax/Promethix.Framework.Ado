@@ -33,19 +33,42 @@ namespace Promethix.Framework.Ado.Implementation
             return this;
         }
 
+        private static string GetValue(IConfigurationSection section, string key)
+        {
+            return section?[key];
+        }
+
+        private static TEnum GetEnumValue<TEnum>(IConfigurationSection section, string key, TEnum defaultValue) where TEnum : struct
+        {
+            string enumValue = section?[key];
+            if (Enum.TryParse(enumValue, out TEnum parsedValue))
+            {
+                return parsedValue;
+            }
+            return defaultValue;
+        }
+
+        private static TEnum? GetEnumValueOrNull<TEnum>(IConfigurationSection section, string key) where TEnum : struct
+        {
+            string enumValue = section[key];
+            if (Enum.TryParse(enumValue, out TEnum parsedValue))
+            {
+                return parsedValue;
+            }
+            return null;
+        }
+
         private void TryPopulateConfiguration(IConfiguration configuration)
         {
             IConfigurationSection connectionStringsSection = configuration.GetSection($"ConnectionStrings:{Name}");
             IConfigurationSection adoContextConfigSection = configuration.GetSection($"AdoContextOptions:{Name}");
 
-            ConnectionString = connectionStringsSection?.Value ?? adoContextConfigSection["ConnectionString"] ?? null;
-            ProviderName = adoContextConfigSection["ProviderName"] ?? null;
-            ExecutionOption = 
-                adoContextConfigSection["ExecutionOption"] != null ? 
-                    Enum.TryParse(adoContextConfigSection["ExecutionOption"], out AdoContextExecutionOption executionOptionParsed) ? executionOptionParsed : AdoContextExecutionOption.Transactional 
-                    : AdoContextExecutionOption.Transactional;
-            OverrideDefaultIsolationLevel = adoContextConfigSection["OverrideDefaultIsolationLevel"] != null ? (IsolationLevel?)Enum.Parse(typeof(IsolationLevel), adoContextConfigSection["OverrideDefaultIsolationLevel"]) : null;
+            ConnectionString = connectionStringsSection?.Value ?? GetValue(adoContextConfigSection, Name);
+            ProviderName = GetValue(adoContextConfigSection, "ProviderName");
+            ExecutionOption = GetEnumValue(adoContextConfigSection, "ExecutionOption", AdoContextExecutionOption.Transactional);
+            OverrideDefaultIsolationLevel = GetEnumValueOrNull<IsolationLevel>(adoContextConfigSection, "OverrideDefaultIsolationLevel");
         }
+
 
         public AdoContextOptionsBuilder WithProviderName(string providerName)
         {

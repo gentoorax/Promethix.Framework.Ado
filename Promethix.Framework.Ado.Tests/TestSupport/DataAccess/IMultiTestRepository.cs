@@ -10,5 +10,7 @@ namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess
     public interface IMultiTestRepository
     {
         void Add(TestEntity entity);
+
+        void CreateDatabase();
     }
 }

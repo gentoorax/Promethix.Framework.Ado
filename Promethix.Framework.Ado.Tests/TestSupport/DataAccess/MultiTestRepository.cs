@@ -28,6 +28,14 @@ namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess
 
         private IDbConnection SqliteConnection5 => ambientAdoContextLocator.GetContext<SqliteContextExample5>().Connection;
 
+        public void CreateDatabase()
+        {
+            const string query = "CREATE TABLE IF NOT EXISTS TestEntity (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Description TEXT, Quantity INTEGER)";
+            SqliteConnection2.Execute(query);
+            SqliteConnection3.Execute(query);
+            SqliteConnection4.Execute(query);
+            SqliteConnection5.Execute(query);   
+        }
 
         public void Add(TestEntity entity)
         {
