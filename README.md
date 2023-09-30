@@ -35,10 +35,10 @@ If you are seeking a Unit of Work pattern for Dapper with minimal coding overhea
 
 ## Please be aware
 
-That when your AdoContext is configured in transactional mode, it will hold a transaction open until you call
-Complete() or Dispose() on the AdoScope, this is by design. If you do not want this behavior, configure your AdoContext to be non-transactional.
+That when your `AdoContext` is configured in transactional mode, it will hold a transaction open until you call
+`Complete()` or `Dispose()` on the `AdoScope`, this is by design. If you do not want this behavior, configure your `AdoContext` to be non-transactional.
 
-CreateWithTransaction() forces the creation of a new ambient AdoContext (i.e. does not join the ambient scope if there is one) and wraps all
+`CreateWithTransaction()` forces the creation of a new ambient `AdoContext` (i.e. does not join the ambient scope if there is one) and wraps all
 AdoContext instances created within that scope in an explicit database transaction with the provided isolation level.
 
 ## Usage
