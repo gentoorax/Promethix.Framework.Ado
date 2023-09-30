@@ -63,21 +63,28 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
         [TestMethod, TestCategory("IntegrationTests")]
         public void SqliteMultiContextAdoScopeCreateTest()
         {
-            using IAdoScope adoScope = adoScopeFactory.Create();
+            using (IAdoScope adoScope = adoScopeFactory.Create())
+            {
 
-            // Create the database if it doesn't exist
-            multiTestRepository.CreateDatabase();
+                // Create the database if it doesn't exist
+                multiTestRepository.CreateDatabase();
 
-            // Create a test entity
-            var newTestEntity = new TestEntity { Name = "CreateTest", Description = "Test Description", Quantity = 1 };
+                // Create a test entity
+                var newTestEntity = new TestEntity { Name = "CreateTest", Description = "Test Description", Quantity = 1 };
 
-            // Call our repository to add the entity
-            multiTestRepository.Add(newTestEntity);
+                // Call our repository to add the entity
+                multiTestRepository.Add(newTestEntity);
 
-            // Complete data related work
-            adoScope.Complete();
+                // Complete data related work
+                adoScope.Complete();
+            }
 
-            Assert.IsNotNull(adoScope);
+            using (IAdoScope adoScope = adoScopeFactory.Create())
+            {
+                // Assert that the entity exists in all contexts
+                Assert.IsTrue(multiTestRepository.ConfirmEntityExists(new TestEntity { Name = "CreateTest", Description = "Test Description", Quantity = 1 }));
+                adoScope.Complete();
+            }
         }
 
         [TestMethod, TestCategory("IntegrationTests")]

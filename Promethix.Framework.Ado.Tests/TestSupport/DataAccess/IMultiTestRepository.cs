@@ -12,5 +12,7 @@ namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess
         void Add(TestEntity entity);
 
         void CreateDatabase();
+
+        bool ConfirmEntityExists(TestEntity entity);
     }
 }

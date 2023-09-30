@@ -42,12 +42,14 @@ namespace Promethix.Framework.Ado.Implementation
                 throw new ObjectDisposedException(nameof(AdoContextGroup));
             }
 
+            // Determine whether we need to create a new context or use an existing one from our cache.
             if (!initialisedAdoContexts.ContainsKey(typeof(TAdoContext)))
             {
                 // First time we have been asked for this type of context, so create it.
                 // Create one, cache it and start its database transaction if needed.
                 TAdoContext adoContext = Activator.CreateInstance<TAdoContext>();
                 
+                // If we have some configuration options for this context type, apply them.
                 if ((adoContextOptionsRegistry?.TryGetContextOptions<TAdoContext>(out AdoContextOptionsBuilder options) != null) && options != null)
                 {
                     adoContext.ConfigureContext(options);
@@ -57,12 +59,15 @@ namespace Promethix.Framework.Ado.Implementation
 
                 // TODO: Implement ReadOnly
 
+                // Start transaction if requested.
                 if (isolationLevel.HasValue)
                 {
+                    // Explicit transaction requested.
                     adoContext.BeginTransaction(isolationLevel.Value);
                 }
                 else if (adoContext.AdoContextExecution == AdoContextExecutionOption.Transactional)
                 {
+                    // Implicit transaction requested via ADO Context configuration.
                     adoContext.BeginTransaction();
                 }
             }

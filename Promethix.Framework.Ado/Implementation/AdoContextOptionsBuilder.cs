@@ -63,7 +63,7 @@ namespace Promethix.Framework.Ado.Implementation
             IConfigurationSection connectionStringsSection = configuration.GetSection($"ConnectionStrings:{Name}");
             IConfigurationSection adoContextConfigSection = configuration.GetSection($"AdoContextOptions:{Name}");
 
-            ConnectionString = connectionStringsSection?.Value ?? GetValue(adoContextConfigSection, Name);
+            ConnectionString = connectionStringsSection?.Value ?? GetValue(adoContextConfigSection, "ConnectionString");
             ProviderName = GetValue(adoContextConfigSection, "ProviderName");
             ExecutionOption = GetEnumValue(adoContextConfigSection, "ExecutionOption", AdoContextExecutionOption.Transactional);
             OverrideDefaultIsolationLevel = GetEnumValueOrNull<IsolationLevel>(adoContextConfigSection, "OverrideDefaultIsolationLevel");

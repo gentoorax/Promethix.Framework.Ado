@@ -30,7 +30,7 @@ namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess
 
         public void CreateDatabase()
         {
-            const string query = "CREATE TABLE IF NOT EXISTS TestEntity (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Description TEXT, Quantity INTEGER)";
+            const string query = "DROP TABLE IF EXISTS TestEntity; CREATE TABLE TestEntity (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Description TEXT, Quantity INTEGER)";
             SqliteConnection2.Execute(query);
             SqliteConnection3.Execute(query);
             SqliteConnection4.Execute(query);
@@ -44,6 +44,15 @@ namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess
             SqliteConnection3.Execute(query, entity);
             SqliteConnection4.Execute(query, entity);
             SqliteConnection5.Execute(query, entity);
+        }
+
+        public bool ConfirmEntityExists(TestEntity entity)
+        {
+            const string query = "SELECT COUNT(*) FROM TestEntity WHERE Name = @Name AND Description = @Description AND Quantity = @Quantity";
+            return SqliteConnection2.ExecuteScalar<int>(query, entity) == 1
+                && SqliteConnection3.ExecuteScalar<int>(query, entity) == 1
+                && SqliteConnection4.ExecuteScalar<int>(query, entity) == 1
+                && SqliteConnection5.ExecuteScalar<int>(query, entity) == 1;
         }
     }
 }
