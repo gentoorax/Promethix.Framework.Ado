@@ -16,6 +16,23 @@ To address this, AdoScope introduces the concept of an AdoContext—a wrapper ar
 
 If you are seeking a Unit of Work pattern for Dapper with minimal coding overhead, AdoScope provides an elegant solution.
 
+## Features
+
+- [x] Simple and flexible configuration
+- [x] Database provider agnostic
+- [x] Support for nested transactions
+- [x] Support for multiple database connections
+- [x] Support for explicit database transactions
+- [x] Context specific execution options (transactional, non-transactional)
+- [x] Support for specific isolation levels per context and per (explicit) transaction
+
+## Future Features
+
+- [ ] Support for multiple databases in a single distributed transaction
+- [ ] Support for explicit distributed transactions
+- [ ] Support for read only transactions
+- [ ] Support for asynchronous operations
+
 ## Usage
 
 Create an ADO Context
@@ -77,8 +94,9 @@ public void ServiceLayerAddTestEntity()
 }
 ```
 
-Configure your DI Container. Just one of many examples of configuration.
-Recommend you use appsettings.json for configuration. See unit test project for that.
+Configure your DI Container. Just one of many examples of configuration. This example is
+by hand to show the available options. Recommend you use appsettings.json for configuration. 
+See example below this one for that.
 ```csharp
 // Still need to register ADO providers you will be using. This is a .NET ADO requirement.
 DbProviderFactories.RegisterFactory("Microsoft.Data.Sqlite", SqliteFactory.Instance);
@@ -105,9 +123,12 @@ var adoContextConfiguration = new AdoContextConfigurationBuilder()
 _ = services.AddScoped(provider => adoContextConfiguration);  
 ```
 
-To use appsettings.json for configuration, you can use the following code:
+**Recommended approach**
+
+Use appsettings.json for configuration, you can use the following code.
+In your DI registrations:
 ```csharp
-// Register your ADO contexts
+// Create ADO context configuration
 var adoContextConfiguration = new AdoContextConfigurationBuilder()
 .AddAdoContext<SqliteContextExample1>(options =>
 {
@@ -115,6 +136,7 @@ var adoContextConfiguration = new AdoContextConfigurationBuilder()
 })
 .Build();
 
+// Register your ADO context configuration
 _ = services.AddScoped(provider => adoContextConfiguration);  
 ```
 
