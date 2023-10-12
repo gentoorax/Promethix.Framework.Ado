@@ -11,7 +11,7 @@ using System.Data.Common;
 namespace Promethix.Framework.Ado.Tests.IntegrationTests
 {
     [TestClass]
-    public class AdoScopeTests
+    public class AdoScopeSqliteTests
     {
         private readonly ISimpleTestRepository simpleTestRepository;
 
@@ -19,7 +19,7 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
 
         private readonly IAdoScopeFactory adoScopeFactory;
 
-        public AdoScopeTests()
+        public AdoScopeSqliteTests()
         {
             var services = new ServiceCollection();
             services.AddIntegrationDependencyInjection();

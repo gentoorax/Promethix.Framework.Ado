@@ -7,8 +7,8 @@ using Promethix.Framework.Ado.Enums;
 using Promethix.Framework.Ado.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Runtime.ExceptionServices;
+using System.Transactions;
 
 namespace Promethix.Framework.Ado.Implementation
 {
@@ -20,18 +20,23 @@ namespace Promethix.Framework.Ado.Implementation
 
         private readonly IAdoContextOptionsRegistry adoContextOptionsRegistry;
 
-        private readonly IsolationLevel? isolationLevel;
+        private readonly AdoContextGroupExecutionOption adoContextGroupExecutionOption;
+
+        private readonly System.Data.IsolationLevel? isolationLevel;
+
+        private TransactionScope transactionScope;
 
         private bool completed;
 
         private ExceptionDispatchInfo lastError;
 
-        public AdoContextGroup(IAdoContextOptionsRegistry adoContextOptionsRegistry, IsolationLevel? isolationLevel = null)
+        public AdoContextGroup(IAdoContextOptionsRegistry adoContextOptionsRegistry, AdoContextGroupExecutionOption adoContextGroupExecutionOption, System.Data.IsolationLevel? isolationLevel = null)
         {
             disposed = false;
             completed = false;
             initialisedAdoContexts = new Dictionary<Type, AdoContext>();
             this.adoContextOptionsRegistry = adoContextOptionsRegistry;
+            this.adoContextGroupExecutionOption = adoContextGroupExecutionOption;
             this.isolationLevel = isolationLevel;
         }
 
@@ -59,10 +64,31 @@ namespace Promethix.Framework.Ado.Implementation
 
                 // TODO: Implement ReadOnly
 
+                // Start distributed transaction if requested.
+#if NET7_0_OR_GREATER && WINDOWS
+                // For .NET 7 and greater, we can use the new TransactionManager.ImplicitDistributedTransactions property.
+                // Note this is only support on Windows as well I believe.
+                TransactionManager.ImplicitDistributedTransactions = true;
+#endif
+#if NET5 || NET6
+                if (adoContextGroupExecutionOption == AdoContextGroupExecutionOption.Distributed)
+                {
+                    throw new NotImplementedException("Cannot use distributed transactions with .NET 5 or .NET 6. Please use .NET 7 or greater.");
+                }
+#endif
+                if (adoContextGroupExecutionOption == AdoContextGroupExecutionOption.Distributed)
+                {
+                    var transactionOptions = isolationLevel.HasValue
+                        ? new TransactionOptions { IsolationLevel = (System.Transactions.IsolationLevel)isolationLevel.Value }
+                        : new TransactionOptions();
+
+                    transactionScope = new TransactionScope(TransactionScopeOption.Required, transactionOptions);
+                }
+
                 // Start transaction if requested.
                 if (isolationLevel.HasValue)
                 {
-                    // Explicit transaction requested.
+                    // Explicit transaction requested. (Could also be distributed if requested. E.g. AdoContextGroupExecutionOption.Distributed)
                     adoContext.BeginTransaction(isolationLevel.Value);
                 }
                 else if (adoContext.AdoContextExecution == AdoContextExecutionOption.Transactional)
@@ -87,6 +113,15 @@ namespace Promethix.Framework.Ado.Implementation
                 throw new InvalidOperationException("This AdoContextCollection has already been completed. You can't call Commit() or Rollback() more than once on an AdoContextCollection.");
             }
 
+            CommitInternal();
+
+            completed = true;
+
+            lastError?.Throw();
+        }
+
+        private void CommitInternal()
+        {
             foreach (AdoContext adoContext in initialisedAdoContexts.Values)
             {
                 try
@@ -98,16 +133,18 @@ namespace Promethix.Framework.Ado.Implementation
                     {
                         adoContext.CommitTransaction();
                     }
+
+                    if (adoContextGroupExecutionOption == AdoContextGroupExecutionOption.Distributed)
+                    {
+                        transactionScope.Complete();
+                        transactionScope.Dispose();
+                    }
                 }
                 catch (Exception ex) when (ex is not ObjectDisposedException)
                 {
                     lastError = ExceptionDispatchInfo.Capture(ex);
                 }
             }
-
-            completed = true;
-
-            lastError?.Throw();
         }
 
         public void Rollback()
@@ -173,6 +210,7 @@ namespace Promethix.Framework.Ado.Implementation
                         }
                     }
 
+                    transactionScope?.Dispose();
                     initialisedAdoContexts.Clear();
                 }
 

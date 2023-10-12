@@ -1,4 +1,5 @@
-﻿using Promethix.Framework.Ado.Interfaces;
+﻿using Promethix.Framework.Ado.Enums;
+using Promethix.Framework.Ado.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -17,9 +18,9 @@ namespace Promethix.Framework.Ado.Implementation
             this.adoContextOptionsRegistry = adoContextOptionsRegistry;
         }
 
-        public IAdoContextGroup CreateContextGroup(IsolationLevel? isolationLevel)
+        public IAdoContextGroup CreateContextGroup(AdoContextGroupExecutionOption adoContextGroupExecutionOption, IsolationLevel? isolationLevel)
         {
-            return new AdoContextGroup(adoContextOptionsRegistry, isolationLevel);
+            return new AdoContextGroup(adoContextOptionsRegistry, adoContextGroupExecutionOption, isolationLevel);
         }
     }
 }

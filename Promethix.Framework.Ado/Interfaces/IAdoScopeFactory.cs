@@ -50,6 +50,8 @@ namespace Promethix.Framework.Ado.Interfaces
         /// <returns></returns>
         IAdoScope CreateWithTransaction(IsolationLevel isolationLevel);
 
+        IAdoScope CreateWithDistributedTransaction(IsolationLevel? isolationLevel = null);
+
         // TODO: Implement ambient scope surpression for certain parallel execution scenarios
     }
 }

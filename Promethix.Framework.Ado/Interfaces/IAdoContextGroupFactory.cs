@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Promethix.Framework.Ado.Enums;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -9,6 +10,6 @@ namespace Promethix.Framework.Ado.Interfaces
 {
     public interface IAdoContextGroupFactory
     {
-        IAdoContextGroup CreateContextGroup(IsolationLevel? isolationLevel);
+        IAdoContextGroup CreateContextGroup(AdoContextGroupExecutionOption adoContextGroupExecutionOption, IsolationLevel? isolationLevel);
     }
 }
