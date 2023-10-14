@@ -5,6 +5,7 @@
  */
 using Promethix.Framework.Ado.Enums;
 using Promethix.Framework.Ado.Interfaces;
+using System;
 using System.Data;
 
 namespace Promethix.Framework.Ado.Implementation
@@ -26,6 +27,11 @@ namespace Promethix.Framework.Ado.Implementation
         public IAdoScope CreateWithTransaction(IsolationLevel isolationLevel)
         {
             return new AdoScope(AdoScopeOption.ForceCreateNew, isolationLevel, adoContextGroupFactory);
+        }
+
+        public IDisposable SuppressAmbientContext()
+        {
+            return new AmbientContextSurpressor();
         }
     }
 }

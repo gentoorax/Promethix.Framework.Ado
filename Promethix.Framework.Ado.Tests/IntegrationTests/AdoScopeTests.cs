@@ -54,6 +54,38 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
             Assert.IsNotNull(adoScope);
         }
 
+        [TestMethod, TestCategory("IntegrationTests")]
+        public void SqliteAdoScopeCreateSurpressTest()
+        {
+            using IAdoScope adoScope = adoScopeFactory.Create();
+
+            // Create a test entities
+            var newTestEntity = new TestEntity { Name = "CreateTest", Description = "Test Description", Quantity = 1 };
+            var newTestEntity2 = new TestEntity { Name = "CreateTest2", Description = "Test Description", Quantity = 1 };
+            var entityList = new List<TestEntity> { newTestEntity, newTestEntity2 };
+
+            // You MUST call SuppressAmbientContext() when kicking off a parallel execution flow 
+            // within a AdoScope. Otherwise, this AdoScope will remain the ambient scope
+            // in the parallel flows of execution, potentially leading to multiple threads
+            // accessing the same AdoContext instance.
+            using (adoScopeFactory.SuppressAmbientContext())
+            {
+                Parallel.ForEach(entityList, AddEntity);
+            }
+
+            // Note: Complete() isn't going to do anything in this instance since all the changes
+            // were actually made and saved in separate AdoScopes created in separate threads.
+            adoScope.Complete();
+        }
+
+        private void AddEntity(TestEntity testEntity)
+        {
+            using IAdoScope adoScope = adoScopeFactory.Create();
+            simpleTestRepository.Add(testEntity);
+            adoScope.Complete();
+        }
+
+
         /// <summary>
         /// Please note that currently we do not have distributed transactions implemented.
         /// So this is best effort, as per DbContextScope. However, I do plan to implement this in the future.
