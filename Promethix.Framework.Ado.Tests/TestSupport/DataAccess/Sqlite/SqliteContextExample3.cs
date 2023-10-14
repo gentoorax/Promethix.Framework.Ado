@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess
+namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess.Sqlite
 {
-    public class SqliteContextExample2 : AdoContext
+    public class SqliteContextExample3 : AdoContext
     {
-        public SqliteContextExample2()
+        public SqliteContextExample3()
         {
             // No Implementation
         }

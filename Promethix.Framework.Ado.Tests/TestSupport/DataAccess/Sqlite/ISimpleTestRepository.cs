@@ -1,6 +1,6 @@
 ﻿using Promethix.Framework.Ado.Tests.TestSupport.Entities;
 
-namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess
+namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess.Sqlite
 {
     public interface ISimpleTestRepository
     {

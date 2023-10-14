@@ -6,13 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess
+namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess.Sqlite
 {
     public class SqliteContextExample5 : AdoContext
     {
         public SqliteContextExample5()
             : base(
-                  "SqliteContextExample4",
+                  "SqliteContextExample5",
                   "Microsoft.Data.Sqlite",
                   "Data Source=mydatabase5.db",
                   AdoContextExecutionOption.NonTransactional

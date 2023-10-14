@@ -1,10 +1,12 @@
-﻿using Microsoft.Data.Sqlite;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Promethix.Framework.Ado.Enums;
 using Promethix.Framework.Ado.Implementation;
 using Promethix.Framework.Ado.Interfaces;
-using Promethix.Framework.Ado.Tests.TestSupport.DataAccess;
+using Promethix.Framework.Ado.Tests.TestSupport.DataAccess.Mssql;
+using Promethix.Framework.Ado.Tests.TestSupport.DataAccess.Sqlite;
 using SQLitePCL;
 using System.Data;
 using System.Data.Common;
@@ -26,6 +28,7 @@ namespace Promethix.Framework.Ado.Tests.DependencyInjection
 
             // Still need to register ADO providers you will be using
             DbProviderFactories.RegisterFactory("Microsoft.Data.Sqlite", SqliteFactory.Instance);
+            DbProviderFactories.RegisterFactory("Microsoft.Data.SqlClient", SqlClientFactory.Instance);
 
             // Register your repositories et al
             _ = services.AddSingleton<IAmbientAdoContextLocator, AmbientAdoContextLocator>();
@@ -33,6 +36,7 @@ namespace Promethix.Framework.Ado.Tests.DependencyInjection
             _ = services.AddSingleton<IAdoContextGroupFactory, AdoContextGroupFactory>();
             _ = services.AddScoped<ISimpleTestRepository, SimpleTestRepository>();
             _ = services.AddScoped<IMultiTestRepository, MultiTestRepository>();
+            _ = services.AddScoped<ISimpleMssqlTestRepository, SimpleMssqlTestRepository>();
 
             // Register your ADO contexts
             var adoContextConfiguration = new AdoContextConfigurationBuilder()

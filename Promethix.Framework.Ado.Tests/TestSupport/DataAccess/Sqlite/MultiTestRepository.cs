@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess
+namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess.Sqlite
 {
     public class MultiTestRepository : IMultiTestRepository
     {
@@ -34,7 +34,7 @@ namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess
             SqliteConnection2.Execute(query);
             SqliteConnection3.Execute(query);
             SqliteConnection4.Execute(query);
-            SqliteConnection5.Execute(query);   
+            SqliteConnection5.Execute(query);
         }
 
         public void Add(TestEntity entity)

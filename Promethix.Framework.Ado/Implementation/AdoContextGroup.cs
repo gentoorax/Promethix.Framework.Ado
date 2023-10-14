@@ -65,11 +65,13 @@ namespace Promethix.Framework.Ado.Implementation
                 // TODO: Implement ReadOnly
 
                 // Start distributed transaction if requested.
-#if NET7_0_OR_GREATER && WINDOWS
+#pragma warning disable CA1416
+#if NET7_0_OR_GREATER
                 // For .NET 7 and greater, we can use the new TransactionManager.ImplicitDistributedTransactions property.
                 // Note this is only support on Windows as well I believe.
                 TransactionManager.ImplicitDistributedTransactions = true;
 #endif
+#pragma warning restore CA1416
 #if NET5 || NET6
                 if (adoContextGroupExecutionOption == AdoContextGroupExecutionOption.Distributed)
                 {
@@ -91,7 +93,8 @@ namespace Promethix.Framework.Ado.Implementation
                     // Explicit transaction requested. (Could also be distributed if requested. E.g. AdoContextGroupExecutionOption.Distributed)
                     adoContext.BeginTransaction(isolationLevel.Value);
                 }
-                else if (adoContext.AdoContextExecution == AdoContextExecutionOption.Transactional)
+                else if (adoContext.AdoContextExecution == AdoContextExecutionOption.Transactional
+                    || adoContextGroupExecutionOption == AdoContextGroupExecutionOption.Distributed)
                 {
                     // Implicit transaction requested via ADO Context configuration.
                     adoContext.BeginTransaction();
@@ -133,17 +136,17 @@ namespace Promethix.Framework.Ado.Implementation
                     {
                         adoContext.CommitTransaction();
                     }
-
-                    if (adoContextGroupExecutionOption == AdoContextGroupExecutionOption.Distributed)
-                    {
-                        transactionScope.Complete();
-                        transactionScope.Dispose();
-                    }
                 }
                 catch (Exception ex) when (ex is not ObjectDisposedException)
                 {
                     lastError = ExceptionDispatchInfo.Capture(ex);
                 }
+            }
+
+            if (adoContextGroupExecutionOption == AdoContextGroupExecutionOption.Distributed)
+            {
+                transactionScope.Complete();
+                transactionScope.Dispose();
             }
         }
 

@@ -3,7 +3,7 @@ using Promethix.Framework.Ado.Interfaces;
 using Promethix.Framework.Ado.Tests.TestSupport.Entities;
 using System.Data;
 
-namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess
+namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess.Sqlite
 {
     public class SimpleTestRepository : ISimpleTestRepository
     {

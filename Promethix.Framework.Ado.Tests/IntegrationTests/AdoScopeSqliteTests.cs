@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestPlatform.Utilities;
 using Promethix.Framework.Ado.Interfaces;
 using Promethix.Framework.Ado.Tests.DependencyInjection;
-using Promethix.Framework.Ado.Tests.TestSupport.DataAccess;
+using Promethix.Framework.Ado.Tests.TestSupport.DataAccess.Sqlite;
 using Promethix.Framework.Ado.Tests.TestSupport.Entities;
 using System.Data;
 using System.Data.Common;
