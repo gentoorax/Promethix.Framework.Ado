@@ -4,6 +4,7 @@
  * https://chrislaw.me
  */
 using Promethix.Framework.Ado.Enums;
+using System;
 using System.Data;
 
 namespace Promethix.Framework.Ado.Interfaces
@@ -50,6 +51,6 @@ namespace Promethix.Framework.Ado.Interfaces
         /// <returns></returns>
         IAdoScope CreateWithTransaction(IsolationLevel isolationLevel);
 
-        // TODO: Implement ambient scope surpression for certain parallel execution scenarios
+        IDisposable SuppressAmbientContext();
     }
 }
