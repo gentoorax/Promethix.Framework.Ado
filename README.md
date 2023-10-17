@@ -25,13 +25,14 @@ If you are seeking a Unit of Work pattern for Dapper with minimal coding overhea
 - [x] Support for explicit database transactions
 - [x] Context specific execution options (transactional, non-transactional)
 - [x] Support for specific isolation levels per context and per (explicit) transaction
+- [x] Support for multiple databases in a single distributed transaction
+- [x] Support for explicit distributed transactions
+- [x] Support for asynchronous operations
 
 ## Future Features
 
-- [ ] Support for multiple databases in a single distributed transaction
-- [ ] Support for explicit distributed transactions
 - [ ] Support for read only transactions
-- [ ] Support for asynchronous operations
+- [ ] Support for default distributed transactions
 
 ## Please be aware
 
@@ -41,11 +42,17 @@ That when your `AdoContext` is configured in transactional mode, it will hold a 
 `CreateWithTransaction()` forces the creation of a new ambient `AdoContext` (i.e. does not join the ambient scope if there is one) and wraps all
 `AdoContext` instances created within that scope in an explicit database transaction with the provided isolation level.
 
+`CreateWithDistributedTransaction()` forces the creation of a new ambient `AdoContext` (i.e. does not join the ambient scope if there is one) and wraps all
+`AdoContext` instances created within that scope in an *distributed transaction*.
+
+*Distributed Transactions will not work at all on .NET 5 or 6. They are supported on .NET 7 or better and only on Windows AFAIK* this is a limitation of
+.NET and it's requirement on OS DTC support e.g. MSDTC. MSDTC will of course need to be enabled and running on Windows as well.
+
 ## Usage
 
 Install the NuGet package
 ```powershell
-Install-Package AdoScope -Version 0.1.30-alpha
+Install-Package AdoScope -Version 0.1.39-alpha
 ```
 
 Create an ADO Context
