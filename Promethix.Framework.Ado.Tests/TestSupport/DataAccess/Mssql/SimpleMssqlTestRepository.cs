@@ -30,7 +30,7 @@ namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess.Mssql
             SqlConnection1.Execute(query, entity);
         }
 
-        public void AddWithSecondContext(TestEntity entity)
+        public void AddWithDifferentContext(TestEntity entity)
         {
             const string query = "INSERT INTO TestEntity (Name, Description, Quantity) VALUES (@Name, @Description, @Quantity)";
             SqlConnection2.Execute(query, entity);
@@ -42,9 +42,22 @@ namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess.Mssql
             return SqlConnection1.QuerySingleOrDefault<TestEntity>(query, new { Name = name });
         }
 
+        public int GetEntityCount()
+        {
+            const string query = "SELECT COUNT(*) FROM TestEntity";
+            return SqlConnection1.ExecuteScalar<int>(query);
+        }
+
         public void DivideByZero()
         {
             const string query = "SELECT 1 / 0";
+            SqlConnection2.Execute(query);
+        }
+
+        public void DeleteAll()
+        {
+            const string query = "DELETE FROM TestEntity";
+            SqlConnection1.Execute(query);
             SqlConnection2.Execute(query);
         }
     }

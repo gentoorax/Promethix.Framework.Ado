@@ -51,6 +51,12 @@ namespace Promethix.Framework.Ado.Interfaces
         /// <returns></returns>
         IAdoScope CreateWithTransaction(IsolationLevel isolationLevel);
 
+        /// <summary>
+        /// WARNING: This is likely only supported on Windows and requires the Microsoft Distributed Transaction Coordinator (MSDTC) service to be running.
+        /// It is not supported on .NET 5 or 6 either!
+        /// </summary>
+        /// <param name="isolationLevel"></param>
+        /// <returns></returns>
         IAdoScope CreateWithDistributedTransaction(IsolationLevel? isolationLevel = null);
 
         // Ambient scope surpression for certain parallel execution scenarios

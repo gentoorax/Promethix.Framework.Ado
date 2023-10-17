@@ -13,8 +13,12 @@ namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess.Mssql
 
         TestEntity GetEntityByName(string name);
 
-        void AddWithSecondContext(TestEntity entity);
+        void AddWithDifferentContext(TestEntity entity);
+
+        int GetEntityCount();
 
         void DivideByZero();
+
+        void DeleteAll();
     }
 }

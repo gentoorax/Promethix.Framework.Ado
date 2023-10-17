@@ -11,6 +11,10 @@ using System.Threading.Tasks;
 
 namespace Promethix.Framework.Ado.Tests.IntegrationTests
 {
+    /// <summary>
+    /// These tests have a dependency on a local SQL Server instance.
+    /// Therefore are not configured to run on CI.
+    /// </summary>
     [TestClass]
     public class AdoScopeMssqlTests
     {
@@ -25,54 +29,73 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
             var container = services.BuildServiceProvider();
 
             simpleTestRepository = container.GetService<ISimpleMssqlTestRepository>() ?? throw new InvalidOperationException("Could not create test repository");
-            //multiTestRepository = container.GetService<IMultiTestRepository>() ?? throw new InvalidOperationException("Could not create test repository");
             adoScopeFactory = container.GetService<IAdoScopeFactory>() ?? throw new InvalidOperationException("Could not create ado scope factory");
         }
 
-        [TestMethod]
-        public void BasicMssqlTest()
+        [TestInitialize]
+        public void TestInitialize()
         {
-            using IAdoScope adoScope = adoScopeFactory.CreateWithDistributedTransaction();
-
-            // Create a test entity
-            var newTestEntity = new TestEntity { Name = "CreateTest", Description = "Test Description", Quantity = 1 };
-
-            // Call our repository to add the entity
-            simpleTestRepository.Add(newTestEntity);
-
-            // Complete data related work
-            adoScope.Complete();
-
-            Assert.IsNotNull(adoScope);
+            using IAdoScope adoScope = adoScopeFactory.Create();
+            simpleTestRepository.DeleteAll();
         }
 
-        [TestMethod]
-        public void DistributedMssqlTest()
+        [TestCategory("IntegrationTests"), TestMethod]
+        public void BasicMssqlTest()
         {
-            using IAdoScope adoScope = adoScopeFactory.CreateWithDistributedTransaction();
 
-            // Create a test entity
-            var newTestEntity = new TestEntity { Name = "CreateTest", Description = "Test Description", Quantity = 1 };
-
-#pragma warning disable CS0168 // Variable is declared but never used
-            try
+            using (IAdoScope adoScope = adoScopeFactory.CreateWithDistributedTransaction())
             {
+                // Create a test entity
+                var newTestEntity = new TestEntity { Name = "CreateTest", Description = "Test Description", Quantity = 1 };
+
                 // Call our repository to add the entity
                 simpleTestRepository.Add(newTestEntity);
-                simpleTestRepository.AddWithSecondContext(newTestEntity);
-                //simpleTestRepository.DivideByZero();
 
                 // Complete data related work
                 adoScope.Complete();
             }
-            catch (Exception ex)
-            {
-                // Do nothing. We expect this to fail.
-                adoScope.Dispose();
-            }
-#pragma warning restore CS0168 // Variable is declared but never used
 
-            Assert.IsTrue(true);
+            using (IAdoScope adoScope = adoScopeFactory.Create())
+            {
+                Assert.IsNotNull(simpleTestRepository.GetEntityByName("CreateTest"));
+            }
+        }
+
+        [TestCategory("IntegrationTests"), TestMethod]
+        public void DistributedMssqlTest()
+        {
+            int recordCountBefore = GetRecordCountFirstContext();
+
+            using (IAdoScope adoScope1 = adoScopeFactory.CreateWithDistributedTransaction())
+            {
+                // Create a test entity
+                var newTestEntity = new TestEntity { Name = "CreateTest", Description = "Test Description", Quantity = 1 };
+
+                try
+                {
+                    // Call our repository to add the entity
+                    simpleTestRepository.Add(newTestEntity);
+                    simpleTestRepository.AddWithDifferentContext(newTestEntity);
+                    simpleTestRepository.DivideByZero();
+
+                    // Complete data related work
+                    adoScope1.Complete();
+                }
+                catch
+                {
+                    // Do nothing. We expect this to fail.
+                    adoScope1.Dispose();
+                }
+            }
+
+            // If our distributed transaction has worked correctly, we shouldn't have additional records in the database.
+            Assert.AreEqual(recordCountBefore, GetRecordCountFirstContext());
+        }
+
+        private int GetRecordCountFirstContext()
+        {
+            using IAdoScope adoScope = adoScopeFactory.Create();
+            return simpleTestRepository.GetEntityCount();
         }
     }
 }

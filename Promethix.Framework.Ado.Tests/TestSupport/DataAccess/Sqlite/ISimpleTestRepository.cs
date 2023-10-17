@@ -6,6 +6,12 @@ namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess.Sqlite
     {
         void Add(TestEntity entity);
 
+        void AddWithDifferentContext(TestEntity newTestEntity);
+
+        void BreakSqlite();
+
         TestEntity GetEntityByName(string name);
+
+        int GetEntityCount();
     }
 }

@@ -8,6 +8,7 @@ using Promethix.Framework.Ado.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
+using System.Runtime.InteropServices;
 using System.Transactions;
 
 namespace Promethix.Framework.Ado.Implementation
@@ -38,6 +39,32 @@ namespace Promethix.Framework.Ado.Implementation
             this.adoContextOptionsRegistry = adoContextOptionsRegistry;
             this.adoContextGroupExecutionOption = adoContextGroupExecutionOption;
             this.isolationLevel = isolationLevel;
+
+            // Prepare distributed transaction if requested.
+            // Gets a bit messy here, because .NET 5 and .NET 6 don't support distributed transactions.
+            // .NET 7 or better support distributed transactions, but only on Windows!
+#if NET7_0_OR_GREATER
+                // For .NET 7 and greater, we can use the new TransactionManager.ImplicitDistributedTransactions property.
+                // Note this is only support on Windows AFAIK.
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    TransactionManager.ImplicitDistributedTransactions = true;
+                }
+#endif
+#if NET5 || NET6
+                if (adoContextGroupExecutionOption == AdoContextGroupExecutionOption.Distributed)
+                {
+                    throw new NotImplementedException("Cannot use distributed transactions with .NET 5 or .NET 6. Please use .NET 7 or greater. Windows is also likely required with MSDTC enabled.");
+                }
+#endif
+            if (adoContextGroupExecutionOption == AdoContextGroupExecutionOption.Distributed)
+            {
+                var transactionOptions = isolationLevel.HasValue
+                    ? new TransactionOptions { IsolationLevel = (System.Transactions.IsolationLevel)isolationLevel.Value }
+                    : new TransactionOptions();
+
+                transactionScope = new TransactionScope(TransactionScopeOption.Required, transactionOptions);
+            }
         }
 
         public TAdoContext GetContext<TAdoContext>() where TAdoContext : AdoContext
@@ -63,29 +90,6 @@ namespace Promethix.Framework.Ado.Implementation
                 initialisedAdoContexts.Add(typeof(TAdoContext), adoContext);
 
                 // TODO: Implement ReadOnly
-
-                // Start distributed transaction if requested.
-#pragma warning disable CA1416
-#if NET7_0_OR_GREATER
-                // For .NET 7 and greater, we can use the new TransactionManager.ImplicitDistributedTransactions property.
-                // Note this is only support on Windows as well I believe.
-                TransactionManager.ImplicitDistributedTransactions = true;
-#endif
-#pragma warning restore CA1416
-#if NET5 || NET6
-                if (adoContextGroupExecutionOption == AdoContextGroupExecutionOption.Distributed)
-                {
-                    throw new NotImplementedException("Cannot use distributed transactions with .NET 5 or .NET 6. Please use .NET 7 or greater.");
-                }
-#endif
-                if (adoContextGroupExecutionOption == AdoContextGroupExecutionOption.Distributed)
-                {
-                    var transactionOptions = isolationLevel.HasValue
-                        ? new TransactionOptions { IsolationLevel = (System.Transactions.IsolationLevel)isolationLevel.Value }
-                        : new TransactionOptions();
-
-                    transactionScope = new TransactionScope(TransactionScopeOption.Required, transactionOptions);
-                }
 
                 // Start transaction if requested.
                 if (isolationLevel.HasValue)
