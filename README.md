@@ -45,7 +45,7 @@ That when your `AdoContext` is configured in transactional mode, it will hold a 
 `CreateWithDistributedTransaction()` forces the creation of a new ambient `AdoContext` (i.e. does not join the ambient scope if there is one) and wraps all
 `AdoContext` instances created within that scope in an *distributed transaction*.
 
-*Distributed Transactions will not work at all on .NET 5 or 6. They are supported on .NET 7 or better and only on Windows AFAIK* this is a limitation of
+**Distributed Transactions will not work at all on .NET 5 or 6. They are supported on .NET 7 or better and only on Windows AFAIK** this is a limitation of
 .NET and it's requirement on OS DTC support e.g. MSDTC. MSDTC will of course need to be enabled and running on Windows as well.
 
 ## Usage
