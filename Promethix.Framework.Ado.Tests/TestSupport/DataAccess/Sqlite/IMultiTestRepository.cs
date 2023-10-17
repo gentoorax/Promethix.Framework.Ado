@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess
+namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess.Sqlite
 {
     public interface IMultiTestRepository
     {

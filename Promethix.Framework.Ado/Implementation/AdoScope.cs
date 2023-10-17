@@ -54,11 +54,16 @@ namespace Promethix.Framework.Ado.Implementation
             // No Implementation
         }
 
-        public AdoScope(AdoScopeOption joiningOption, IsolationLevel? isolationLevel, IAdoContextGroupFactory adoContextGroupFactory = null)
+        public AdoScope(AdoScopeOption joiningOption, IsolationLevel? isolationLevel, IAdoContextGroupFactory adoContextGroupFactory = null, AdoContextGroupExecutionOption adoContextGroupExecutionOption = AdoContextGroupExecutionOption.Standard)
         {
             if (isolationLevel.HasValue && joiningOption == AdoScopeOption.JoinExisting)
             {
-                throw new ArgumentException("Cannot join an ambient AdoScope when an explicit database transaction is required. When requiring explicit database transactions to be used (i.e.when the 'isolationLevel' parameter is set), you must not also ask to join the ambient context (i.e.the 'joinAmbient' parameter must be set to false).");
+                throw new ArgumentException("Cannot join an ambient AdoScope when an explicit database transaction is required. When requiring explicit database transactions to be used (i.e. when the 'isolationLevel' parameter is set), you must not also ask to join the ambient context (i.e.the 'joinAmbient' parameter must be set to false).");
+            }
+
+            if (adoContextGroupExecutionOption == AdoContextGroupExecutionOption.Distributed && joiningOption == AdoScopeOption.JoinExisting)
+            {
+                throw new NotImplementedException("Cannot join an ambient AdoScope when an explicit distributed transaction is required. When requiring explicit distributed database transactions to be used (i.e. when adoContextGroupExecutionOption set to 'distributed'), you must not also ask to join the ambient context.");
             }
 
             disposed = false;
@@ -74,7 +79,7 @@ namespace Promethix.Framework.Ado.Implementation
             else
             {
                 nested = false;
-                adoContexts = adoContextGroupFactory?.CreateContextGroup(isolationLevel);
+                adoContexts = adoContextGroupFactory?.CreateContextGroup(adoContextGroupExecutionOption, isolationLevel);
             }
 
             SetAmbientScope(this);
@@ -177,16 +182,7 @@ namespace Promethix.Framework.Ado.Implementation
                     {
                         if (!completed)
                         {
-                            try
-                            {
-                                RollbackInternal();
-                            }
-                            catch (Exception ex) when (ex is not ObjectDisposedException)
-                            {
-                                System.Diagnostics.Debug.WriteLine(ex);
-                            }
-
-                            completed = true;
+                            RollbackInternal();
                         }
 
                         adoContexts.Dispose();
@@ -222,7 +218,16 @@ namespace Promethix.Framework.Ado.Implementation
 
         private void RollbackInternal()
         {
-            adoContexts.Rollback();
+            try
+            {
+                adoContexts.Rollback();
+            }
+            catch (Exception ex) when (ex is not ObjectDisposedException)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+            }
+
+            completed = true;
         }
 
         public void Dispose()

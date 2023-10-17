@@ -29,6 +29,11 @@ namespace Promethix.Framework.Ado.Implementation
             return new AdoScope(AdoScopeOption.ForceCreateNew, isolationLevel, adoContextGroupFactory);
         }
 
+        public IAdoScope CreateWithDistributedTransaction(IsolationLevel? isolationLevel)
+        {
+            return new AdoScope(AdoScopeOption.ForceCreateNew, isolationLevel, adoContextGroupFactory, AdoContextGroupExecutionOption.Distributed);
+        }
+        
         public IDisposable SuppressAmbientContext()
         {
             return new AmbientContextSurpressor();

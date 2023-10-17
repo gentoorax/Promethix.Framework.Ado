@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestPlatform.Utilities;
 using Promethix.Framework.Ado.Interfaces;
 using Promethix.Framework.Ado.Tests.DependencyInjection;
-using Promethix.Framework.Ado.Tests.TestSupport.DataAccess;
+using Promethix.Framework.Ado.Tests.TestSupport.DataAccess.Sqlite;
 using Promethix.Framework.Ado.Tests.TestSupport.Entities;
 using System.Data;
 using System.Data.Common;
@@ -11,7 +11,7 @@ using System.Data.Common;
 namespace Promethix.Framework.Ado.Tests.IntegrationTests
 {
     [TestClass]
-    public class AdoScopeTests
+    public class AdoScopeSqliteTests
     {
         private readonly ISimpleTestRepository simpleTestRepository;
 
@@ -19,7 +19,7 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
 
         private readonly IAdoScopeFactory adoScopeFactory;
 
-        public AdoScopeTests()
+        public AdoScopeSqliteTests()
         {
             var services = new ServiceCollection();
             services.AddIntegrationDependencyInjection();
@@ -29,15 +29,10 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
             multiTestRepository = container.GetService<IMultiTestRepository>() ?? throw new InvalidOperationException("Could not create test repository");
             adoScopeFactory = container.GetService<IAdoScopeFactory>() ?? throw new InvalidOperationException("Could not create ado scope factory");
 
-            if (!File.Exists("mydatabase.db"))
-            {
-                File.Create("mydatabase.db").Dispose();
-            }
-
             CreateSqliteSchema();
         }
 
-        [TestMethod, TestCategory("IntegrationTests")]
+        [TestCategory("IntegrationTestsOnCI"), TestMethod]
         public void SqliteAdoScopeCreateTest()
         {
             using IAdoScope adoScope = adoScopeFactory.Create();
@@ -54,7 +49,7 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
             Assert.IsNotNull(adoScope);
         }
 
-        [TestMethod, TestCategory("IntegrationTests")]
+        [TestCategory("IntegrationTestsOnCI"), TestMethod]
         public void SqliteAdoScopeCreateSurpressTest()
         {
             using IAdoScope adoScope = adoScopeFactory.Create();
@@ -92,7 +87,7 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
         /// It's unlikely you would have multiple contexts all with different settings in the same repository
         /// like this, but this is just to demonstrate the different configuration options.
         /// </summary>
-        [TestMethod, TestCategory("IntegrationTests")]
+        [TestCategory("IntegrationTestsOnCI"), TestMethod]
         public void SqliteMultiContextAdoScopeCreateTest()
         {
             using (IAdoScope adoScope = adoScopeFactory.Create())
@@ -119,7 +114,7 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
             }
         }
 
-        [TestMethod, TestCategory("IntegrationTests")]
+        [TestCategory("IntegrationTestsOnCI"), TestMethod]
         public void SqliteAdoScopeCreateReadTest()
         {
             using IAdoScope adoScope = adoScopeFactory.Create();
@@ -136,7 +131,7 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
         /// Please note as per DbContextScope this creates a dedicated connection for an explicit transaction.
         /// So be careful, there are transaction options that can be set on the ADO context.
         /// </summary>
-        [TestMethod, TestCategory("IntegrationTests")]
+        [TestCategory("IntegrationTestsOnCI"), TestMethod]
         public void SqliteAdoScopeCreateWithTransactionTest()
         {
             using IAdoScope adoScope = adoScopeFactory.CreateWithTransaction(IsolationLevel.ReadCommitted);
@@ -147,7 +142,7 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
             Assert.IsNotNull(adoScope);
         }
 
-        [TestCategory("IntegrationTests"), TestMethod]
+        [TestCategory("IntegrationTestsOnCI"), TestMethod]
         public void SqliteAdoScopeTransactionDisposeTest()
         {
             using IAdoScope adoScope = adoScopeFactory.CreateWithTransaction(IsolationLevel.ReadCommitted);
@@ -164,9 +159,73 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
             Assert.IsNull(simpleTestRepository.GetEntityByName("TransactionTest"));
         }
 
+        [TestCategory("IntegrationTestsOnCI"), TestMethod]
+        public void SqliteAdoScopeBasicDistributedTest()
+        {
+            using (IAdoScope adoScope = adoScopeFactory.CreateWithDistributedTransaction())
+            {
+                // Create a test entity
+                var newTestEntity = new TestEntity { Name = "CreateTest", Description = "Test Description", Quantity = 1 };
+
+                // Call our repository to add the entity
+                simpleTestRepository.Add(newTestEntity);
+                simpleTestRepository.AddWithDifferentContext(newTestEntity);
+
+                // Complete data related work
+                adoScope.Complete();
+            }
+
+            using (IAdoScope adoScope = adoScopeFactory.Create())
+            {
+                // Get the entity from the database
+                TestEntity testEntity = simpleTestRepository.GetEntityByName("CreateTest");
+
+                // Assert that the entity was retrieved
+                Assert.IsNotNull(testEntity);
+            }
+        }
+
+        [TestCategory("IntegrationTestsOnCI"), TestMethod]
+        public void SqliteAdoScopeDistributedTest()
+        {
+            int recordCountBefore = GetRecordCountFirstContext();
+
+            using (IAdoScope adoScope1 = adoScopeFactory.CreateWithDistributedTransaction())
+            {
+                // Create a test entity
+                var newTestEntity = new TestEntity { Name = "CreateTest", Description = "Test Description", Quantity = 1 };
+
+                try
+                {
+                    // Call our repository to add the entity
+                    simpleTestRepository.Add(newTestEntity);
+                    simpleTestRepository.AddWithDifferentContext(newTestEntity);
+                    // Sqlite won't throw an exception for divide by zero! So need another way to break it.
+                    simpleTestRepository.BreakSqlite();
+
+                    // Complete data related work
+                    adoScope1.Complete();
+                }
+                catch
+                {
+                    // Do nothing. We expect this to fail.
+                    adoScope1.Dispose();
+                }
+            }
+
+            // If our distributed transaction has worked correctly, we shouldn't have additional records in the database.
+            Assert.AreEqual(recordCountBefore, GetRecordCountFirstContext());
+        }
+
+        private int GetRecordCountFirstContext()
+        {
+            using IAdoScope adoScope = adoScopeFactory.Create();
+            return simpleTestRepository.GetEntityCount();
+        }
+
         #region Nested Scope Tests
 
-        [TestMethod, TestCategory("IntegrationTests")]
+        [TestCategory("IntegrationTestsOnCI"), TestMethod]
         public void SqliteAdoScopeNestedAndSequentialTest()
         {
             // Testing nested scopes
@@ -201,7 +260,7 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
             adoScope.Complete();
         }
 
-        [TestMethod, TestCategory("IntegrationTests")]
+        [TestCategory("IntegrationTestsOnCI"), TestMethod]
         public void SqliteAdoScopeTransactionNestedTest()
         {
             using IAdoScope adoScope = adoScopeFactory.CreateWithTransaction(IsolationLevel.ReadCommitted);
