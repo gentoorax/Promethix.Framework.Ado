@@ -92,7 +92,7 @@ jobs:
 
     - name: Run Tests
       working-directory: ./Promethix.Framework.Ado.Tests
-      run: dotnet test --no-restore --verbosity normal --filter Category="IntegrationTestOnCI|Unit"
+      run: dotnet test --no-restore --verbosity normal --filter Category="IntegrationTestsOnCI|Unit"
 
   publish:
     name: Publish Promethix.Framework.Ado
