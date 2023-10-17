@@ -160,7 +160,7 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
         }
 
         [TestCategory("IntegrationTestsOnCI"), TestMethod]
-        public void SqliteBasicDistributedTest()
+        public void SqliteAdoScopeBasicDistributedTest()
         {
             using (IAdoScope adoScope = adoScopeFactory.CreateWithDistributedTransaction())
             {
@@ -169,6 +169,7 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
 
                 // Call our repository to add the entity
                 simpleTestRepository.Add(newTestEntity);
+                simpleTestRepository.AddWithDifferentContext(newTestEntity);
 
                 // Complete data related work
                 adoScope.Complete();
@@ -185,7 +186,7 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
         }
 
         [TestCategory("IntegrationTestsOnCI"), TestMethod]
-        public void SqliteDistributedTest()
+        public void SqliteAdoScopeDistributedTest()
         {
             int recordCountBefore = GetRecordCountFirstContext();
 

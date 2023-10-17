@@ -40,7 +40,7 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
         }
 
         [TestCategory("IntegrationTests"), TestMethod]
-        public void BasicMssqlTest()
+        public void MssqlAdoScopeBasicTest()
         {
 
             using (IAdoScope adoScope = adoScopeFactory.CreateWithDistributedTransaction())
@@ -50,6 +50,7 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
 
                 // Call our repository to add the entity
                 simpleTestRepository.Add(newTestEntity);
+                simpleTestRepository.AddWithDifferentContext(newTestEntity);
 
                 // Complete data related work
                 adoScope.Complete();
@@ -62,7 +63,7 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
         }
 
         [TestCategory("IntegrationTests"), TestMethod]
-        public void DistributedMssqlTest()
+        public void MssqlAdoScopeDistributedTest()
         {
             int recordCountBefore = GetRecordCountFirstContext();
 
