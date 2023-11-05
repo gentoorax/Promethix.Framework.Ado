@@ -29,6 +29,8 @@ namespace Promethix.Framework.Ado.Implementation
 
         private bool completed;
 
+        private bool isDistributed;
+
         private ExceptionDispatchInfo lastError;
 
         public AdoContextGroup(IAdoContextOptionsRegistry adoContextOptionsRegistry, AdoContextGroupExecutionOption adoContextGroupExecutionOption, System.Data.IsolationLevel? isolationLevel = null)
@@ -39,6 +41,10 @@ namespace Promethix.Framework.Ado.Implementation
             this.adoContextOptionsRegistry = adoContextOptionsRegistry;
             this.adoContextGroupExecutionOption = adoContextGroupExecutionOption;
             this.isolationLevel = isolationLevel;
+            isDistributed = adoContextGroupExecutionOption is 
+                AdoContextGroupExecutionOption.ExplicitDistributed 
+                or 
+                AdoContextGroupExecutionOption.ImplicitDistributed;
 
             // Prepare distributed transaction if requested.
             // Gets a bit messy here, because .NET 5 and .NET 6 don't support distributed transactions.
@@ -52,12 +58,12 @@ namespace Promethix.Framework.Ado.Implementation
                 }
 #endif
 #if NET5 || NET6
-                if (adoContextGroupExecutionOption == AdoContextGroupExecutionOption.Distributed)
+                if (isDistributed)
                 {
                     throw new NotImplementedException("Cannot use distributed transactions with .NET 5 or .NET 6. Please use .NET 7 or greater. Windows is also likely required with MSDTC enabled.");
                 }
 #endif
-            if (adoContextGroupExecutionOption == AdoContextGroupExecutionOption.Distributed)
+            if (isDistributed)
             {
                 var transactionOptions = isolationLevel.HasValue
                     ? new TransactionOptions { IsolationLevel = (System.Transactions.IsolationLevel)isolationLevel.Value }
@@ -98,7 +104,7 @@ namespace Promethix.Framework.Ado.Implementation
                     adoContext.BeginTransaction(isolationLevel.Value);
                 }
                 else if (adoContext.AdoContextExecution == AdoContextExecutionOption.Transactional
-                    || adoContextGroupExecutionOption == AdoContextGroupExecutionOption.Distributed)
+                    || adoContextGroupExecutionOption == AdoContextGroupExecutionOption.ExplicitDistributed)
                 {
                     // Implicit transaction requested via ADO Context configuration.
                     adoContext.BeginTransaction();
@@ -147,7 +153,7 @@ namespace Promethix.Framework.Ado.Implementation
                 }
             }
 
-            if (adoContextGroupExecutionOption == AdoContextGroupExecutionOption.Distributed)
+            if (adoContextGroupExecutionOption == AdoContextGroupExecutionOption.ExplicitDistributed)
             {
                 transactionScope.Complete();
                 transactionScope.Dispose();

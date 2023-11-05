@@ -164,6 +164,9 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
         {
             using (IAdoScope adoScope = adoScopeFactory.CreateWithDistributedTransaction())
             {
+                // Create databases and schemas
+                simpleTestRepository.CreateDatabase();
+
                 // Create a test entity
                 var newTestEntity = new TestEntity { Name = "CreateTest", Description = "Test Description", Quantity = 1 };
 

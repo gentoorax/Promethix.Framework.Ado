@@ -15,8 +15,20 @@ namespace Promethix.Framework.Ado.Enums
         Standard,
 
         /// <summary>
-        /// Encapsulates the scope in a distributed transaction (Requires MSDTC or ADO supported DTC controller).
+        /// Implicit distributed transactions will be enabled at the scope level. You want this if working
+        /// with a lot of databases and you want to enable unit of work / transactions for all operations
+        /// within all scopes.
+        /// This uses TransactionScope under the hood and TransactionScope with cover the AdoScope
+        /// regardless of the AdoContext configuration.
+        /// WARNING: This is advanced behaviour only enabled it if you know what you're doing.
+        /// Requires MSDTC or ADO supported DTC controller.
         /// </summary>
-        Distributed
+        ImplicitDistributed,
+
+        /// <summary>
+        /// Encapsulates the scope in a distributed transaction.
+        /// Requires MSDTC or ADO supported DTC controller.
+        /// </summary>
+        ExplicitDistributed
     }
 }
