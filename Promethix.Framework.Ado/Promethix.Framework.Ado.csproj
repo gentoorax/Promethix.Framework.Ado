@@ -41,6 +41,9 @@ public void ServiceLayerAddTestEntity()
 		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
 		<AnalysisLevel>latest</AnalysisLevel>
 		<PackageLicenseFile>LICENCE</PackageLicenseFile>
+		<RepositoryUrl>https://github.com/gentoorax/Promethix.Framework.Ado</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageReleaseNotes>Support added for implicit/explicit distributed transactions and ambient supression for async workloads.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>
