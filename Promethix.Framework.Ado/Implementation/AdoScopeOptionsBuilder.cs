@@ -1,4 +1,5 @@
-﻿using Promethix.Framework.Ado.Enums;
+﻿using Microsoft.Extensions.Configuration;
+using Promethix.Framework.Ado.Enums;
 using System;
 using System.Collections.Generic;
 using System.Configuration.Provider;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Promethix.Framework.Ado.Implementation
 {
-    public class AdoScopeOptionsBuilder
+    public class AdoScopeOptionsBuilder : OptionsBuilder
     {
         public AdoContextGroupExecutionOption ScopeExecutionOption { get; private set; }
 
@@ -25,6 +26,28 @@ namespace Promethix.Framework.Ado.Implementation
         {
             OverrideDefaultIsolationLevel = isolationLevel;
             return this;
+        }
+
+        public AdoScopeOptionsBuilder WithScopeConfiguration(IConfigurationRoot configuration)
+        {
+            if (configuration != null)
+            {
+                TryPopulateConfiguration(configuration);
+            }
+
+            return this;
+        }
+
+        private void TryPopulateConfiguration(IConfigurationRoot configuration)
+        {
+            IConfigurationSection adoScopeConfigSection = configuration.GetSection($"AdoScopeOptions");
+
+            // Configure AdoScope level options
+            if (adoScopeConfigSection != null)
+            {
+                ScopeExecutionOption = GetEnumValue(adoScopeConfigSection, nameof(ScopeExecutionOption), ScopeExecutionOption);
+                OverrideDefaultIsolationLevel = GetEnumValueOrNull<IsolationLevel>(adoScopeConfigSection, nameof(OverrideDefaultIsolationLevel));
+            }
         }
     }
 }

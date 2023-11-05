@@ -25,7 +25,7 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
         public AdoScopeMssqlTests()
         {
             var services = new ServiceCollection();
-            services.AddIntegrationDependencyInjection();
+            services.AddIntegrationDependencyInjectionHybridExample();
             var container = services.BuildServiceProvider();
 
             simpleTestRepository = container.GetService<ISimpleMssqlTestRepository>() ?? throw new InvalidOperationException("Could not create test repository");

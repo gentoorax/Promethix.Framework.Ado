@@ -1,15 +1,11 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 
 namespace Promethix.Framework.Ado.Implementation
 {
     public class AdoScopeConfigurationBuilder
     {
-        public AdoContextConfigurationBuilder AdoContextConfiguration { get; }
-
-        public AdoScopeConfigurationBuilder() 
-        {
-            AdoContextConfiguration = new AdoContextConfigurationBuilder();
-        }
+        private AdoScopeOptionsBuilder optionsBuilder { get; set; }
 
         public AdoScopeConfigurationBuilder ConfigureScope(Action<AdoScopeOptionsBuilder> configure)
         {
@@ -18,10 +14,15 @@ namespace Promethix.Framework.Ado.Implementation
                 throw new ArgumentNullException(nameof(configure));
             }
 
-            var optionsBuilder = new AdoScopeOptionsBuilder();
+            optionsBuilder = new AdoScopeOptionsBuilder();
             configure(optionsBuilder);
 
             return this;
+        }
+
+        public AdoScopeOptionsBuilder Build()
+        {
+            return optionsBuilder;
         }
     }
 }

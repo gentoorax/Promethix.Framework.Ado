@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Promethix.Framework.Ado.Implementation
 {
-    public class AdoContextOptionsBuilder
+    public class AdoContextOptionsBuilder : OptionsBuilder
     {
         public string Name { get; private set; }
 
@@ -21,7 +21,7 @@ namespace Promethix.Framework.Ado.Implementation
 
         public IsolationLevel? OverrideDefaultIsolationLevel { get; private set; }
 
-        public AdoContextOptionsBuilder WithNamedConnection(string name, IConfiguration configuration = null)
+        public AdoContextOptionsBuilder WithNamedContext(string name, IConfiguration configuration = null)
         {
             Name = name;
 
@@ -33,37 +33,12 @@ namespace Promethix.Framework.Ado.Implementation
             return this;
         }
 
-        private static string GetValue(IConfigurationSection section, string key)
-        {
-            return section?[key];
-        }
-
-        private static TEnum GetEnumValue<TEnum>(IConfigurationSection section, string key, TEnum defaultValue) where TEnum : struct
-        {
-            string enumValue = section?[key];
-            if (Enum.TryParse(enumValue, out TEnum parsedValue))
-            {
-                return parsedValue;
-            }
-            return defaultValue;
-        }
-
-        private static TEnum? GetEnumValueOrNull<TEnum>(IConfigurationSection section, string key) where TEnum : struct
-        {
-            string enumValue = section[key];
-            if (Enum.TryParse(enumValue, out TEnum parsedValue))
-            {
-                return parsedValue;
-            }
-            return null;
-        }
-
         private void TryPopulateConfiguration(IConfiguration configuration)
         {
             IConfigurationSection connectionStringsSection = configuration.GetSection($"ConnectionStrings:{Name}");
             IConfigurationSection adoContextConfigSection = configuration.GetSection($"AdoContextOptions:{Name}");
 
-            ConnectionString = connectionStringsSection?.Value ?? GetValue(adoContextConfigSection, "ConnectionString");
+            ConnectionString = GetValue(adoContextConfigSection, "ConnectionString") ?? connectionStringsSection?.Value;
             ProviderName = GetValue(adoContextConfigSection, "ProviderName");
             ExecutionOption = GetEnumValue(adoContextConfigSection, "ExecutionOption", AdoContextExecutionOption.Transactional);
             OverrideDefaultIsolationLevel = GetEnumValueOrNull<IsolationLevel>(adoContextConfigSection, "OverrideDefaultIsolationLevel");

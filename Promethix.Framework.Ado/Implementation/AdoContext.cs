@@ -56,7 +56,7 @@ namespace Promethix.Framework.Ado.Implementation
             IsolationLevel? overrideDefaultIsolationLevel = null)
         {
             adoContextOptions = new AdoContextOptionsBuilder()
-                .WithNamedConnection(name)
+                .WithNamedContext(name)
                 .WithProviderName(providerName)
                 .WithConnectionString(connectionString)
                 .WithExecutionOption(adoContextExecutionOption)

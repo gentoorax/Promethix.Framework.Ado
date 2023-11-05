@@ -22,7 +22,7 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
         public AdoScopeSqliteTests()
         {
             var services = new ServiceCollection();
-            services.AddIntegrationDependencyInjection();
+            services.AddIntegrationDependencyInjectionHybridExample();
             var container = services.BuildServiceProvider();
 
             simpleTestRepository = container.GetService<ISimpleTestRepository>() ?? throw new InvalidOperationException("Could not create test repository");

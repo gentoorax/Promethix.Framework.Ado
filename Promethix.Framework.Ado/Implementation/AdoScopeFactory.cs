@@ -14,23 +14,19 @@ namespace Promethix.Framework.Ado.Implementation
     {
         private readonly IAdoContextGroupFactory adoContextGroupFactory;
 
-        private readonly AdoContextGroupExecutionOption adoContextGroupExecutionOption;
-
-        private readonly IsolationLevel? isolationLevel;
+        private readonly AdoScopeOptionsBuilder adoScopeOptions;
 
         public AdoScopeFactory(
             IAdoContextGroupFactory adoContextGroupFactory,
-            IsolationLevel? isolationLevel = null,
-            AdoContextGroupExecutionOption adoContextGroupExecutionOption = AdoContextGroupExecutionOption.Standard) 
+            AdoScopeOptionsBuilder adoScopeOptions) 
         {
             this.adoContextGroupFactory = adoContextGroupFactory;
-            this.adoContextGroupExecutionOption = adoContextGroupExecutionOption;
-            this.isolationLevel = isolationLevel;
+            this.adoScopeOptions = adoScopeOptions;
         }
 
         public IAdoScope Create(AdoScopeOption adoScopeOption = AdoScopeOption.JoinExisting)
         {
-            return new AdoScope(adoScopeOption, isolationLevel, adoContextGroupFactory, adoContextGroupExecutionOption);
+            return new AdoScope(adoScopeOption, adoScopeOptions.OverrideDefaultIsolationLevel, adoContextGroupFactory, adoScopeOptions.ScopeExecutionOption);
         }
 
         public IAdoScope CreateWithTransaction(IsolationLevel isolationLevel)
