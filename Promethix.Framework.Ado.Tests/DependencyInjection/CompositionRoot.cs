@@ -30,7 +30,25 @@ namespace Promethix.Framework.Ado.Tests.DependencyInjection
             .ConfigureScope(options =>
             {
                 _ = options.WithScopeConfiguration(configuration);
-            });
+            })
+            .Build();
+
+            var adoContextConfiguration = new AdoContextConfigurationBuilder()
+                .AddAdoContext<SqliteContextExample1>(options =>
+                {
+                    // JSON AdoContext Configuration File Example 1
+                    _ = options.WithNamedContext("SqliteContextExample1", configuration);
+                })
+                .AddAdoContext<SqliteContextExample3>(options =>
+                {
+                    // JSON AdoContext Configuration File Example 3
+                    _ = options.WithNamedContext("SqliteContextExample3", configuration);
+                })
+                .Build();
+
+            // Register out entire AdoScope configuration in DI
+            _ = services.AddScoped(provider => adoScopeConfiguration);
+            _ = services.AddScoped(provider => adoContextConfiguration);
         }
 
         /// <summary>

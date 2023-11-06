@@ -5,8 +5,16 @@ namespace Promethix.Framework.Ado.Implementation
 {
     public class AdoScopeOptions
     {
-        public AdoScopeExecutionOption ScopeExecutionOption { get; internal set; }
+        public AdoScopeOptions()
+        {
+            JoinOption = AdoScopeOption.JoinExisting;
+            ScopeExecutionOption = AdoContextGroupExecutionOption.Standard;
+        }
 
-        public IsolationLevel? DefaultIsolationLevel { get; internal set; }
+        public AdoScopeOption JoinOption { get; internal set; }
+
+        public AdoContextGroupExecutionOption ScopeExecutionOption { get; internal set; }
+
+        public IsolationLevel? IsolationLevel { get; internal set; }
     }
 }

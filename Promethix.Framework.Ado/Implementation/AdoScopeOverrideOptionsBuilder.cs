@@ -10,28 +10,38 @@ namespace Promethix.Framework.Ado.Implementation
 {
     public class AdoScopeOverrideOptionsBuilder
     {
-        public AdoScopeOptionsBuilder AdoScopeOptionsBuilder { get; private set; }
-
-        public AdoScopeExecutionOption AdoScopeExecutionOption { get; private set; }
+        public AdoScopeOptions AdoScopeOptions { get; private set; }
 
         public bool HasExplicitOverrides { get; private set;}
 
-        public AdoScopeOverrideOptionsBuilder(AdoScopeOptionsBuilder adoScopeOptionsBuilder)
+        public AdoScopeOverrideOptionsBuilder(AdoScopeOptions adoScopeOptions)
         {
-            AdoScopeOptionsBuilder = adoScopeOptionsBuilder;
+            AdoScopeOptions = adoScopeOptions;
         }
 
-        public AdoScopeOverrideOptionsBuilder WithAdoScopeExecutionOption(AdoScopeExecutionOption adoScopeExecutionOption)
+        public AdoScopeOverrideOptionsBuilder WithAdoScopeExecutionOption(AdoContextGroupExecutionOption adoScopeExecutionOption)
         {
             HasExplicitOverrides = true;
-            AdoScopeExecutionOption = adoScopeExecutionOption;
+            AdoScopeOptions.ScopeExecutionOption = adoScopeExecutionOption;
             return this;
         }
 
-        public AdoScopeOverrideOptionsBuilder WithDefaultIsolationLevel(IsolationLevel? isolationLevel)
+        public AdoScopeOverrideOptionsBuilder WithIsolationLevel(IsolationLevel? isolationLevel)
         {
             HasExplicitOverrides = true;
-            AdoScopeOptionsBuilder.WithDefaultIsolationLevel(isolationLevel);
+            AdoScopeOptions.IsolationLevel = isolationLevel;
+            return this;
+        }
+
+        public AdoScopeOverrideOptionsBuilder WithJoinOption(AdoScopeOption joinOption)
+        {
+            // Default is JoinExisting
+            if (joinOption != AdoScopeOption.JoinExisting)
+            {
+                HasExplicitOverrides = true;
+            }
+
+            AdoScopeOptions.JoinOption = joinOption;
             return this;
         }
     }
