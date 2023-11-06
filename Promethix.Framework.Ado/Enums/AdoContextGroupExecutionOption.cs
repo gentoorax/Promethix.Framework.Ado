@@ -6,29 +6,21 @@ using System.Threading.Tasks;
 
 namespace Promethix.Framework.Ado.Enums
 {
+    /// <summary>
+    /// Sets the internal behaviour of the AdoContextGroup.
+    /// </summary>
     public enum AdoContextGroupExecutionOption
-
     {
         /// <summary>
-        /// The default behavior of the scope. Will not be promoted to a distributed transaction.
+        /// The default behavior of the AdoContextGroup. Will not be promoted to a distributed transaction.
         /// </summary>
         Standard,
 
         /// <summary>
-        /// Implicit distributed transactions will be enabled at the scope level. You want this if working
-        /// with a lot of databases and you want to enable unit of work / transactions for all operations
-        /// within all scopes.
-        /// This uses TransactionScope under the hood and TransactionScope with cover the AdoScope
-        /// regardless of the AdoContext configuration.
-        /// WARNING: This is advanced behaviour only enabled it if you know what you're doing.
+        /// Encapsulates the AdoContextGroup in a distributed transaction.
         /// Requires MSDTC or ADO supported DTC controller.
+        /// Used for explicit distributed transactions and AdoScope with Distributed execution option.
         /// </summary>
-        ImplicitDistributed,
-
-        /// <summary>
-        /// Encapsulates the scope in a distributed transaction.
-        /// Requires MSDTC or ADO supported DTC controller.
-        /// </summary>
-        ExplicitDistributed
+        Distributed
     }
 }

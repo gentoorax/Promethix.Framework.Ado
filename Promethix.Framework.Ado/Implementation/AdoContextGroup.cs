@@ -42,7 +42,7 @@ namespace Promethix.Framework.Ado.Implementation
             this.adoContextGroupExecutionOption = adoContextGroupExecutionOption;
             this.isolationLevel = isolationLevel;
             isDistributed = adoContextGroupExecutionOption is 
-                AdoContextGroupExecutionOption.ExplicitDistributed 
+                AdoContextGroupExecutionOption.Distributed 
                 or 
                 AdoContextGroupExecutionOption.ImplicitDistributed;
 
@@ -104,7 +104,7 @@ namespace Promethix.Framework.Ado.Implementation
                     adoContext.BeginTransaction(isolationLevel.Value);
                 }
                 else if (adoContext.AdoContextExecution == AdoContextExecutionOption.Transactional
-                    || adoContextGroupExecutionOption == AdoContextGroupExecutionOption.ExplicitDistributed)
+                    || adoContextGroupExecutionOption == AdoContextGroupExecutionOption.Distributed)
                 {
                     // Implicit transaction requested via ADO Context configuration.
                     adoContext.BeginTransaction();
@@ -153,7 +153,7 @@ namespace Promethix.Framework.Ado.Implementation
                 }
             }
 
-            if (adoContextGroupExecutionOption == AdoContextGroupExecutionOption.ExplicitDistributed)
+            if (adoContextGroupExecutionOption == AdoContextGroupExecutionOption.Distributed)
             {
                 transactionScope.Complete();
                 transactionScope.Dispose();

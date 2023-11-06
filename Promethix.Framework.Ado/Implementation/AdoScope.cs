@@ -54,16 +54,20 @@ namespace Promethix.Framework.Ado.Implementation
             // No Implementation
         }
 
-        public AdoScope(AdoScopeOption joiningOption, IsolationLevel? isolationLevel, IAdoContextGroupFactory adoContextGroupFactory = null, AdoContextGroupExecutionOption adoContextGroupExecutionOption = AdoContextGroupExecutionOption.Standard)
+        public AdoScope(AdoScopeOption joiningOption, AdoScopeOverrideOptionsBuilder
+            adoScopeOverrideOptions, IAdoContextGroupFactory adoContextGroupFactory = null)
         {
-            if (isolationLevel.HasValue && joiningOption == AdoScopeOption.JoinExisting)
+            if (adoScopeOverrideOptions.HasExplicitOverrides)
             {
-                throw new ArgumentException("Cannot join an ambient AdoScope when an explicit database transaction is required. When requiring explicit database transactions to be used (i.e. when the 'isolationLevel' parameter is set), you must not also ask to join the ambient context (i.e.the 'joinAmbient' parameter must be set to false).");
-            }
+                if (adoScopeOverrideOptions.AdoScopeOptionsBuilder.DefaultIsolationLevel.HasValue && joiningOption == AdoScopeOption.JoinExisting)
+                {
+                    throw new ArgumentException("Cannot join an ambient AdoScope when an explicit database transaction is required. When requiring explicit database transactions to be used (i.e. when the 'isolationLevel' parameter is set), you must not also ask to join the ambient context (i.e.the 'joinAmbient' parameter must be set to false).");
+                }
 
-            if (adoContextGroupExecutionOption == AdoContextGroupExecutionOption.ExplicitDistributed && joiningOption == AdoScopeOption.JoinExisting)
-            {
-                throw new NotImplementedException("Cannot join an ambient AdoScope when an explicit distributed transaction is required. When requiring explicit distributed database transactions to be used (i.e. when adoContextGroupExecutionOption set to 'distributed'), you must not also ask to join the ambient context.");
+                if (adoScopeOverrideOptions.AdoContextGroupExecutionOption == AdoContextGroupExecutionOption.Distributed && joiningOption == AdoScopeOption.JoinExisting)
+                {
+                    throw new NotImplementedException("Cannot join an ambient AdoScope when an explicit distributed transaction is required. When requiring explicit distributed database transactions to be used (i.e. when adoContextGroupExecutionOption set to 'distributed'), you must not also ask to join the ambient context.");
+                }
             }
 
             disposed = false;
@@ -79,7 +83,7 @@ namespace Promethix.Framework.Ado.Implementation
             else
             {
                 nested = false;
-                adoContexts = adoContextGroupFactory?.CreateContextGroup(adoContextGroupExecutionOption, isolationLevel);
+                adoContexts = adoContextGroupFactory?.CreateContextGroup(explicitAdoContextGroupExecutionOption, explicitIsolationLevel);
             }
 
             SetAmbientScope(this);

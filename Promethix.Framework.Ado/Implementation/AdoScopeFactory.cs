@@ -14,19 +14,19 @@ namespace Promethix.Framework.Ado.Implementation
     {
         private readonly IAdoContextGroupFactory adoContextGroupFactory;
 
-        private readonly AdoScopeOptionsBuilder adoScopeOptions;
+        private readonly AdoScopeOptionsBuilder adoScopeBuilderOptions;
 
         public AdoScopeFactory(
             IAdoContextGroupFactory adoContextGroupFactory,
-            AdoScopeOptionsBuilder adoScopeOptions) 
+            AdoScopeOptionsBuilder adoScopeBuilderOptions) 
         {
             this.adoContextGroupFactory = adoContextGroupFactory;
-            this.adoScopeOptions = adoScopeOptions;
+            this.adoScopeBuilderOptions = adoScopeBuilderOptions;
         }
 
         public IAdoScope Create(AdoScopeOption adoScopeOption = AdoScopeOption.JoinExisting)
         {
-            return new AdoScope(adoScopeOption, adoScopeOptions.OverrideDefaultIsolationLevel, adoContextGroupFactory, adoScopeOptions.ScopeExecutionOption);
+            return new AdoScope(adoScopeOption, adoScopeBuilderOptions.DefaultIsolationLevel, adoContextGroupFactory, adoScopeBuilderOptions.ScopeExecutionOption);
         }
 
         public IAdoScope CreateWithTransaction(IsolationLevel isolationLevel)
@@ -36,7 +36,7 @@ namespace Promethix.Framework.Ado.Implementation
 
         public IAdoScope CreateWithDistributedTransaction(IsolationLevel? isolationLevel)
         {
-            return new AdoScope(AdoScopeOption.ForceCreateNew, isolationLevel, adoContextGroupFactory, AdoContextGroupExecutionOption.ExplicitDistributed);
+            return new AdoScope(AdoScopeOption.ForceCreateNew, isolationLevel, adoContextGroupFactory, AdoContextGroupExecutionOption.Distributed);
         }
         
         public IDisposable SuppressAmbientContext()
