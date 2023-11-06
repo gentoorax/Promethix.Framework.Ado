@@ -16,15 +16,98 @@ namespace Promethix.Framework.Ado.Tests.DependencyInjection
 {
     public static class CompositionRoot
     {
-        public static void AddIntegrationDependencyInjection(this IServiceCollection services)
+        public static void AddIntegrationDependencyInjectionJsonExample(this IServiceCollection services)
         {
             // Register configuration file
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("appsettings.example2.json", optional: true, reloadOnChange: true)
                 .Build();
 
-            services.AddSingleton<IConfiguration>(configuration);
+            StandardRegistrations(services, configuration);
+
+            var adoScopeConfiguration = new AdoScopeConfigurationBuilder()
+            .ConfigureScope(options =>
+            {
+                _ = options.WithScopeConfiguration(configuration);
+            })
+            .Build();
+
+            var adoContextConfiguration = new AdoContextConfigurationBuilder()
+                .AddAdoContext<SqliteContextExample1>(options =>
+                {
+                    // JSON AdoContext Configuration File Example 1
+                    _ = options.WithNamedContext("SqliteContextExample1", configuration);
+                })
+                .AddAdoContext<SqliteContextExample3>(options =>
+                {
+                    // JSON AdoContext Configuration File Example 3
+                    _ = options.WithNamedContext("SqliteContextExample3", configuration);
+                })
+                .Build();
+
+            // Register out entire AdoScope configuration in DI
+            _ = services.AddScoped(provider => adoScopeConfiguration);
+            _ = services.AddScoped(provider => adoContextConfiguration);
+        }
+
+        /// <summary>
+        ///  Demonstrates several ways to configure AdoScope and AdoContext with a
+        ///  hybrid JSON, Fluent and Constructor driven options.
+        /// </summary>
+        /// <param name="services"></param>
+        public static void AddIntegrationDependencyInjectionHybridExample(this IServiceCollection services)
+        {
+            // Register configuration file
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.example1.json", optional: true, reloadOnChange: true)
+                .Build();
+
+            StandardRegistrations(services, configuration);
+
+            var adoScopeConfiguration = new AdoScopeConfigurationBuilder()
+            .ConfigureScope(options => { _ = options.WithScopeExecutionOption(AdoContextGroupExecutionOption.Standard); })
+            .Build();
+
+            var adoContextConfiguration = new AdoContextConfigurationBuilder()
+                .AddAdoContext<SqliteContextExample1>(options =>
+                {
+                    // JSON AdoContext Configuration File Example 1
+                    _ = options.WithNamedContext("SqliteContextExample1", configuration);
+                })
+                .AddAdoContext<SqliteContextExample2>(options => 
+                {
+                    // JSON AdoContext Configuration File Example 2
+                    _ = options.WithNamedContext("SqliteContextExample2", configuration);
+                })
+                .AddAdoContext<SqliteContextExample3>(options =>
+                {
+                    // JSON AdoContext Configuration File Example 3
+                    _ = options.WithNamedContext("SqliteContextExample3", configuration);
+                })
+                .AddAdoContext<SqliteContextExample4>(options =>
+                {
+                    // Fluent AdoContext Configuration File Example 4
+                    _ = options.WithNamedContext("SqliteContextExample4");
+                    _ = options.WithConnectionString("Data Source=mydatabase4.db");
+                    _ = options.WithProviderName("Microsoft.Data.Sqlite");
+                    _ = options.WithExecutionOption(AdoContextExecutionOption.Transactional);
+                    _ = options.WithDefaultIsolationLevel(IsolationLevel.ReadCommitted);
+                })
+                .Build();
+
+            // NOTE: AdoContext SqliteContextExample5 uses constructor configuration and
+            // doesn't need to be registered at all.
+
+            // Register out entire AdoScope configuration in DI
+            _ = services.AddScoped(provider => adoScopeConfiguration);
+            _ = services.AddScoped(provider => adoContextConfiguration);
+        }
+
+        private static void StandardRegistrations(IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddSingleton(configuration);
 
             // Still need to register ADO providers you will be using
             DbProviderFactories.RegisterFactory("Microsoft.Data.Sqlite", SqliteFactory.Instance);
@@ -37,32 +120,6 @@ namespace Promethix.Framework.Ado.Tests.DependencyInjection
             _ = services.AddScoped<ISimpleTestRepository, SimpleTestRepository>();
             _ = services.AddScoped<IMultiTestRepository, MultiTestRepository>();
             _ = services.AddScoped<ISimpleMssqlTestRepository, SimpleMssqlTestRepository>();
-
-            // Register your ADO contexts
-            var adoContextConfiguration = new AdoContextConfigurationBuilder()
-                .AddAdoContext<SqliteContextExample1>(options =>
-                {
-                    _ = options.WithNamedConnection("SqliteContextExample1", configuration);
-                })
-                .AddAdoContext<SqliteContextExample2>(options => 
-                {
-                    _ = options.WithNamedConnection("SqliteContextExample2", configuration);
-                })
-                .AddAdoContext<SqliteContextExample3>(options =>
-                {
-                    _ = options.WithNamedConnection("SqliteContextExample3", configuration);
-                })
-                .AddAdoContext<SqliteContextExample4>(options =>
-                {
-                    _ = options.WithNamedConnection("SqliteContextExample4");
-                    _ = options.WithConnectionString("Data Source=mydatabase4.db");
-                    _ = options.WithProviderName("Microsoft.Data.Sqlite");
-                    _ = options.WithExecutionOption(AdoContextExecutionOption.Transactional);
-                    _ = options.WithDefaultIsolationLevel(IsolationLevel.ReadCommitted);
-                })
-                .Build();
-
-            _ = services.AddScoped(provider => adoContextConfiguration);  
         }
     }
 }

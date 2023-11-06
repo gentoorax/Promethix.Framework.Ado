@@ -4,6 +4,8 @@ namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess.Sqlite
 {
     public interface ISimpleTestRepository
     {
+        void CreateDatabase();
+
         void Add(TestEntity entity);
 
         void AddWithDifferentContext(TestEntity newTestEntity);

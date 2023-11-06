@@ -18,9 +18,9 @@ namespace Promethix.Framework.Ado.Implementation
             this.adoContextOptionsRegistry = adoContextOptionsRegistry;
         }
 
-        public IAdoContextGroup CreateContextGroup(AdoContextGroupExecutionOption adoContextGroupExecutionOption, IsolationLevel? isolationLevel)
+        public IAdoContextGroup CreateContextGroup(AdoScopeOptions adoScopeOptions)
         {
-            return new AdoContextGroup(adoContextOptionsRegistry, adoContextGroupExecutionOption, isolationLevel);
+            return new AdoContextGroup(adoContextOptionsRegistry, adoScopeOptions);
         }
     }
 }

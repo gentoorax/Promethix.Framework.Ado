@@ -36,34 +36,28 @@ namespace Promethix.Framework.Ado.Implementation
 
         public IAdoContextGroup AdoContexts => adoContexts;
 
-        public AdoScope(IsolationLevel isolationLevel, IAdoContextGroupFactory adoContextGroupFactory)
-            : this(AdoScopeOption.JoinExisting, isolationLevel, adoContextGroupFactory)
-        {
-            // No Implementation
-        }
+        public AdoScopeOptions AdoScopeOptions { get; }
 
-        public AdoScope(AdoScopeOption joiningOption, IAdoContextGroupFactory adoContextGroupFactory = null)
-            : this(joiningOption, null, adoContextGroupFactory)
+        public AdoScope(AdoScopeOverrideOptionsBuilder adoScopeOverrideOptions, IAdoContextGroupFactory adoContextGroupFactory = null)
         {
-            // No Implementation
-        }
-
-        public AdoScope(IAdoContextGroupFactory adoContextGroupFactory = null)
-            : this(AdoScopeOption.JoinExisting, null, adoContextGroupFactory)
-        {
-            // No Implementation
-        }
-
-        public AdoScope(AdoScopeOption joiningOption, IsolationLevel? isolationLevel, IAdoContextGroupFactory adoContextGroupFactory = null, AdoContextGroupExecutionOption adoContextGroupExecutionOption = AdoContextGroupExecutionOption.Standard)
-        {
-            if (isolationLevel.HasValue && joiningOption == AdoScopeOption.JoinExisting)
+            if (adoScopeOverrideOptions == null)
             {
-                throw new ArgumentException("Cannot join an ambient AdoScope when an explicit database transaction is required. When requiring explicit database transactions to be used (i.e. when the 'isolationLevel' parameter is set), you must not also ask to join the ambient context (i.e.the 'joinAmbient' parameter must be set to false).");
+                throw new ArgumentNullException(nameof(adoScopeOverrideOptions));
             }
 
-            if (adoContextGroupExecutionOption == AdoContextGroupExecutionOption.Distributed && joiningOption == AdoScopeOption.JoinExisting)
+            AdoScopeOptions = adoScopeOverrideOptions.AdoScopeOptions;
+
+            if (adoScopeOverrideOptions.HasExplicitOverrides)
             {
-                throw new NotImplementedException("Cannot join an ambient AdoScope when an explicit distributed transaction is required. When requiring explicit distributed database transactions to be used (i.e. when adoContextGroupExecutionOption set to 'distributed'), you must not also ask to join the ambient context.");
+                if (AdoScopeOptions.IsolationLevel.HasValue && AdoScopeOptions.JoinOption == AdoScopeOption.JoinExisting)
+                {
+                    throw new ArgumentException("Cannot join an ambient AdoScope when an explicit database transaction is required. When requiring explicit database transactions to be used (i.e. when the 'isolationLevel' parameter is set), you must not also ask to join the ambient context (i.e.the 'joinAmbient' parameter must be set to false).");
+                }
+
+                if (AdoScopeOptions.ScopeExecutionOption == AdoContextGroupExecutionOption.Distributed && AdoScopeOptions.JoinOption == AdoScopeOption.JoinExisting)
+                {
+                    throw new NotImplementedException("Cannot join an ambient AdoScope when an explicit distributed transaction is required. When requiring explicit distributed database transactions to be used (i.e. when adoContextGroupExecutionOption set to 'distributed'), you must not also ask to join the ambient context.");
+                }
             }
 
             disposed = false;
@@ -71,7 +65,7 @@ namespace Promethix.Framework.Ado.Implementation
 
             parentScope = GetAmbientScope();
 
-            if (parentScope != null && joiningOption == AdoScopeOption.JoinExisting)
+            if (parentScope != null && AdoScopeOptions.JoinOption == AdoScopeOption.JoinExisting)
             {
                 nested = true;
                 adoContexts = parentScope.adoContexts;
@@ -79,7 +73,7 @@ namespace Promethix.Framework.Ado.Implementation
             else
             {
                 nested = false;
-                adoContexts = adoContextGroupFactory?.CreateContextGroup(adoContextGroupExecutionOption, isolationLevel);
+                adoContexts = adoContextGroupFactory?.CreateContextGroup(adoScopeOverrideOptions.AdoScopeOptions);
             }
 
             SetAmbientScope(this);

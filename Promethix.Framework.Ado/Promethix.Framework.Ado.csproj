@@ -9,7 +9,8 @@
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<Title>Promethix.Framework.AdoScope</Title>
-		<Description>AdoScope (Official): A simple and flexible way to manage your ADO database connections and transactions.
+		<Description>
+AdoScope (Official): A simple and flexible way to manage your ADO database connections and transactions.
 
 Based on DbContextScope but for general ADO including Dapper.
 
@@ -27,7 +28,8 @@ public void ServiceLayerAddTestEntity()
 
     // Commit the unit of work / transaction (if using ExecutionOption.Transactional)
     adoScope.Complete();
-}</Description>
+}
+</Description>
 		<Version>$(BuildVersion)</Version>
 		<Authors>Christopher Law</Authors>
 		<Company>Promethix</Company>
@@ -39,6 +41,9 @@ public void ServiceLayerAddTestEntity()
 		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
 		<AnalysisLevel>latest</AnalysisLevel>
 		<PackageLicenseFile>LICENCE</PackageLicenseFile>
+		<RepositoryUrl>https://github.com/gentoorax/Promethix.Framework.Ado</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageReleaseNotes>Support added for implicit/explicit distributed transactions and ambient supression for async workloads.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>

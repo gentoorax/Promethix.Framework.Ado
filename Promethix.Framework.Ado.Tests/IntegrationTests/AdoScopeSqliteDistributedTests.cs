@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Promethix.Framework.Ado.Interfaces;
 using Promethix.Framework.Ado.Tests.DependencyInjection;
-using Promethix.Framework.Ado.Tests.TestSupport.DataAccess.Mssql;
+using Promethix.Framework.Ado.Tests.TestSupport.DataAccess.Sqlite;
 using Promethix.Framework.Ado.Tests.TestSupport.Entities;
 using System;
 using System.Collections.Generic;
@@ -11,40 +11,33 @@ using System.Threading.Tasks;
 
 namespace Promethix.Framework.Ado.Tests.IntegrationTests
 {
-    /// <summary>
-    /// These tests have a dependency on a local SQL Server instance.
-    /// Therefore are not configured to run on CI.
-    /// </summary>
     [TestClass]
-    public class AdoScopeMssqlTests
+    public class AdoScopeSqliteImplicitDistributedTests
     {
-        private readonly ISimpleMssqlTestRepository simpleTestRepository;
+        private readonly ISimpleTestRepository simpleTestRepository;
 
         private readonly IAdoScopeFactory adoScopeFactory;
 
-        public AdoScopeMssqlTests()
+        public AdoScopeSqliteImplicitDistributedTests()
         {
             var services = new ServiceCollection();
-            services.AddIntegrationDependencyInjectionHybridExample();
+            services.AddIntegrationDependencyInjectionJsonExample();
             var container = services.BuildServiceProvider();
 
-            simpleTestRepository = container.GetService<ISimpleMssqlTestRepository>() ?? throw new InvalidOperationException("Could not create test repository");
+            simpleTestRepository = container.GetService<ISimpleTestRepository>() ?? throw new InvalidOperationException("Could not create test repository");
             adoScopeFactory = container.GetService<IAdoScopeFactory>() ?? throw new InvalidOperationException("Could not create ado scope factory");
+
+            SqliteTestPreparation.CreateSqliteSchema();
         }
 
-        [TestInitialize]
-        public void TestInitialize()
+        [TestCategory("IntegrationTestsOnCI"), TestMethod]
+        public void SqliteAdoScopeBasicDistributedTest()
         {
-            using IAdoScope adoScope = adoScopeFactory.Create();
-            simpleTestRepository.DeleteAll();
-        }
-
-        [TestCategory("IntegrationTests"), TestMethod]
-        public void MssqlAdoScopeBasicTest()
-        {
-
-            using (IAdoScope adoScope = adoScopeFactory.CreateWithDistributedTransaction())
+            using (IAdoScope adoScope = adoScopeFactory.Create())
             {
+                // Create databases and schemas
+                simpleTestRepository.CreateDatabase();
+
                 // Create a test entity
                 var newTestEntity = new TestEntity { Name = "CreateTest", Description = "Test Description", Quantity = 1 };
 
@@ -58,16 +51,20 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
 
             using (IAdoScope adoScope = adoScopeFactory.Create())
             {
-                Assert.IsNotNull(simpleTestRepository.GetEntityByName("CreateTest"));
+                // Get the entity from the database
+                TestEntity testEntity = simpleTestRepository.GetEntityByName("CreateTest");
+
+                // Assert that the entity was retrieved
+                Assert.IsNotNull(testEntity);
             }
         }
 
-        [TestCategory("IntegrationTests"), TestMethod]
-        public void MssqlAdoScopeDistributedTest()
+        [TestCategory("IntegrationTestsOnCI"), TestMethod]
+        public void SqliteAdoScopeDistributedTest()
         {
             int recordCountBefore = GetRecordCountFirstContext();
 
-            using (IAdoScope adoScope1 = adoScopeFactory.CreateWithDistributedTransaction())
+            using (IAdoScope adoScope1 = adoScopeFactory.Create())
             {
                 // Create a test entity
                 var newTestEntity = new TestEntity { Name = "CreateTest", Description = "Test Description", Quantity = 1 };
@@ -77,7 +74,8 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
                     // Call our repository to add the entity
                     simpleTestRepository.Add(newTestEntity);
                     simpleTestRepository.AddWithDifferentContext(newTestEntity);
-                    simpleTestRepository.DivideByZero();
+                    // Sqlite won't throw an exception for divide by zero! So need another way to break it.
+                    simpleTestRepository.BreakSqlite();
 
                     // Complete data related work
                     adoScope1.Complete();
