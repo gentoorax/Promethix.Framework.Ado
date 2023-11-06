@@ -26,6 +26,7 @@ namespace Promethix.Framework.Ado.Tests.DependencyInjection
 
             StandardRegistrations(services, configuration);
 
+            // AdoScope Configuration
             var adoScopeConfiguration = new AdoScopeConfigurationBuilder()
             .ConfigureScope(options =>
             {
@@ -33,6 +34,7 @@ namespace Promethix.Framework.Ado.Tests.DependencyInjection
             })
             .Build();
 
+            // AdoContexts Configuration
             var adoContextConfiguration = new AdoContextConfigurationBuilder()
                 .AddAdoContext<SqliteContextExample1>(options =>
                 {
@@ -46,7 +48,7 @@ namespace Promethix.Framework.Ado.Tests.DependencyInjection
                 })
                 .Build();
 
-            // Register out entire AdoScope configuration in DI
+            // Register entire AdoScope configuration in DI
             _ = services.AddScoped(provider => adoScopeConfiguration);
             _ = services.AddScoped(provider => adoContextConfiguration);
         }
@@ -100,7 +102,7 @@ namespace Promethix.Framework.Ado.Tests.DependencyInjection
             // NOTE: AdoContext SqliteContextExample5 uses constructor configuration and
             // doesn't need to be registered at all.
 
-            // Register out entire AdoScope configuration in DI
+            // Register entire AdoScope configuration in DI
             _ = services.AddScoped(provider => adoScopeConfiguration);
             _ = services.AddScoped(provider => adoContextConfiguration);
         }

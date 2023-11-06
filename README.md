@@ -16,7 +16,7 @@ To address this, AdoScope introduces the concept of an AdoContext—a wrapper ar
 
 If you are seeking a Unit of Work pattern for Dapper with minimal coding overhead, AdoScope provides an elegant solution.
 
-## Features
+## Supported Features
 
 - [x] Simple and flexible configuration
 - [x] Database provider agnostic
@@ -28,11 +28,11 @@ If you are seeking a Unit of Work pattern for Dapper with minimal coding overhea
 - [x] Support for multiple databases in a single distributed transaction
 - [x] Support for explicit distributed transactions
 - [x] Support for asynchronous operations
+- [x] Support for default distributed transactions
 
 ## Future Features
 
 - [ ] Support for read only transactions
-- [ ] Support for default distributed transactions
 
 ## Please be aware
 
@@ -52,7 +52,7 @@ That when your `AdoContext` is configured in transactional mode, it will hold a 
 
 Install the NuGet package
 ```powershell
-Install-Package AdoScope -Version 0.1.39-alpha
+Install-Package AdoScope -Version 0.1.42-alpha
 ```
 
 Create an ADO Context
@@ -143,34 +143,58 @@ var adoContextConfiguration = new AdoContextConfigurationBuilder()
 _ = services.AddScoped(provider => adoContextConfiguration);  
 ```
 
-**Recommended approach**
+### Recommended Approach
 
-Use appsettings.json for configuration, you can use the following code.
-In your DI registrations:
+Use appsettings.json for configuration, you can use the following code in your DI composition:
 ```csharp
-// Create ADO context configuration
-var adoContextConfiguration = new AdoContextConfigurationBuilder()
-.AddAdoContext<SqliteContextExample1>(options =>
+// AdoScope Configuration
+var adoScopeConfiguration = new AdoScopeConfigurationBuilder()
+.ConfigureScope(options =>
 {
-    _ = options.WithNamedConnection("SqliteContextExample1", configuration);
+    _ = options.WithScopeConfiguration(configuration);
 })
 .Build();
 
-// Register your ADO context configuration
-_ = services.AddScoped(provider => adoContextConfiguration);  
+// AdoContexts Configuration
+var adoContextConfiguration = new AdoContextConfigurationBuilder()
+    .AddAdoContext<SqliteContextExample1>(options =>
+    {
+        // JSON AdoContext Configuration File Example 1
+        _ = options.WithNamedContext("SqliteContextExample1", configuration);
+    })
+    .AddAdoContext<SqliteContextExample3>(options =>
+    {
+        // JSON AdoContext Configuration File Example 3
+        _ = options.WithNamedContext("SqliteContextExample3", configuration);
+    })
+    .Build();
+
+// Register entire AdoScope configuration in DI
+_ = services.AddScoped(provider => adoScopeConfiguration);
+_ = services.AddScoped(provider => adoContextConfiguration); 
 ```
+
+For most use cases you want the following configuration:
+- Distributed Transactions Off.
+- AdoContext Transactions On - provides Unit of Work behaviour.
 
 appsettings.json as follows (see unit test project for more examples):
 ```json
 {
+  "AdoScopeOptions": {
+    "ScopeExecutionOption": "Standard",
+  },
   "AdoContextOptions": {
     "SqliteContextExample1": {
       "ProviderName": "Microsoft.Data.Sqlite",
+      "ConnectionString": "Data Source=mydatabase.db",
+      "ExecutionOption": "Transactional"
+    },
+    "SqliteContextExample3": {
+      "ProviderName": "Microsoft.Data.Sqlite",
+      "ConnectionString": "Data Source=mydatabase3.db",
       "ExecutionOption": "Transactional"
     }
-  },
-  "ConnectionStrings": {
-    "SqliteContextExample1": "Data Source=mydatabase.db",
   }
 }
 ```
