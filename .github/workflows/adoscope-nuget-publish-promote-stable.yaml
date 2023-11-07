@@ -30,12 +30,34 @@ jobs:
         path: ${{ env.NuGetDirectory }}
         search_artifacts: true
 
-    - name: Publish Nuget Package Promethix.Framework.Ado
-      working-directory: .
+    # - name: Publish Nuget Package Promethix.Framework.Ado
+    #   needs: download-artifact
+    #   working-directory: .
+    #   run: |
+    #     echo Directory List
+    #     ls
+    #     echo NuGet Directory List
+    #     ls ${{ env.NuGetDirectory }}
+    #     PACKAGE_VERSION=${{ inputs.new_package_version }}
+    #     dotnet nuget push ${{ env.NuGetDirectory }}/Promethix.Framework.Ado.${PACKAGE_VERSION}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
+
+    - name: Extract Commit Hash and Tag
+      needs: download-artifact
+      env:
+        PACKAGE_VERSION: ${{ github.event.inputs.package_version }}
+        NEW_PACKAGE_VERSION: ${{ github.event.inputs.new_package_version }}
       run: |
-        echo Directory List
-        ls
-        echo NuGet Directory List
-        ls ${{ env.NuGetDirectory }}
-        PACKAGE_VERSION=${{ inputs.new_package_version }}
-        dotnet nuget push ${{ env.NuGetDirectory }}/Promethix.Framework.Ado.${PACKAGE_VERSION}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
+        $pattern = '-([0-9a-f]{7,40})-alpha'
+        if ($PACKAGE_VERSION -match $pattern) {
+          $commitHash = $Matches[1]
+          # Checkout the commit
+          git checkout $commitHash
+          # Tag the commit
+          git tag -a $NEW_PACKAGE_VERSION -m "Promote $PACKAGE_VERSION to $NEW_PACKAGE_VERSION"
+          # Push the tag
+          git push origin $NEW_PACKAGE_VERSION
+        } else {
+          Write-Error "Commit hash not found in package version."
+          exit 1
+        }
+      shell: pwsh
