@@ -1,9 +1,13 @@
-name: adoscope-nuget-publish
+name: adoscope-nuget-publish-promote-stable
 on:
   workflow_dispatch:
     inputs:
       package_version:
         description: 'NuGet package version to approve'
+        required: true
+        default: '1.0.0-alpha'
+      new_package_version:
+        description: 'Promotion version'
         required: true
         default: '1.0.0'
 
@@ -33,5 +37,5 @@ jobs:
         ls
         echo NuGet Directory List
         ls ${{ env.NuGetDirectory }}
-        PACKAGE_VERSION=${{ inputs.package_version }}
+        PACKAGE_VERSION=${{ inputs.new_package_version }}
         dotnet nuget push ${{ env.NuGetDirectory }}/Promethix.Framework.Ado.${PACKAGE_VERSION}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
