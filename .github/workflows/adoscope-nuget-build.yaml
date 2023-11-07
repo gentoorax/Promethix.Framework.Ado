@@ -42,9 +42,10 @@ jobs:
         $major = ${{ vars.MAJOR }}
         $minor = ${{ vars.MINOR }}
         $revision = ${{ secrets.REVISION }}
+        $commitHash = "${{ github.sha }}".Substring(0,7) # Short SHA
 
-        $buildVersion = "${major}.${minor}.${revision}-alpha"
-        echo "BuildVersion=${buildVersion}" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+        $buildVersion = "${major}.${minor}.${revision}-$commitHash-alpha"
+        echo "BuildVersion=$buildVersion" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v3

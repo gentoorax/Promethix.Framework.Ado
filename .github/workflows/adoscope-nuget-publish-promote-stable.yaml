@@ -5,7 +5,7 @@ on:
       package_version:
         description: 'NuGet package version to approve'
         required: true
-        default: '1.0.0-alpha'
+        default: '1.0.0-commithash-alpha'
       new_package_version:
         description: 'Promotion version'
         required: true
