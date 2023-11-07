@@ -20,6 +20,11 @@ jobs:
     name: Publish Promethix.Framework.Ado
     runs-on: ubuntu-latest
     steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0 # This is crucial to fetch all history for tagging
+
     - name: Download artifact
       id: download-artifact
       uses: dawidd6/action-download-artifact@v2
@@ -46,15 +51,16 @@ jobs:
         PACKAGE_VERSION: ${{ github.event.inputs.package_version }}
         NEW_PACKAGE_VERSION: ${{ github.event.inputs.new_package_version }}
       run: |
-        pattern='-([0-9a-f]{7,40})-alpha'
+        $pattern = '-([0-9a-f]{7,40})-alpha'
         if ($env:PACKAGE_VERSION -match $pattern) {
           $commitHash = $Matches[1]
           # Checkout the commit
+          git fetch --depth=1 origin $commitHash
           git checkout $commitHash
           # Tag the commit
           git tag -a $env:NEW_PACKAGE_VERSION -m "Promote $env:PACKAGE_VERSION to $env:NEW_PACKAGE_VERSION"
           # Push the tag
-          git push origin $env:NEW_PACKAGE_VERSION
+          git push origin refs/tags/$env:NEW_PACKAGE_VERSION
         } else {
           Write-Error "Commit hash not found in package version."
           exit 1
