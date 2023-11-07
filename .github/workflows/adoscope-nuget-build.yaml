@@ -108,8 +108,8 @@ jobs:
         major="${{ vars.MAJOR }}"
         minor="${{ vars.MINOR }}"
         revision="${{ secrets.REVISION }}"
-        $commitHash = "${{ github.sha }}".Substring(0,7) # Short SHA
-        $buildVersion = "${major}.${minor}.${revision}-$commitHash-alpha"
+        commitHash="$(echo ${{ github.sha }} | cut -c1-7)" # Short SHA
+        $buildVersion = "${major}.${minor}.${revision}-${commitHash}-alpha"
         echo "buildVersion=${buildVersion}" >> $GITHUB_ENV
 
     - uses: actions/download-artifact@v3
