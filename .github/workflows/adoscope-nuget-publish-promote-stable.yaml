@@ -65,7 +65,7 @@ jobs:
           # Push the tag: git push origin refs/tags/$env:NEW_PACKAGE_VERSION
           # Push the tag using the PAT and correct repository URL
           $repoUrl = "${{ github.server_url }}/${{ github.repository }}".TrimStart('https://')
-          echo git push --tags "https://${env:MY_PAT}@$repoUrl"
+          git push --tags "https://github-actions:${env:MY_PAT}@$repoUrl"
         } else {
           Write-Error "Commit hash not found in package version."
           exit 1
