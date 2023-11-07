@@ -50,6 +50,7 @@ jobs:
       env:
         PACKAGE_VERSION: ${{ github.event.inputs.package_version }}
         NEW_PACKAGE_VERSION: ${{ github.event.inputs.new_package_version }}
+        MY_PAT: ${{ secrets.REPO_ACCESS_TOKEN }}
       run: |
         $pattern = '-([0-9a-f]{7,40})-alpha'
         if ($env:PACKAGE_VERSION -match $pattern) {
@@ -61,8 +62,9 @@ jobs:
           git checkout $commitHash
           # Tag the commit
           git tag -a $env:NEW_PACKAGE_VERSION -m "Promote $env:PACKAGE_VERSION to $env:NEW_PACKAGE_VERSION"
-          # Push the tag
-          git push origin refs/tags/$env:NEW_PACKAGE_VERSION
+          # Push the tag: git push origin refs/tags/$env:NEW_PACKAGE_VERSION
+          # Push the tag using PAT
+          git push --tags https://${env:MY_PAT}@${{ github.server_url }}/${{ github.repository }}
         } else {
           Write-Error "Commit hash not found in package version."
           exit 1
