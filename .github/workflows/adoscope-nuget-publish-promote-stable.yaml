@@ -53,6 +53,8 @@ jobs:
       run: |
         $pattern = '-([0-9a-f]{7,40})-alpha'
         if ($env:PACKAGE_VERSION -match $pattern) {
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
           $commitHash = $Matches[1]
           # Checkout the commit
           git fetch --depth=1 origin $commitHash
