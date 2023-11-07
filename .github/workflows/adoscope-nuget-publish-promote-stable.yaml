@@ -50,7 +50,7 @@ jobs:
       env:
         PACKAGE_VERSION: ${{ github.event.inputs.package_version }}
         NEW_PACKAGE_VERSION: ${{ github.event.inputs.new_package_version }}
-        MY_PAT: ${{ secrets.REPO_ACCESS_TOKEN }}
+        MY_PAT: ${{ secrets.REPO_ACCESS_TOKEN2 }}
       run: |
         $pattern = '-([0-9a-f]{7,40})-alpha'
         if ($env:PACKAGE_VERSION -match $pattern) {
