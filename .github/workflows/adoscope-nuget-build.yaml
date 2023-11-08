@@ -47,20 +47,20 @@ jobs:
         $buildVersion = "${major}.${minor}.${revision}-$commitHash-alpha"
         echo "BuildVersion=$buildVersion" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
-  - name: Build and Package
-    uses: ./.github/workflows/reusable-build.yml
-    with:
-      buildVersion: ${{ env.buildVersion }}
-      dotnetVersion: '6.0.x'
-      nugetDirectory: ${{ env.NuGetDirectoryWin }}
-
-    - name: Upload Nuget Package Artifact
-      uses: actions/upload-artifact@v3
+    - name: Build and Package
+      uses: ./.github/workflows/reusable-build.yml
       with:
-        name: Promethix.Framework.Ado.NuGet.${{ env.buildVersion }}
-        if-no-files-found: error
-        retention-days: 7
-        path: ${{ env.NuGetDirectoryWin }}\*.nupkg
+        buildVersion: ${{ env.buildVersion }}
+        dotnetVersion: '6.0.x'
+        nugetDirectory: ${{ env.NuGetDirectoryWin }}
+
+      - name: Upload Nuget Package Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Promethix.Framework.Ado.NuGet.${{ env.buildVersion }}
+          if-no-files-found: error
+          retention-days: 7
+          path: ${{ env.NuGetDirectoryWin }}\*.nupkg
 
   test:
     name: Run Tests
