@@ -38,7 +38,7 @@ jobs:
         shell: pwsh
 
   build-package:
-    name: Build and Package
+    name: Build, Test and Package
     uses: gentoorax/Promethix.Framework.Ado/.github/workflows/adoscope-reusable-build.yaml@main
     needs: extract-commit-hash
     with:
@@ -73,4 +73,28 @@ jobs:
           $repoUrl = "${{ github.server_url }}/${{ github.repository }}".TrimStart('https://')
           git push "https://github-actions:${env:MY_PAT}@$repoUrl" refs/tags/$env:NEW_PACKAGE_VERSION
         shell: pwsh
+
+  publish:
+    name: Publish Promethix.Framework.Ado
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download artifact
+      id: download-artifact
+      uses: dawidd6/action-download-artifact@v2
+      with:
+        name: Promethix.Framework.Ado.NuGet.${{ inputs.new_package_version }}
+        github_token: ${{ secrets.REPO_ACCESS_TOKEN }}
+        workflow: adoscope-nuget-build.yaml
+        path: ${{ env.NuGetDirectory }}
+        search_artifacts: true
+
+    - name: Publish Nuget Package Promethix.Framework.Ado
+      working-directory: .
+      run: |
+        echo Directory List
+        ls
+        echo NuGet Directory List
+        ls ${{ env.NuGetDirectory }}
+        PACKAGE_VERSION=${{ inputs.package_version }}
+        #dotnet nuget push ${{ env.NuGetDirectory }}/Promethix.Framework.Ado.${NEW_PACKAGE_VERSION}.nupkg --source https://api.nuget.test.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
 

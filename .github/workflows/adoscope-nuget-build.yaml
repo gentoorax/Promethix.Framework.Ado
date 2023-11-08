@@ -52,43 +52,13 @@ jobs:
         echo "BuildVersion=$buildVersion" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
   buildpackage:
-      name: Build and Package
+      name: Build, Test and Package
       uses: gentoorax/Promethix.Framework.Ado/.github/workflows/adoscope-reusable-build.yaml@main
       needs:
         - versionprepare
       with:
         buildVersion: ${{ needs.versionprepare.outputs.buildVersion }}
         dotnetVersion: '7.0.x'
-
-  publish:
-    name: Publish Promethix.Framework.Ado
-    needs:
-      - buildpackage
-      - test
-      - versionupdate
-      - versionprepare
-    runs-on: ubuntu-latest
-    steps:
-    - name: Set up build version
-      run: |
-        major="${{ vars.MAJOR }}"
-        minor="${{ vars.MINOR }}"
-        revision="${{ secrets.REVISION }}"
-        commitHash="$(echo ${{ github.sha }} | cut -c1-7)" # Short SHA
-
-        buildVersion="${major}.${minor}.${revision}-${commitHash}-alpha"
-        echo "buildVersion=${buildVersion}" >> $GITHUB_ENV
-
-    - uses: actions/download-artifact@v3
-      with:
-        name: Promethix.Framework.Ado.NuGet.${{ needs.versionprepare.outputs.buildVersion }}
-        path: ${{ env.NuGetDirectory }}
-
-    - name: Publish Nuget Package Promethix.Framework.Ado
-      working-directory: .
-      run: |
-        dotnet nuget add source --username gentoorax --password ${{ secrets.REPO_ACCESS_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/gentoorax/index.json"
-        dotnet nuget push ${{ env.NuGetDirectory }}/*.nupkg --api-key ${{ secrets.REPO_ACCESS_TOKEN }} --source "github"
   
     - name: Manual Approval
       id: approval
