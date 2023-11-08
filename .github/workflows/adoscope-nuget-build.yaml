@@ -48,7 +48,6 @@ jobs:
         echo "BuildVersion=$buildVersion" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
   buildpackage:
-    steps:
     - name: Build and Package
       uses: gentoorax/Promethix.Framework.Ado/.github/workflows/adoscope-reusable-build.yaml@main
       with:
@@ -56,6 +55,7 @@ jobs:
         dotnetVersion: '6.0.x'
         nugetDirectory: ${{ env.NuGetDirectoryWin }}
 
+  uploadpackage:
     - name: Upload Nuget Package Artifact
       uses: actions/upload-artifact@v3
       with:
