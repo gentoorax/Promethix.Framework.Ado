@@ -67,7 +67,7 @@ jobs:
 
       - name: Add NuGet Source
         working-directory: .
-        run: dotnet nuget add source --username gentoorax --password ${{ secrets.REPO_ACCESS_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/gentoorax/index.json"
+        run: dotnet nuget add source --username gentoorax --password ${{ secrets.repoToken }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/gentoorax/index.json"
 
       - name: List NuGet sources
         working-directory: .
@@ -79,7 +79,7 @@ jobs:
 
       - name: Push NuGet Package
         working-directory: .
-        run: dotnet nuget push "${{ env.NuGetDirectoryWin }}\*.nupkg" --source "github" --api-key ${{ secrets.repoToken }}
+        run: dotnet nuget push "${{ env.NuGetDirectoryWin }}\*.nupkg" --api-key ${{ secrets.repoToken }} --source "github"
         shell: pwsh
 
     
