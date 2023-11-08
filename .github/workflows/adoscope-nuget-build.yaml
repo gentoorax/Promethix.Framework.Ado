@@ -19,42 +19,36 @@ jobs:
     name: Update Version - Revision
     runs-on: ubuntu-latest
     steps:
-    - uses: action-pack/set-secret@v1
-      with:
-        name: 'REVISION'
-        value: $((${{ secrets.REVISION }}+1))
-        token: ${{ secrets.REPO_ACCESS_TOKEN }}
+      - uses: action-pack/set-secret@v1
+        with:
+          name: 'REVISION'
+          value: $((${{ secrets.REVISION }}+1))
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
 
   versionprepare:
     name: Version Prepare
     runs-on: windows-latest
-    needs:
-      - versionupdate
+    needs: [versionupdate]
     outputs:
       buildVersion: ${{ steps.set_version.outputs.buildVersion }}
     steps:
-    - uses: actions/checkout@v3
-    - name: Setting up build version
-      id: set_version
-      run: |
-        $major = ${{ vars.MAJOR }}
-        $minor = ${{ vars.MINOR }}
-        $revision = ${{ secrets.REVISION }}
-        $commitHash = "${{ github.sha }}".Substring(0,7) # Short SHA
+      - uses: actions/checkout@v3
+      - name: Setting up build version
+        id: set_version
+        run: |
+          $major = ${{ vars.MAJOR }}
+          $minor = ${{ vars.MINOR }}
+          $revision = ${{ secrets.REVISION }}
+          $commitHash = "${{ github.sha }}".Substring(0,7) # Short SHA
 
-        $buildVersion = "${major}.${minor}.${revision}-$commitHash-alpha"
-        echo "::set-output name=buildVersion::$buildVersion"
-        echo "BuildVersion=$buildVersion" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+          $buildVersion = "${major}.${minor}.${revision}-$commitHash-alpha"
+          echo "::set-output name=buildVersion::$buildVersion"
+          echo "BuildVersion=$buildVersion" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
   buildpackage:
-      name: Build, Test and Package
-      uses: gentoorax/Promethix.Framework.Ado/.github/workflows/adoscope-reusable-build.yaml@main
-      needs:
-        - versionprepare
-      with:
-        buildVersion: ${{ needs.versionprepare.outputs.buildVersion }}
-        dotnetVersion: '7.0.x'
-  
-    - name: Manual Approval
-      id: approval
-      run: echo "Package is ready for approval - to publish to nuget.org"
+    name: Build, Test and Package
+    needs: [versionprepare]
+    uses: gentoorax/Promethix.Framework.Ado/.github/workflows/adoscope-reusable-build.yaml@main
+    with:
+      buildVersion: ${{ needs.versionprepare.outputs.buildVersion }}
+      dotnetVersion: '7.0.x'
