@@ -48,7 +48,7 @@ jobs:
         echo "BuildVersion=$buildVersion" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
     - name: Build and Package
-      uses: ./.github/workflows/reusable-build.yml
+      uses: ./.github/workflows/adoscope-reusable-build.yml
       with:
         buildVersion: ${{ env.buildVersion }}
         dotnetVersion: '6.0.x'
