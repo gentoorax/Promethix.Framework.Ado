@@ -62,10 +62,21 @@ jobs:
           retention-days: 7
           path: ${{ env.NuGetDirectoryWin }}\*.nupkg
 
-      - name: Publish Nuget Package Promethix.Framework.Ado
+      - name: Add NuGet Source
         working-directory: .
-        run: |
-          dotnet nuget add source --username gentoorax --password ${{ secrets.REPO_ACCESS_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/gentoorax/index.json"
-          dotnet nuget push ${{ env.NuGetDirectoryWin }}\*.nupkg --api-key ${{ secrets.REPO_ACCESS_TOKEN }} --source "github"
+        run: dotnet nuget add source --username gentoorax --password ${{ secrets.REPO_ACCESS_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/gentoorax/index.json"
+
+      - name: List NuGet sources
+        working-directory: .
+        run: dotnet nuget list source
+
+      - name: List .nupkg files in directory
+        working-directory: .
+        run: Get-ChildItem -Path ${{ env.NuGetDirectoryWin }} -Filter *.nupkg
+
+      - name: Push NuGet Package
+        working-directory: .
+        run: dotnet nuget push "${{ env.NuGetDirectoryWin }}\*.nupkg" --api-key ${{ secrets.REPO_ACCESS_TOKEN }} --source "github"
+        shell: pwsh
 
     
