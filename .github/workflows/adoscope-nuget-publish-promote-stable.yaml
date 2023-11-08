@@ -87,7 +87,7 @@ jobs:
       with:
         name: Promethix.Framework.Ado.NuGet.${{ inputs.new_package_version }}
         github_token: ${{ secrets.REPO_ACCESS_TOKEN }}
-        workflow: adoscope-nuget-build.yaml
+        workflow: adoscope-nuget-publish-promote-stable.yaml
         path: ${{ env.NuGetDirectory }}
         search_artifacts: true
 
