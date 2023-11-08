@@ -16,16 +16,6 @@ env:
   NuGetDirectoryWin: ${{ github.workspace}}\nuget
 
 jobs:
-  publish:
-    name: Publish Promethix.Framework.Ado
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0 # This is crucial to fetch all history for tagging
-        token: ${{ secrets.REPO_ACCESS_TOKEN }}
-
   extract-commit-hash:
     runs-on: ubuntu-latest
     outputs:
