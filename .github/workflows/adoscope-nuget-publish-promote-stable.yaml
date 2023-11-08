@@ -50,6 +50,14 @@ jobs:
     needs: build-package
     runs-on: ubuntu-latest
     steps:
+      name: Publish Promethix.Framework.Ado
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # This is crucial to fetch all history for tagging
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
       - name: Tag Commit Hash
         env:
           NEW_PACKAGE_VERSION: ${{ github.event.inputs.new_package_version }}
