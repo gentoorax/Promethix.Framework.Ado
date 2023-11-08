@@ -29,8 +29,8 @@ jobs:
         
       - name: Set BuildVersion
         run: |
-          $buildVersion = ${{ inputs.buildVersion }}
-          echo "BuildVersion='$buildVersion'" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+          $buildVersion = '${{ inputs.buildVersion }}'
+          echo "BuildVersion=$buildVersion" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
