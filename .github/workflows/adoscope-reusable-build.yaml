@@ -40,7 +40,7 @@ jobs:
       - name: Upload Nuget Package Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: Promethix.Framework.Ado.NuGet.${{ needs.versionprepare.outputs.buildVersion }}
+          name: Promethix.Framework.Ado.NuGet.${{ inputs.buildVersion }}
           if-no-files-found: error
           retention-days: 7
           path: ${{ env.NuGetDirectoryWin }}\*.nupkg
