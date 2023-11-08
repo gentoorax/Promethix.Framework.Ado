@@ -38,11 +38,11 @@ jobs:
         shell: pwsh
 
   build-package:
-    name: Build, Test and Package
+    name: Build
     uses: gentoorax/Promethix.Framework.Ado/.github/workflows/adoscope-reusable-build.yaml@main
     needs: extract-commit-hash
     with:
-      buildVersion: ${{ github.event.inputs.package_version }}
+      buildVersion: ${{ github.event.inputs.new_package_version }}
       dotnetVersion: '7.0.x'
       commitHash: ${{ needs.extract-commit-hash.outputs.commit_hash }}
     secrets:
