@@ -47,29 +47,11 @@ jobs:
         $buildVersion = "${major}.${minor}.${revision}-$commitHash-alpha"
         echo "BuildVersion=$buildVersion" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 6.0.x
-
-    - name: Restore Dependencies
-      working-directory: .
-      run: dotnet restore
-
-    - name: Build
-      working-directory: .
-      run: dotnet build --no-restore --configuration Release
-
-    - name: Package
-      working-directory: .
-      run: dotnet pack --no-restore --configuration release --output ${{ env.NuGetDirectory }}
-
-    - name: Get Certificate
-      id: cert_file
-      uses: timheuer/base64-to-file@v1.2
-      with:
-        fileName: 'certfile.pfx'
-        encodedString: ${{ secrets.CODE_SIGNING_CERT_PFX }}
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      buildVersion: ${{ env.buildVersion }}
+      dotnetVersion: '6.0.x'
+      nugetDirectory: ${{ env.NuGetDirectoryWin }}
 
     - name: Upload Nuget Package Artifact
       uses: actions/upload-artifact@v3
