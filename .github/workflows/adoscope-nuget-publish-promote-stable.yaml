@@ -36,16 +36,16 @@ jobs:
         path: ${{ env.NuGetDirectory }}
         search_artifacts: true
 
-    # - name: Publish Nuget Package Promethix.Framework.Ado
-    #   needs: download-artifact
-    #   working-directory: .
-    #   run: |
-    #     echo Directory List
-    #     ls
-    #     echo NuGet Directory List
-    #     ls ${{ env.NuGetDirectory }}
-    #     PACKAGE_VERSION=${{ inputs.new_package_version }}
-    #     dotnet nuget push ${{ env.NuGetDirectory }}/Promethix.Framework.Ado.${PACKAGE_VERSION}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
+    - name: Publish Nuget Package Promethix.Framework.Ado
+      needs: download-artifact
+      working-directory: .
+      run: |
+        echo Directory List
+        ls
+        echo NuGet Directory List
+        ls ${{ env.NuGetDirectory }}
+        PACKAGE_VERSION=${{ inputs.new_package_version }}
+        dotnet nuget push ${{ env.NuGetDirectory }}/Promethix.Framework.Ado.${PACKAGE_VERSION}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
 
     - name: Extract Commit Hash and Tag
       env:
