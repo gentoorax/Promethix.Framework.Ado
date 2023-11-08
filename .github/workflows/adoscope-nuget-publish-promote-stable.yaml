@@ -48,15 +48,13 @@ jobs:
         shell: pwsh
 
   build-package:
+    name: Build and Package
+    uses: gentoorax/Promethix.Framework.Ado/.github/workflows/adoscope-reusable-build.yaml@main
     needs: extract-commit-hash
-    runs-on: windows-latest
-    steps:
-      - name: Build and Package
-        uses: gentoorax/Promethix.Framework.Ado/.github/workflows/adoscope-reusable-build.yaml@main
-        with:
-          buildVersion: ${{ github.event.inputs.package_version }}
-          dotnetVersion: '7.0.x'
-          commitHash: ${{ needs.extract-commit-hash.outputs.commit_hash }}
+    with:
+      buildVersion: ${{ github.event.inputs.package_version }}
+      dotnetVersion: '7.0.x'
+      commitHash: ${{ needs.extract-commit-hash.outputs.commit_hash }}
 
   tag-commit:
     needs: build-package
