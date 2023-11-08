@@ -58,7 +58,7 @@ jobs:
       with:
         buildVersion: ${{ needs.versionprepare.outputs.buildVersion }}
         dotnetVersion: '6.0.x'
-        nugetDirectory: ${{ env.NuGetDirectoryWin }}
+        nugetDirectory: '${{ github.workspace }}\nuget'
 
   uploadpackage:
     name: Upload Package
