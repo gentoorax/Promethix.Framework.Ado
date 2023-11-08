@@ -47,6 +47,7 @@ jobs:
         $buildVersion = "${major}.${minor}.${revision}-$commitHash-alpha"
         echo "BuildVersion=$buildVersion" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
+  - name: Build and Package
     uses: ./.github/workflows/reusable-build.yml
     with:
       buildVersion: ${{ env.buildVersion }}

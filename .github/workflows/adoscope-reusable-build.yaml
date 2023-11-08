@@ -1,4 +1,4 @@
-name: Reusable Build Workflow
+name: adoscope-reusable-build
 
 on:
   workflow_call:
