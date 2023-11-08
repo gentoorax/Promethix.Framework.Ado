@@ -48,7 +48,6 @@ jobs:
         echo "BuildVersion=$buildVersion" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
   buildpackage:
-    - name: Build and Package
       uses: gentoorax/Promethix.Framework.Ado/.github/workflows/adoscope-reusable-build.yaml@main
       with:
         buildVersion: ${{ env.buildVersion }}
