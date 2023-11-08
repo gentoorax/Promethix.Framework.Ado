@@ -20,7 +20,7 @@ env:
   NuGetDirectoryWin: ${{ github.workspace}}\nuget
 
 jobs:
-  version-update:
+  versionupdate:
     name: Update Version - Revision
     runs-on: ubuntu-latest
     steps:
@@ -30,11 +30,11 @@ jobs:
         value: $((${{ secrets.REVISION }}+1))
         token: ${{ secrets.REPO_ACCESS_TOKEN }}
 
-  version-prepare:
-    name: Build
+  versionprepare:
+    name: Version Prepare
     runs-on: windows-latest
     needs:
-      - versioning
+      - versionupdate
     steps:
     - uses: actions/checkout@v3
     - name: Setting up build version
@@ -48,13 +48,19 @@ jobs:
         echo "BuildVersion=$buildVersion" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
   buildpackage:
+      name: Build and Package
       uses: gentoorax/Promethix.Framework.Ado/.github/workflows/adoscope-reusable-build.yaml@main
+      needs:
+        - versionprepare
       with:
         buildVersion: ${{ env.buildVersion }}
         dotnetVersion: '6.0.x'
         nugetDirectory: ${{ env.NuGetDirectoryWin }}
 
   uploadpackage:
+    name: Upload Package
+    needs:
+      - buildpackage
     steps:
     - name: Upload Nuget Package Artifact
       uses: actions/upload-artifact@v3
