@@ -75,6 +75,7 @@ jobs:
         shell: pwsh
 
   publish:
+    needs: tag-commit
     name: Publish Promethix.Framework.Ado
     runs-on: ubuntu-latest
     steps:
@@ -95,6 +96,6 @@ jobs:
         ls
         echo NuGet Directory List
         ls ${{ env.NuGetDirectory }}
-        PACKAGE_VERSION=${{ inputs.package_version }}
+        NEW_PACKAGE_VERSION=${{ inputs.new_package_version }}
         #dotnet nuget push ${{ env.NuGetDirectory }}/Promethix.Framework.Ado.${NEW_PACKAGE_VERSION}.nupkg --source https://api.nuget.test.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
 

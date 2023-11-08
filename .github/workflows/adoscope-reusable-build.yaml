@@ -15,7 +15,7 @@ on:
         description: 'Short SHA commit hash to checkout. If not provided, the latest commit will be used.'
 
 env:
-  NuGetDirectory: ${{ github.workspace}}/nuget
+  NuGetDirectory: ${{ github.workspace }}/nuget
   NuGetDirectoryWin: ${{ github.workspace }}\nuget
 
 jobs:
@@ -66,6 +66,6 @@ jobs:
         working-directory: .
         run: |
           dotnet nuget add source --username gentoorax --password ${{ secrets.REPO_ACCESS_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/gentoorax/index.json"
-          dotnet nuget push ${{ env.NuGetDirectory }}/*.nupkg --api-key ${{ secrets.REPO_ACCESS_TOKEN }} --source "github"
+          dotnet nuget push ${{ env.NuGetDirectoryWin }}\*.nupkg --api-key ${{ secrets.REPO_ACCESS_TOKEN }} --source "github"
 
     
