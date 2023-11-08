@@ -52,3 +52,4 @@ jobs:
     with:
       buildVersion: ${{ needs.versionprepare.outputs.buildVersion }}
       dotnetVersion: '7.0.x'
+      token: ${{ secrets.REPO_ACCESS_TOKEN }}
