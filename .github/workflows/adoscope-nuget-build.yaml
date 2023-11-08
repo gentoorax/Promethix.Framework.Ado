@@ -55,6 +55,7 @@ jobs:
         nugetDirectory: ${{ env.NuGetDirectoryWin }}
 
   uploadpackage:
+    steps:
     - name: Upload Nuget Package Artifact
       uses: actions/upload-artifact@v3
       with:
