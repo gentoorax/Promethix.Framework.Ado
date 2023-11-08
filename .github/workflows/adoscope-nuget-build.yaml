@@ -14,11 +14,6 @@ on:
       - 'README.md'
   workflow_dispatch:
 
-
-env:
-  NuGetDirectory: ${{ github.workspace}}/nuget
-  NuGetDirectoryWin: ${{ github.workspace}}\nuget
-
 jobs:
   versionupdate:
     name: Update Version - Revision
