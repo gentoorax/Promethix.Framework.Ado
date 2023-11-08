@@ -25,7 +25,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          ref: ${{ inputs.commitHash || 'main' }} # This will checkout the commit hash if provided, otherwise the main branch
+          ref: ${{ inputs.commitHash || 'main' }}
+        
+      - name: Set BuildVersion
         run: |
           $buildVersion = ${{ inputs.buildVersion }}
           echo "BuildVersion=$buildVersion" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
