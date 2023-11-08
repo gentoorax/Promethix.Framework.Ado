@@ -58,21 +58,6 @@ jobs:
       with:
         buildVersion: ${{ needs.versionprepare.outputs.buildVersion }}
         dotnetVersion: '6.0.x'
-        nugetDirectory: '${{ github.workspace }}\nuget'
-
-  uploadpackage:
-    name: Upload Package
-    runs-on: windows-latest
-    needs:
-      - buildpackage
-    steps:
-    - name: Upload Nuget Package Artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: Promethix.Framework.Ado.NuGet.${{ needs.versionprepare.outputs.buildVersion }}
-        if-no-files-found: error
-        retention-days: 7
-        path: ${{ env.NuGetDirectoryWin }}\*.nupkg
 
   test:
     name: Run Tests

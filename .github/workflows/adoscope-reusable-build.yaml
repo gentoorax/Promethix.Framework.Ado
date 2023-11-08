@@ -9,9 +9,9 @@ on:
       dotnetVersion:
         required: true
         type: string
-      nugetDirectory:
-        required: true
-        type: string
+
+env:
+  NuGetDirectoryWin: ${{ github.workspace}}\nuget
 
 jobs:
   build:
@@ -35,4 +35,12 @@ jobs:
 
       - name: Package
         working-directory: .
-        run: dotnet pack --no-restore --configuration Release --output ${{ inputs.nugetDirectory }}
+        run: dotnet pack --no-restore --configuration Release --output ${{ env.NuGetDirectoryWin }}
+
+      - name: Upload Nuget Package Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Promethix.Framework.Ado.NuGet.${{ needs.versionprepare.outputs.buildVersion }}
+          if-no-files-found: error
+          retention-days: 7
+          path: ${{ env.NuGetDirectoryWin }}\*.nupkg
