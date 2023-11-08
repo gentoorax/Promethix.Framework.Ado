@@ -49,6 +49,7 @@ jobs:
 
         $buildVersion = "${major}.${minor}.${revision}-$commitHash-alpha"
         echo "::set-output name=buildVersion::$buildVersion"
+        echo "BuildVersion=$buildVersion" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
   buildpackage:
       name: Build and Package
