@@ -54,13 +54,13 @@ jobs:
         dotnetVersion: '6.0.x'
         nugetDirectory: ${{ env.NuGetDirectoryWin }}
 
-      - name: Upload Nuget Package Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: Promethix.Framework.Ado.NuGet.${{ env.buildVersion }}
-          if-no-files-found: error
-          retention-days: 7
-          path: ${{ env.NuGetDirectoryWin }}\*.nupkg
+    - name: Upload Nuget Package Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: Promethix.Framework.Ado.NuGet.${{ env.buildVersion }}
+        if-no-files-found: error
+        retention-days: 7
+        path: ${{ env.NuGetDirectoryWin }}\*.nupkg
 
   test:
     name: Run Tests
