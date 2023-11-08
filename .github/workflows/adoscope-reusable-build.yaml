@@ -16,6 +16,9 @@ on:
         required: false
         type: string
         description: 'Short SHA commit hash to checkout. If not provided, the latest commit will be used.'
+    secrets:
+      repoToken:
+        required: true
 
 env:
   NuGetDirectory: ${{ github.workspace }}/nuget
