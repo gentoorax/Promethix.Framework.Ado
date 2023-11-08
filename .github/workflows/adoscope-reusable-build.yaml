@@ -9,17 +9,27 @@ on:
       dotnetVersion:
         required: true
         type: string
+      commitHash:
+        required: false
+        type: string
+        description: 'Short SHA commit hash to checkout. If not provided, the latest commit will be used.'
 
 env:
-  NuGetDirectoryWin: ${{ github.workspace}}\nuget
+  NuGetDirectoryWin: ${{ github.workspace }}\nuget
 
 jobs:
   build:
     name: Build
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v3
-      
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.commitHash || 'main' }} # This will checkout the commit hash if provided, otherwise the main branch
+        run: |
+          $buildVersion = ${{ inputs.buildVersion }}
+          echo "BuildVersion=$buildVersion" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
