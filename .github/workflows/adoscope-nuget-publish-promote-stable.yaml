@@ -44,7 +44,7 @@ jobs:
     with:
       buildVersion: ${{ github.event.inputs.package_version }}
       dotnetVersion: '7.0.x'
-      token: ${{ secrets.REPO_ACCESS_TOKEN }}
+      repoToken: ${{ secrets.REPO_ACCESS_TOKEN }}
       commitHash: ${{ needs.extract-commit-hash.outputs.commit_hash }}
 
   tag-commit:
