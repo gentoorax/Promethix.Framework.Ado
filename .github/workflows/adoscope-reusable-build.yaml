@@ -9,6 +9,9 @@ on:
       dotnetVersion:
         required: true
         type: string
+      # repoToken:
+      #   required: true
+      #   type: string
       commitHash:
         required: false
         type: string
@@ -76,7 +79,7 @@ jobs:
 
       - name: Push NuGet Package
         working-directory: .
-        run: dotnet nuget push "${{ env.NuGetDirectoryWin }}\*.nupkg" --source "github" --api-key ${{ secrets.REPO_ACCESS_TOKEN }}
+        run: dotnet nuget push "${{ env.NuGetDirectoryWin }}\*.nupkg" --source "github" #--api-key ${{ secrets.REPO_ACCESS_TOKEN }}
         shell: pwsh
 
     
