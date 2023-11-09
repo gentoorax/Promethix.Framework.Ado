@@ -12,8 +12,8 @@ on:
         default: '1.0.0'
 
 env:
-  NuGetDirectory: ${{ github.workspace}}/nuget
-  NuGetDirectoryWin: ${{ github.workspace}}\nuget
+  NuGetDirectory: ${{ github.workspace }}/nuget
+  NuGetDirectoryWin: ${{ github.workspace }}\nuget
 
 jobs:
   extract-commit-hash:
@@ -87,7 +87,7 @@ jobs:
       with:
         name: Promethix.Framework.Ado.NuGet.${{ github.event.inputs.new_package_version }}
         github_token: ${{ secrets.REPO_ACCESS_TOKEN }}
-        workflow: adoscope-nuget-publish-promote-stable
+        workflow: adoscope-nuget-publish-promote-stable.yaml
         path: ${{ env.NuGetDirectory }}
         search_artifacts: true
 
