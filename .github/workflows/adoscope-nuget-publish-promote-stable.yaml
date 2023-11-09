@@ -83,10 +83,9 @@ jobs:
     steps:
     - name: Download artifact
       id: download-artifact
-      uses: dawidd6/action-download-artifact@v2
+      actions/download-artifact@v3
       with:
         name: Promethix.Framework.Ado.NuGet.${{ github.event.inputs.new_package_version }}
-        github_token: ${{ secrets.REPO_ACCESS_TOKEN }}
         path: ${{ env.NuGetDirectory }}
 
     - name: Publish Nuget Package Promethix.Framework.Ado
