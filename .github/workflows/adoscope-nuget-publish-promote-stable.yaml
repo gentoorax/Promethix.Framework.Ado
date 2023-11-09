@@ -83,7 +83,7 @@ jobs:
     steps:
     - name: Download artifact
       id: download-artifact
-      actions/download-artifact@v3
+      uses: actions/download-artifact@v3
       with:
         name: Promethix.Framework.Ado.NuGet.${{ github.event.inputs.new_package_version }}
         path: ${{ env.NuGetDirectory }}
