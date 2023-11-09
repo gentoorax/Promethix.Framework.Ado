@@ -18,13 +18,10 @@ jobs:
     steps:
     - name: Download artifact
       id: download-artifact
-      uses: dawidd6/action-download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: Promethix.Framework.Ado.NuGet.${{ inputs.package_version }}
-        github_token: ${{ secrets.REPO_ACCESS_TOKEN }}
-        workflow: adoscope-nuget-build.yaml
         path: ${{ env.NuGetDirectory }}
-        search_artifacts: true
 
     - name: Publish Nuget Package Promethix.Framework.Ado
       working-directory: .
