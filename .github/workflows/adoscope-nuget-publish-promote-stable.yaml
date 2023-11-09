@@ -30,7 +30,6 @@ jobs:
           if ($env:PACKAGE_VERSION -match $pattern) {
             $commitHash = $Matches[1]
             echo "commit_hash=$commitHash" >> $GITHUB_ENV
-            echo "::set-output name=commit_hash::$commitHash"
             echo "commit_hash=$commitHash" >> $GITHUB_OUTPUT
           } else {
             Write-Error "Commit hash not found in package version."
@@ -85,12 +84,10 @@ jobs:
     - name: Download artifact
       id: download-artifact
       uses: dawidd6/action-download-artifact@v2
-      env:
-          NEW_PACKAGE_VERSION: ${{ github.event.inputs.new_package_version }}
       with:
-        name: Promethix.Framework.Ado.NuGet.$env:NEW_PACKAGE_VERSION
+        name: Promethix.Framework.Ado.NuGet.${{ github.event.inputs.new_package_version }}
         github_token: ${{ secrets.REPO_ACCESS_TOKEN }}
-        workflow: adoscope-nuget-publish-promote-stable.yaml
+        workflow: adoscope-nuget-publish-promote-stable
         path: ${{ env.NuGetDirectory }}
         search_artifacts: true
 
