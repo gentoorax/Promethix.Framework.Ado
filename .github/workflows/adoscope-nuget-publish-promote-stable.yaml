@@ -98,5 +98,7 @@ jobs:
         echo NuGet Directory List
         ls ${{ env.NuGetDirectory }}
         NEW_PACKAGE_VERSION=${{ github.event.inputs.new_package_version }}
+        echo "hello" > ${{ env.NuGetDirectory }}/Promethix.Framework.Ado.${NEW_PACKAGE_VERSION}.nupkg
+        ls
         echo dotnet nuget push ${{ env.NuGetDirectory }}/Promethix.Framework.Ado.${NEW_PACKAGE_VERSION}.nupkg --source https://api.nuget.test.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
 
