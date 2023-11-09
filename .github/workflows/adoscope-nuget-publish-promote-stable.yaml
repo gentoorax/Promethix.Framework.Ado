@@ -31,6 +31,7 @@ jobs:
             $commitHash = $Matches[1]
             echo "commit_hash=$commitHash" >> $GITHUB_ENV
             echo "::set-output name=commit_hash::$commitHash"
+            echo "commit_hash=$commitHash" >> $GITHUB_OUTPUT
           } else {
             Write-Error "Commit hash not found in package version."
             exit 1
@@ -84,20 +85,23 @@ jobs:
     - name: Download artifact
       id: download-artifact
       uses: dawidd6/action-download-artifact@v2
+      env:
+          NEW_PACKAGE_VERSION: ${{ github.event.inputs.new_package_version }}
       with:
-        name: Promethix.Framework.Ado.NuGet.${{ inputs.new_package_version }}
+        name: Promethix.Framework.Ado.NuGet.$env:NEW_PACKAGE_VERSION
         github_token: ${{ secrets.REPO_ACCESS_TOKEN }}
         workflow: adoscope-nuget-publish-promote-stable.yaml
         path: ${{ env.NuGetDirectory }}
         search_artifacts: true
 
     - name: Publish Nuget Package Promethix.Framework.Ado
+      env:
+          NEW_PACKAGE_VERSION: ${{ github.event.inputs.new_package_version }}
       working-directory: .
       run: |
         echo Directory List
         ls
         echo NuGet Directory List
         ls ${{ env.NuGetDirectory }}
-        NEW_PACKAGE_VERSION=${{ inputs.new_package_version }}
-        #dotnet nuget push ${{ env.NuGetDirectory }}/Promethix.Framework.Ado.${NEW_PACKAGE_VERSION}.nupkg --source https://api.nuget.test.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
+        echo dotnet nuget push ${{ env.NuGetDirectory }}/Promethix.Framework.Ado.$env:NEW_PACKAGE_VERSION.nupkg --source https://api.nuget.test.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
 
