@@ -79,7 +79,7 @@ jobs:
 
       - name: Push NuGet Package
         working-directory: .
-        run: dotnet nuget push "${{ env.NuGetDirectoryWin }}\*.nupkg" --api-key ${{ secrets.repoToken }} --source "github"
+        run: dotnet nuget push "${{ env.NuGetDirectoryWin }}\*.nupkg" --api-key ${{ secrets.repoToken }} --source "github" --skip-duplicate
         shell: pwsh
 
     
