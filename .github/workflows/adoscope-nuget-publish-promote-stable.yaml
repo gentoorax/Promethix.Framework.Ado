@@ -17,6 +17,7 @@ env:
 
 jobs:
   extract-commit-hash:
+    name: Extract Commit Hash
     runs-on: ubuntu-latest
     outputs:
       commit_hash: ${{ steps.set_commit_hash.outputs.commit_hash }}
@@ -49,6 +50,7 @@ jobs:
       repoToken: ${{ secrets.REPO_ACCESS_TOKEN }}
 
   tag-commit:
+    name: Tag Commit
     needs: build-package
     runs-on: ubuntu-latest
     steps:
@@ -89,13 +91,12 @@ jobs:
         path: ${{ env.NuGetDirectory }}
 
     - name: Publish Nuget Package Promethix.Framework.Ado
-      env:
-          NEW_PACKAGE_VERSION: ${{ github.event.inputs.new_package_version }}
       working-directory: .
       run: |
         echo Directory List
         ls
         echo NuGet Directory List
         ls ${{ env.NuGetDirectory }}
-        echo dotnet nuget push ${{ env.NuGetDirectory }}/Promethix.Framework.Ado.$env:NEW_PACKAGE_VERSION.nupkg --source https://api.nuget.test.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
+        NEW_PACKAGE_VERSION=${{ github.event.inputs.new_package_version }}
+        echo dotnet nuget push ${{ env.NuGetDirectory }}/Promethix.Framework.Ado.${NEW_PACKAGE_VERSION}.nupkg --source https://api.nuget.test.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
 
