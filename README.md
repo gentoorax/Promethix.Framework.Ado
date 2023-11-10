@@ -1,7 +1,9 @@
-﻿# AdoScope (Pre-Release Alpha)
+﻿# AdoScope (Pre-Release - Release Candidate 1)
 
 [![Build and Test 0.1.x-alpha](https://github.com/gentoorax/Promethix.Framework.Ado/actions/workflows/adoscope-nuget-build.yaml/badge.svg)](https://github.com/gentoorax/Promethix.Framework.Ado/actions/workflows/adoscope-nuget-build.yaml)
 [![Published to nuget.org 0.1.x-x-alpha](https://github.com/gentoorax/Promethix.Framework.Ado/actions/workflows/adoscope-nuget-publish-prerelease.yaml/badge.svg)](https://github.com/gentoorax/Promethix.Framework.Ado/actions/workflows/adoscope-nuget-publish-prerelease.yaml)
+
+**Recently promoted to v1.0.0-rc1. All major features have been implemented.**
 
 AdoScope offers a simple and flexible solution for managing your ADO.NET connections and transactions. It draws inspiration
 from the remarkable work in DbContextScope by Mehdime El Gueddari, whose DbContextScope library has been a source of
@@ -52,7 +54,7 @@ That when your `AdoContext` is configured in transactional mode, it will hold a 
 
 Install the NuGet package
 ```powershell
-Install-Package AdoScope -Version 0.1.42-alpha
+Install-Package Promethix.Framework.Ado -Version 1.0.0-rc1
 ```
 
 Create an ADO Context
