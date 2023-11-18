@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<OutputType>Library</OutputType>
 		<LangVersion>latest</LangVersion>
-		<TargetFrameworks>net48;net6.0;net7.0</TargetFrameworks>
+		<TargetFrameworks>net48;net6.0;net7.0;net8.0</TargetFrameworks>
 		<AnalysisMode>AllEnabledByDefault</AnalysisMode>
 		<CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -51,6 +51,7 @@ public void ServiceLayerAddTestEntity()
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Include="..\.editorconfig" Link=".editorconfig" />
 	  <None Include="..\LICENCE">
 	    <Pack>True</Pack>
 	    <PackagePath>\</PackagePath>

@@ -1,9 +1,11 @@
-﻿# AdoScope (Pre-Release - Release Candidate 1)
+﻿# AdoScope (Pre-Release - Release Candidate 2)
 
 [![Build and Test 0.1.x-alpha](https://github.com/gentoorax/Promethix.Framework.Ado/actions/workflows/adoscope-nuget-build.yaml/badge.svg)](https://github.com/gentoorax/Promethix.Framework.Ado/actions/workflows/adoscope-nuget-build.yaml)
 [![Published to nuget.org 0.1.x-x-alpha](https://github.com/gentoorax/Promethix.Framework.Ado/actions/workflows/adoscope-nuget-publish-prerelease.yaml/badge.svg)](https://github.com/gentoorax/Promethix.Framework.Ado/actions/workflows/adoscope-nuget-publish-prerelease.yaml)
 
-**Recently promoted to v1.0.0-rc1. All major features have been implemented.**
+**Recently promoted to v1.0.0-rc2. All major features have been implemented.**
+
+**Now incldues .NET 8.0 support**
 
 AdoScope offers a simple and flexible solution for managing your ADO.NET connections and transactions. It draws inspiration
 from the remarkable work in DbContextScope by Mehdime El Gueddari, whose DbContextScope library has been a source of
@@ -35,6 +37,13 @@ If you are seeking a Unit of Work pattern for Dapper with minimal coding overhea
 ## Future Features
 
 - [ ] Support for read only transactions
+
+## Release Notes
+
+### v1.0.0-rc2
+
+As a result of targeting for .NET 8 and the latest compiler with existing multi-targeting support for .NET 4.8 - .NET 7, some analyser rule
+adjustments have been made. This is to avoid littering the code with lots of `#if` statements to enable new syntax.
 
 ## Please be aware
 

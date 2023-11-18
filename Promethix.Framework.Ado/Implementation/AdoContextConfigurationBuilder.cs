@@ -5,7 +5,7 @@ namespace Promethix.Framework.Ado.Implementation
 {
     public class AdoContextConfigurationBuilder
     {
-        private IAdoContextOptionsRegistry adoContextOptionsRegistry = new AdoContextOptionsRegistry();
+        private AdoContextOptionsRegistry adoContextOptionsRegistry = new AdoContextOptionsRegistry();
 
         public AdoContextConfigurationBuilder AddAdoContext<TAdoContext>(Action<AdoContextOptionsBuilder> configure)
             where TAdoContext : AdoContext

@@ -5,7 +5,12 @@ VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Promethix.Framework.Ado", "Promethix.Framework.Ado\Promethix.Framework.Ado.csproj", "{45A42169-58A4-44EE-B551-F1B22567C659}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Promethix.Framework.Ado.Tests", "Promethix.Framework.Ado.Tests\Promethix.Framework.Ado.Tests.csproj", "{F3F4AAAE-48D0-489C-87F9-C10DD804071B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Promethix.Framework.Ado.Tests", "Promethix.Framework.Ado.Tests\Promethix.Framework.Ado.Tests.csproj", "{F3F4AAAE-48D0-489C-87F9-C10DD804071B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0B1D3C3D-8A01-4CB4-BC99-7B379B2D8516}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
