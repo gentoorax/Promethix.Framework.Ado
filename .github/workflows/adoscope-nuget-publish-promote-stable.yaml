@@ -44,7 +44,7 @@ jobs:
     needs: extract-commit-hash
     with:
       buildVersion: ${{ github.event.inputs.new_package_version }}
-      dotnetVersion: '7.0.x'
+      dotnetVersion: '8.0.x'
       commitHash: ${{ needs.extract-commit-hash.outputs.commit_hash }}
     secrets:
       repoToken: ${{ secrets.REPO_ACCESS_TOKEN }}
