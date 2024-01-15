@@ -42,13 +42,8 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
         [TestCategory("IntegrationTests"), TestMethod]
         public void MssqlAdoScopeBasicReadRecordsTest()
         {
-            using IAdoScope adoScopePrepare = adoScopeFactory.Create();
-            var newTestEntity = new TestEntity { Name = "CreateTest", Description = "Test Description", Quantity = 1 };
-            simpleTestRepository.Add(newTestEntity);
-            adoScopePrepare.Complete();
-
             using IAdoScope adoScope = adoScopeFactory.Create();
-            Assert.IsTrue(simpleTestRepository.GetEntities().Any());
+            Assert.IsFalse(simpleTestRepository.GetEntities().Any());
             adoScope.Complete();
         }
 

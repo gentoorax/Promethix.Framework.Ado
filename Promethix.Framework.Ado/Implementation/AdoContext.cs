@@ -38,6 +38,23 @@ namespace Promethix.Framework.Ado.Implementation
             }
         }
 
+        /// <summary>
+        /// Gets the transaction for reference. 
+        /// WARNING: This should not be used to commit or rollback the transaction!
+        /// </summary>
+        public IDbTransaction Transaction
+        {
+            get
+            {
+                if (transaction == null)
+                {
+                    throw new InvalidOperationException("There is no active transaction.");
+                }
+
+                return transaction;
+            }
+        }
+
         protected AdoContext()
         {
             // No Implementation

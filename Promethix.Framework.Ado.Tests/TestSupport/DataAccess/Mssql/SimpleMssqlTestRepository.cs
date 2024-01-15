@@ -26,6 +26,8 @@ namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess.Mssql
 
         private IDbConnection SqlConnection3 => ambientAdoContextLocator.GetContext<MssqlContextExample3>().Connection;
 
+        private IDbTransaction SqlTransaction3 => ambientAdoContextLocator.GetContext<MssqlContextExample3>().Transaction;
+
         public void Add(TestEntity entity)
         {
             const string query = "INSERT INTO TestEntity (Name, Description, Quantity) VALUES (@Name, @Description, @Quantity)";
@@ -47,7 +49,7 @@ namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess.Mssql
         public IEnumerable<TestEntity> GetEntities()
         {
             const string query = "SELECT * FROM TestEntity";
-            return SqlConnection3.Query<TestEntity>(query);
+            return SqlConnection3.Query<TestEntity>(query, transaction: SqlTransaction3);
         }
 
         public int GetEntityCount()
