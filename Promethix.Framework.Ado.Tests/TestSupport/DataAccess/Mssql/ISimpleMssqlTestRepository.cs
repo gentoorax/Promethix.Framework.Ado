@@ -14,7 +14,7 @@ namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess.Mssql
         TestEntity GetEntityByName(string name);
 
         IEnumerable<TestEntity> GetEntities();
-
+      
         IEnumerable<TestEntity> GetEntitiesNullTransaction();
 
         void AddWithDifferentContext(TestEntity entity);
