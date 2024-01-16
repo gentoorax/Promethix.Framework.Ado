@@ -22,6 +22,8 @@ namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess.Mssql
 
         private IDbConnection SqlConnection1 => ambientAdoContextLocator.GetContext<MssqlContextExample1>().Connection;
 
+        private IDbTransaction SqlTransaction1 => ambientAdoContextLocator.GetContext<MssqlContextExample1>().Transaction;
+
         private IDbConnection SqlConnection2 => ambientAdoContextLocator.GetContext<MssqlContextExample2>().Connection;
 
         private IDbConnection SqlConnection3 => ambientAdoContextLocator.GetContext<MssqlContextExample3>().Connection;
@@ -50,6 +52,12 @@ namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess.Mssql
         {
             const string query = "SELECT * FROM TestEntity";
             return SqlConnection3.Query<TestEntity>(query, transaction: SqlTransaction3);
+        }
+
+        public IEnumerable<TestEntity> GetEntitiesNullTransaction()
+        {
+            const string query = "SELECT * FROM TestEntity";
+            return SqlConnection1.Query<TestEntity>(query, transaction: SqlTransaction1);
         }
 
         public int GetEntityCount()
