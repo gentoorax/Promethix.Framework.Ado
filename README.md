@@ -3,7 +3,7 @@
 [![Build and Test 0.1.x-alpha](https://github.com/gentoorax/Promethix.Framework.Ado/actions/workflows/adoscope-nuget-build.yaml/badge.svg)](https://github.com/gentoorax/Promethix.Framework.Ado/actions/workflows/adoscope-nuget-build.yaml)
 [![Published to nuget.org 0.1.x-x-alpha](https://github.com/gentoorax/Promethix.Framework.Ado/actions/workflows/adoscope-nuget-publish-prerelease.yaml/badge.svg)](https://github.com/gentoorax/Promethix.Framework.Ado/actions/workflows/adoscope-nuget-publish-prerelease.yaml)
 
-**Recently promoted to v1.0.0-rc3. All major features have been implemented.**
+**Recently promoted to v1.0.0-rc4. All major features have been implemented.**
 
 **Now incldues .NET 8.0 support**
 
@@ -40,6 +40,14 @@ If you are seeking a Unit of Work pattern for Dapper with minimal coding overhea
 
 ## Release Notes
 
+### v1.0.0-rc4
+
+Allow for null transaction when "NonTransactional" execution option is used. Prevents exception when using Dapper Query methods.
+
+### v1.0.0-rc3
+
+Expose context transaction for compatibility with some Dapper queries.
+
 ### v1.0.0-rc2
 
 As a result of targeting for .NET 8 and the latest compiler with existing multi-targeting support for .NET 4.8 - .NET 7, some analyser rule
@@ -63,7 +71,7 @@ That when your `AdoContext` is configured in transactional mode, it will hold a 
 
 Install the NuGet package
 ```powershell
-Install-Package Promethix.Framework.Ado -Version 1.0.0-rc1
+Install-Package Promethix.Framework.Ado -Version 1.0.0-rc4
 ```
 
 Create an ADO Context
