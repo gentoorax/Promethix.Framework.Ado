@@ -46,11 +46,6 @@ namespace Promethix.Framework.Ado.Implementation
         {
             get
             {
-                if (transaction == null)
-                {
-                    throw new InvalidOperationException("There is no active transaction.");
-                }
-
                 return transaction;
             }
         }
