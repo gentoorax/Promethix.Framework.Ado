@@ -112,6 +112,37 @@ public class SimpleTestRepository : ISimpleTestRepository
 }
 ```
 
+For Dapper transactions Dapper requires access to the `DbTransaction`, if you need access to the transaction you will need to use the
+following syntax, the transaction is null when configured as non-transactional and Dapper will accept that. This will allow seamless
+configuration of transactional and non-transactional in the AdoScope configuration.
+```csharp
+public class SimpleTestRepository : ISimpleTestRepository
+{
+	private readonly IAmbientAdoContextLocator ambientAdoContextLocator;
+
+	public SimpleTestRepository(IAmbientAdoContextLocator ambientAdoContextLocator)
+	{
+		this.ambientAdoContextLocator = ambientAdoContextLocator;
+	}
+
+	private IDbConnection SqliteConnection => ambientAdoContextLocator.GetContext<SqliteContextExample1>().Connection;
+
+    private IDbTransaction SqliteTransaction => ambientAdoContextLocator.GetContext<SqliteContextExample1>().Transaction;
+
+	public void Add(TestEntity entity)
+	{
+		const string query = "INSERT INTO TestEntity (Name, Description, Quantity) VALUES (@Name, @Description, @Quantity)";
+		SqliteConnection.Execute(query, entity, SqliteTransaction);
+	}
+
+	public TestEntity GetEntityByName(string name)
+	{
+		const string query = "SELECT * FROM TestEntity WHERE Name = @Name";
+		return SqliteConnection.QuerySingleOrDefault<TestEntity>(query, new { Name = name }, SqliteTransaction);
+	}
+}
+```
+
 Create a Service making use of this repository and AdoScope.
 
 When the ADO Context is configured with a transactional execution option, this will behave as a Unit of Work. It will commit when Complete() is called.
