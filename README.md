@@ -127,7 +127,7 @@ public class SimpleTestRepository : ISimpleTestRepository
 
 	private IDbConnection SqliteConnection => ambientAdoContextLocator.GetContext<SqliteContextExample1>().Connection;
 
-    private IDbTransaction SqliteTransaction => ambientAdoContextLocator.GetContext<SqliteContextExample1>().Transaction;
+        private IDbTransaction SqliteTransaction => ambientAdoContextLocator.GetContext<SqliteContextExample1>().Transaction;
 
 	public void Add(TestEntity entity)
 	{
