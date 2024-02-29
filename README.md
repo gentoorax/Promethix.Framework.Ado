@@ -249,4 +249,6 @@ appsettings.json as follows (see unit test project for more examples):
 }
 ```
 
-For MS SQL Server the Provider Name should be `System.Data.SqlClient`
+For MS SQL Server the Provider Name should be `Microsoft.Data.SqlClient`
+e.g.
+`DbProviderFactories.RegisterFactory("Microsoft.Data.SqlClient", SqlClientFactory.Instance);`
