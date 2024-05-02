@@ -1,9 +1,9 @@
-﻿# AdoScope (Pre-Release - Release Candidate 2)
+﻿# AdoScope (Official Release)
 
 [![Build and Test 0.1.x-alpha](https://github.com/gentoorax/Promethix.Framework.Ado/actions/workflows/adoscope-nuget-build.yaml/badge.svg)](https://github.com/gentoorax/Promethix.Framework.Ado/actions/workflows/adoscope-nuget-build.yaml)
 [![Published to nuget.org 0.1.x-x-alpha](https://github.com/gentoorax/Promethix.Framework.Ado/actions/workflows/adoscope-nuget-publish-prerelease.yaml/badge.svg)](https://github.com/gentoorax/Promethix.Framework.Ado/actions/workflows/adoscope-nuget-publish-prerelease.yaml)
 
-**Recently promoted to v1.0.0-rc4. All major features have been implemented.**
+**Recently promoted to v1.0.0 official stable release.**
 
 **Now incldues .NET 8.0 support**
 
@@ -40,13 +40,17 @@ If you are seeking a Unit of Work pattern for Dapper with minimal coding overhea
 
 ## Release Notes
 
+### v1.0.0
+
+Promoted from rc4. Official stable release.
+
 ### v1.0.0-rc4
 
 Allow for null transaction when "NonTransactional" execution option is used. Prevents exception when using Dapper Query methods.
 
 ### v1.0.0-rc3
 
-Expose context transaction for compatibility with some Dapper queries.
+Expose context transaction for compatibility with some Dapper queries. All major features implemented.
 
 ### v1.0.0-rc2
 
