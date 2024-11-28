@@ -82,8 +82,8 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
 
 
         /// <summary>
-        /// Please note that currently we do not have distributed transactions implemented.
-        /// So this is best effort, as per DbContextScope. However, I do plan to implement this in the future.
+        /// Distributed transactions are now available, but not used in this test.
+        /// So this is best effort, as per DbContextScope.
         /// It's unlikely you would have multiple contexts all with different settings in the same repository
         /// like this, but this is just to demonstrate the different configuration options.
         /// </summary>
