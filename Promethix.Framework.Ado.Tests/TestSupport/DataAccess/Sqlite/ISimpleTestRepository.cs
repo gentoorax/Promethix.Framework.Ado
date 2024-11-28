@@ -12,7 +12,7 @@ namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess.Sqlite
 
         void BreakSqlite();
 
-        TestEntity GetEntityByName(string name);
+        TestEntity? GetEntityByName(string name);
 
         int GetEntityCount();
     }

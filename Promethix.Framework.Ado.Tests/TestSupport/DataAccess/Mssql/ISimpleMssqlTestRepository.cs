@@ -11,7 +11,7 @@ namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess.Mssql
     {
         void Add(TestEntity entity);
 
-        TestEntity GetEntityByName(string name);
+        TestEntity? GetEntityByName(string name);
 
         IEnumerable<TestEntity> GetEntities();
       

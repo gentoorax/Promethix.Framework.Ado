@@ -52,7 +52,7 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
             using (IAdoScope adoScope = adoScopeFactory.Create())
             {
                 // Get the entity from the database
-                TestEntity testEntity = simpleTestRepository.GetEntityByName("CreateTest");
+                TestEntity? testEntity = simpleTestRepository.GetEntityByName("CreateTest");
 
                 // Assert that the entity was retrieved
                 Assert.IsNotNull(testEntity);

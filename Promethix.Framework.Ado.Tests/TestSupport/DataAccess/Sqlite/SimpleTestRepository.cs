@@ -45,7 +45,7 @@ namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess.Sqlite
             SqliteConnection3.Execute(query);
         }
 
-        public TestEntity GetEntityByName(string name)
+        public TestEntity? GetEntityByName(string name)
         {
             const string query = "SELECT * FROM TestEntity WHERE Name = @Name";
             return SqliteConnection1.QuerySingleOrDefault<TestEntity>(query, new { Name = name });
