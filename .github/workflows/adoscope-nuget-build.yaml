@@ -49,11 +49,9 @@ jobs:
   buildpackage:
     name: Build
     needs: [versionprepare]
-    uses: gentoorax/Promethix.Framework.Ado/.github/workflows/adoscope-reusable-build.yaml
+    uses: gentoorax/Promethix.Framework.Ado/.github/workflows/adoscope-reusable-build.yaml@main
     with:
       buildVersion: ${{ needs.versionprepare.outputs.buildVersion }}
       dotnetVersion: '8.0.x'
-      commitHash: ${{ github.sha }} # Short SHA for the exact commit
-      branch: ${{ github.ref_name }} # Current branch name
     secrets:
       repoToken: ${{ secrets.REPO_ACCESS_TOKEN }}
