@@ -10,30 +10,24 @@ using System.Data;
 
 namespace Promethix.Framework.Ado.Implementation
 {
-    public class AdoScopeFactory : IAdoScopeFactory
+    public class AdoScopeFactory(
+        IAdoContextGroupFactory adoContextGroupFactory,
+        AdoScopeOptionsBuilder adoScopeBuilderOptions) : IAdoScopeFactory
     {
-        private readonly IAdoContextGroupFactory adoContextGroupFactory;
+        private readonly IAdoContextGroupFactory adoContextGroupFactory = adoContextGroupFactory;
 
-        private readonly AdoScopeOptions adoScopeOptions;
-
-        public AdoScopeFactory(
-            IAdoContextGroupFactory adoContextGroupFactory,
-            AdoScopeOptionsBuilder adoScopeBuilderOptions) 
-        {
-            this.adoContextGroupFactory = adoContextGroupFactory;
-            adoScopeOptions = adoScopeBuilderOptions?.adoScopeOptions;
-        }
+        private readonly AdoScopeOptions adoScopeOptions = adoScopeBuilderOptions?.AdoScopeOptions;
 
         public IAdoScope Create(AdoScopeOption adoScopeOption = AdoScopeOption.JoinExisting)
         {
-            var overrides = Overrides().WithJoinOption(adoScopeOption);
+            AdoScopeOverrideOptionsBuilder overrides = Overrides().WithJoinOption(adoScopeOption);
 
             return new AdoScope(overrides, adoContextGroupFactory);
         }
 
         public IAdoScope CreateWithTransaction(IsolationLevel isolationLevel)
         {
-            var overrides = Overrides()
+            AdoScopeOverrideOptionsBuilder overrides = Overrides()
                                 .WithJoinOption(AdoScopeOption.ForceCreateNew)
                                 .WithIsolationLevel(isolationLevel);
 
@@ -42,7 +36,7 @@ namespace Promethix.Framework.Ado.Implementation
 
         public IAdoScope CreateWithDistributedTransaction(IsolationLevel? isolationLevel)
         {
-            var overrides = Overrides()
+            AdoScopeOverrideOptionsBuilder overrides = Overrides()
                                 .WithJoinOption(AdoScopeOption.ForceCreateNew)
                                 .WithIsolationLevel(isolationLevel)
                                 .WithAdoScopeExecutionOption(AdoContextGroupExecutionOption.Distributed);

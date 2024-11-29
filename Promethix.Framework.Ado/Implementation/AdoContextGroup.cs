@@ -8,7 +8,9 @@ using Promethix.Framework.Ado.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
+#if NET7_0_OR_GREATER
 using System.Runtime.InteropServices;
+#endif
 using System.Transactions;
 
 namespace Promethix.Framework.Ado.Implementation
@@ -29,16 +31,19 @@ namespace Promethix.Framework.Ado.Implementation
 
         private ExceptionDispatchInfo lastError;
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0016:Use 'throw' expression", Justification = "Multi-targeted not supported in .NET4.8!")]
         public AdoContextGroup(IAdoContextOptionsRegistry adoContextOptionsRegistry, AdoScopeOptions adoScopeOptions)
         {
+#pragma warning disable CA1510 // Use ArgumentNullException throw helper. Multi-targeted not supported in .NET4.8!
             if (adoScopeOptions == null)
             {
                 throw new ArgumentNullException(nameof(adoScopeOptions));
             }
+#pragma warning restore CA1510 // Use ArgumentNullException throw helper
 
             disposed = false;
             completed = false;
-            initialisedAdoContexts = new Dictionary<Type, AdoContext>();
+            initialisedAdoContexts = [];
             this.adoContextOptionsRegistry = adoContextOptionsRegistry;
             this.adoScopeOptions = adoScopeOptions;
 
@@ -46,12 +51,12 @@ namespace Promethix.Framework.Ado.Implementation
             // Gets a bit messy here, because .NET 5 and .NET 6 don't support distributed transactions.
             // .NET 7 or better support distributed transactions, but only on Windows!
 #if NET7_0_OR_GREATER
-                // For .NET 7 and greater, we can use the new TransactionManager.ImplicitDistributedTransactions property.
-                // Note this is only support on Windows AFAIK.
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                {
-                    TransactionManager.ImplicitDistributedTransactions = true;
-                }
+            // For .NET 7 and greater, we can use the new TransactionManager.ImplicitDistributedTransactions property.
+            // Note this is only support on Windows AFAIK.
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                TransactionManager.ImplicitDistributedTransactions = true;
+            }
 #endif
 #if NET5 || NET6
             if (adoScopeOptions.ScopeExecutionOption == AdoContextGroupExecutionOption.Distributed)
@@ -61,7 +66,7 @@ namespace Promethix.Framework.Ado.Implementation
 #endif
             if (adoScopeOptions.ScopeExecutionOption == AdoContextGroupExecutionOption.Distributed)
             {
-                var transactionOptions = adoScopeOptions.IsolationLevel.HasValue
+                TransactionOptions transactionOptions = adoScopeOptions.IsolationLevel.HasValue
                     ? new TransactionOptions { IsolationLevel = (System.Transactions.IsolationLevel)adoScopeOptions.IsolationLevel.Value }
                     : new TransactionOptions();
 
@@ -82,7 +87,7 @@ namespace Promethix.Framework.Ado.Implementation
                 // First time we have been asked for this type of context, so create it.
                 // Create one, cache it and start its database transaction if needed.
                 TAdoContext adoContext = Activator.CreateInstance<TAdoContext>();
-                
+
                 // If we have some configuration options for this context type, apply them.
                 if ((adoContextOptionsRegistry?.TryGetContextOptions<TAdoContext>(out AdoContextOptionsBuilder options) != null) && options != null)
                 {
@@ -198,7 +203,7 @@ namespace Promethix.Framework.Ado.Implementation
                     if (!completed)
                     {
                         try
-                        { 
+                        {
                             Rollback();
                         }
                         catch (Exception ex) when (ex is not ObjectDisposedException)

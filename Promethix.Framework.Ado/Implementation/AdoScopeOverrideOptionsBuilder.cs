@@ -1,23 +1,13 @@
 ﻿using Promethix.Framework.Ado.Enums;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Promethix.Framework.Ado.Implementation
 {
-    public class AdoScopeOverrideOptionsBuilder
+    public class AdoScopeOverrideOptionsBuilder(AdoScopeOptions adoScopeOptions)
     {
-        public AdoScopeOptions AdoScopeOptions { get; private set; }
+        public AdoScopeOptions AdoScopeOptions { get; private set; } = adoScopeOptions;
 
-        public bool HasExplicitOverrides { get; private set;}
-
-        public AdoScopeOverrideOptionsBuilder(AdoScopeOptions adoScopeOptions)
-        {
-            AdoScopeOptions = adoScopeOptions;
-        }
+        public bool HasExplicitOverrides { get; private set; }
 
         public AdoScopeOverrideOptionsBuilder WithAdoScopeExecutionOption(AdoContextGroupExecutionOption adoScopeExecutionOption)
         {

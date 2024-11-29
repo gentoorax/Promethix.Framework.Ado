@@ -5,7 +5,7 @@ namespace Promethix.Framework.Ado.Implementation
 {
     public class AdoContextConfigurationBuilder
     {
-        private AdoContextOptionsRegistry adoContextOptionsRegistry = new AdoContextOptionsRegistry();
+        private readonly AdoContextOptionsRegistry adoContextOptionsRegistry = new();
 
         public AdoContextConfigurationBuilder AddAdoContext<TAdoContext>(Action<AdoContextOptionsBuilder> configure)
             where TAdoContext : AdoContext
@@ -13,9 +13,9 @@ namespace Promethix.Framework.Ado.Implementation
             if (configure == null)
             {
                 throw new ArgumentNullException(nameof(configure));
-            }   
+            }
 
-            var optionsBuilder = new AdoContextOptionsBuilder();
+            AdoContextOptionsBuilder optionsBuilder = new();
             configure(optionsBuilder);
 
             // Register the options for the context type in the dictionary
