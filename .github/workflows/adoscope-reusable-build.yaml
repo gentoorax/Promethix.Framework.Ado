@@ -41,9 +41,12 @@ jobs:
         with:
           dotnet-version: ${{ inputs.dotnetVersion }}
 
+      - name: Clear NuGet Cache
+        run: dotnet nuget locals all --clear
+
       - name: Restore Dependencies
         working-directory: .
-        run: dotnet restore
+        run: dotnet restore --force-evaluate --no-cache
 
       - name: Build
         working-directory: .

@@ -42,7 +42,7 @@ namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess.Mssql
             SqlConnection2.Execute(query, entity);
         }
 
-        public TestEntity GetEntityByName(string name)
+        public TestEntity? GetEntityByName(string name)
         {
             const string query = "SELECT * FROM TestEntity WHERE Name = @Name";
             return SqlConnection1.QuerySingleOrDefault<TestEntity>(query, new { Name = name });

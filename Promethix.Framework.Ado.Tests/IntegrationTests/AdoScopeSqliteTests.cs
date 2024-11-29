@@ -82,8 +82,8 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
 
 
         /// <summary>
-        /// Please note that currently we do not have distributed transactions implemented.
-        /// So this is best effort, as per DbContextScope. However, I do plan to implement this in the future.
+        /// Distributed transactions are now available, but not used in this test.
+        /// So this is best effort, as per DbContextScope.
         /// It's unlikely you would have multiple contexts all with different settings in the same repository
         /// like this, but this is just to demonstrate the different configuration options.
         /// </summary>
@@ -118,7 +118,7 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
         public void SqliteAdoScopeCreateReadTest()
         {
             using IAdoScope adoScope = adoScopeFactory.Create();
-            TestEntity existingTestEntity = simpleTestRepository.GetEntityByName("Test3");
+            TestEntity? existingTestEntity = simpleTestRepository.GetEntityByName("Test3");
             adoScope.Complete();
 
             Assert.IsNotNull(existingTestEntity);
@@ -181,7 +181,7 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
             using (IAdoScope adoScope = adoScopeFactory.Create())
             {
                 // Get the entity from the database
-                TestEntity testEntity = simpleTestRepository.GetEntityByName("CreateTest");
+                TestEntity? testEntity = simpleTestRepository.GetEntityByName("CreateTest");
 
                 // Assert that the entity was retrieved
                 Assert.IsNotNull(testEntity);
@@ -278,33 +278,34 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
 
         #endregion
 
-        [AssemblyCleanup]
-        public static void AssemblyCleanup()
-        {
-            if (File.Exists("mydatabase.db"))
-            {
-                File.Delete("mydatabase.db");
-            }
+        // To be re-instated once sqlite locking issue is resolved
+        //[AssemblyCleanup]
+        //public static void AssemblyCleanup()
+        //{
+        //    if (File.Exists("mydatabase.db"))
+        //    {
+        //        File.Delete("mydatabase.db");
+        //    }
 
-            if (File.Exists("mydatabase2.db"))
-            {
-                File.Delete("mydatabase2.db");
-            }
+        //    if (File.Exists("mydatabase2.db"))
+        //    {
+        //        File.Delete("mydatabase2.db");
+        //    }
 
-            if (File.Exists("mydatabase3.db"))
-            {
-                File.Delete("mydatabase3.db");
-            }
+        //    if (File.Exists("mydatabase3.db"))
+        //    {
+        //        File.Delete("mydatabase3.db");
+        //    }
 
-            if (File.Exists("mydatabase4.db"))
-            {
-                File.Delete("mydatabase4.db");
-            }
+        //    if (File.Exists("mydatabase4.db"))
+        //    {
+        //        File.Delete("mydatabase4.db");
+        //    }
 
-            if (File.Exists("mydatabase5.db"))
-            {
-                File.Delete("mydatabase5.db");
-            }
-        }
+        //    if (File.Exists("mydatabase5.db"))
+        //    {
+        //        File.Delete("mydatabase5.db");
+        //    }
+        //}
     }
 }
