@@ -49,7 +49,7 @@ jobs:
   buildpackage:
     name: Build
     needs: [versionprepare]
-    uses: gentoorax/Promethix.Framework.Ado/.github/workflows/adoscope-reusable-build.yaml@main
+    uses: gentoorax/Promethix.Framework.Ado/.github/workflows/adoscope-reusable-build.yaml@${{ github.ref_name }}
     with:
       buildVersion: ${{ needs.versionprepare.outputs.buildVersion }}
       dotnetVersion: '8.0.x'
