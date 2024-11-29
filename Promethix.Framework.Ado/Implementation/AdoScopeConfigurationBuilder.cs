@@ -5,7 +5,7 @@ namespace Promethix.Framework.Ado.Implementation
 {
     public class AdoScopeConfigurationBuilder
     {
-        private AdoScopeOptionsBuilder optionsBuilder { get; set; }
+        private AdoScopeOptionsBuilder OptionsBuilder { get; set; }
 
         public AdoScopeConfigurationBuilder ConfigureScope(Action<AdoScopeOptionsBuilder> configure)
         {
@@ -14,15 +14,15 @@ namespace Promethix.Framework.Ado.Implementation
                 throw new ArgumentNullException(nameof(configure));
             }
 
-            optionsBuilder = new AdoScopeOptionsBuilder();
-            configure(optionsBuilder);
+            OptionsBuilder = new AdoScopeOptionsBuilder();
+            configure(OptionsBuilder);
 
             return this;
         }
 
         public AdoScopeOptionsBuilder Build()
         {
-            return optionsBuilder;
+            return OptionsBuilder;
         }
     }
 }

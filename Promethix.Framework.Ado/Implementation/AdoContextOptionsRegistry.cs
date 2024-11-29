@@ -1,16 +1,12 @@
 ﻿using Promethix.Framework.Ado.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Promethix.Framework.Ado.Implementation
 {
     public class AdoContextOptionsRegistry : IAdoContextOptionsRegistry
     {
-        private Dictionary<Type, AdoContextOptionsBuilder> adoContextOptions = new();
+        private readonly Dictionary<Type, AdoContextOptionsBuilder> adoContextOptions = [];
 
         public void AddContextOptions<TAdoContext>(AdoContextOptionsBuilder optionsBuilder)
         {

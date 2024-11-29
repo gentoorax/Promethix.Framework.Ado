@@ -6,7 +6,6 @@
 using Promethix.Framework.Ado.Enums;
 using Promethix.Framework.Ado.Interfaces;
 using System;
-using System.Data;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
@@ -24,17 +23,16 @@ namespace Promethix.Framework.Ado.Implementation
 #pragma warning restore CA2213 // Disposable fields should be disposed
 #pragma warning restore IDE0079 // Remove unnecessary suppression
 
-        private readonly IAdoContextGroup adoContexts;
-
         private readonly InstanceIdentifier instanceIdentifier = new();
 
         private static readonly AsyncLocal<InstanceIdentifier> ambientDbContextScopeKey = new();
 
         private readonly bool nested;
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0028:Simplify collection initialization", Justification = "Not construtable with []")]
         private static readonly ConditionalWeakTable<InstanceIdentifier, AdoScope> adoScopeInstances = new();
 
-        public IAdoContextGroup AdoContexts => adoContexts;
+        public IAdoContextGroup AdoContexts { get; }
 
         public AdoScopeOptions AdoScopeOptions { get; }
 
@@ -68,12 +66,12 @@ namespace Promethix.Framework.Ado.Implementation
             if (parentScope != null && AdoScopeOptions.JoinOption == AdoScopeOption.JoinExisting)
             {
                 nested = true;
-                adoContexts = parentScope.adoContexts;
+                AdoContexts = parentScope.AdoContexts;
             }
             else
             {
                 nested = false;
-                adoContexts = adoContextGroupFactory?.CreateContextGroup(adoScopeOverrideOptions.AdoScopeOptions);
+                AdoContexts = adoContextGroupFactory?.CreateContextGroup(adoScopeOverrideOptions.AdoScopeOptions);
             }
 
             SetAmbientScope(this);
@@ -101,7 +99,7 @@ namespace Promethix.Framework.Ado.Implementation
 
         private void CommitInternal()
         {
-            adoContexts.Commit();
+            AdoContexts.Commit();
         }
 
         internal static void SetAmbientScope(AdoScope newAmbientScope)
@@ -120,7 +118,7 @@ namespace Promethix.Framework.Ado.Implementation
 
             ambientDbContextScopeKey.Value = newAmbientScope.instanceIdentifier;
 
-            adoScopeInstances.GetValue(newAmbientScope.instanceIdentifier, key => newAmbientScope);
+            _ = adoScopeInstances.GetValue(newAmbientScope.instanceIdentifier, key => newAmbientScope);
         }
 
         internal static AdoScope GetAmbientScope()
@@ -152,7 +150,7 @@ namespace Promethix.Framework.Ado.Implementation
 
             if (adoScopeInstances.TryGetValue(identifier, out _))
             {
-                adoScopeInstances.Remove(identifier);
+                _ = adoScopeInstances.Remove(identifier);
             }
 
             ambientDbContextScopeKey.Value = null;
@@ -179,7 +177,7 @@ namespace Promethix.Framework.Ado.Implementation
                             RollbackInternal();
                         }
 
-                        adoContexts.Dispose();
+                        AdoContexts.Dispose();
                     }
 
                     AdoScope currentAmbientScope = GetAmbientScope();
@@ -196,7 +194,7 @@ namespace Promethix.Framework.Ado.Implementation
                         if (parentScope.disposed)
                         {
                             System.Diagnostics.Debug.WriteLine("Programming error detected. The parent AdoScope instance is already disposed. This most likely means that this AdoScope instance wasn't disposed of properly. AdoScope instance must always be disposed. Review the code for any AdoScope instance used outside of a 'using' block and fix it so that all AdoScope instances are disposed of.");
-                        }   
+                        }
                         else
                         {
                             SetAmbientScope(parentScope);
@@ -214,7 +212,7 @@ namespace Promethix.Framework.Ado.Implementation
         {
             try
             {
-                adoContexts.Rollback();
+                AdoContexts.Rollback();
             }
             catch (Exception ex) when (ex is not ObjectDisposedException)
             {

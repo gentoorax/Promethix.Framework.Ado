@@ -12,22 +12,22 @@ namespace Promethix.Framework.Ado.Implementation
 {
     public class AdoScopeOptionsBuilder : OptionsBuilder
     {
-        public AdoScopeOptions adoScopeOptions { get; private set; }
+        public AdoScopeOptions AdoScopeOptions { get; private set; }
 
         public AdoScopeOptionsBuilder()
         {
-            adoScopeOptions = new AdoScopeOptions();
+            AdoScopeOptions = new AdoScopeOptions();
         }
 
         public AdoScopeOptionsBuilder WithScopeExecutionOption(AdoContextGroupExecutionOption scopeExecutionOption)
         {
-            adoScopeOptions.ScopeExecutionOption = scopeExecutionOption;
+            AdoScopeOptions.ScopeExecutionOption = scopeExecutionOption;
             return this;
         }
 
         public AdoScopeOptionsBuilder WithDefaultIsolationLevel(IsolationLevel? isolationLevel)
         {
-            adoScopeOptions.IsolationLevel = isolationLevel;
+            AdoScopeOptions.IsolationLevel = isolationLevel;
             return this;
         }
 
@@ -48,8 +48,8 @@ namespace Promethix.Framework.Ado.Implementation
             // Configure AdoScope level options
             if (adoScopeConfigSection != null)
             {
-                adoScopeOptions.ScopeExecutionOption = GetEnumValue(adoScopeConfigSection, nameof(adoScopeOptions.ScopeExecutionOption), adoScopeOptions.ScopeExecutionOption);
-                adoScopeOptions.IsolationLevel = GetEnumValueOrNull<IsolationLevel>(adoScopeConfigSection, nameof(adoScopeOptions.IsolationLevel));
+                AdoScopeOptions.ScopeExecutionOption = GetEnumValue(adoScopeConfigSection, nameof(AdoScopeOptions.ScopeExecutionOption), AdoScopeOptions.ScopeExecutionOption);
+                AdoScopeOptions.IsolationLevel = GetEnumValueOrNull<IsolationLevel>(adoScopeConfigSection, nameof(AdoScopeOptions.IsolationLevel));
             }
         }
     }

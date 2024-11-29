@@ -11,7 +11,7 @@ namespace Promethix.Framework.Ado.Implementation
     {
         public TAdoContext GetContext<TAdoContext>() where TAdoContext : AdoContext
         {
-            var ambientAdoScope = AdoScope.GetAmbientScope();
+            AdoScope ambientAdoScope = AdoScope.GetAmbientScope();
             return ambientAdoScope?.AdoContexts.GetContext<TAdoContext>();
         }
     }
