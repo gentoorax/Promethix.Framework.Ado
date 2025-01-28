@@ -26,6 +26,8 @@ namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess.Mssql
 
         private IDbConnection SqlConnection2 => ambientAdoContextLocator.GetContext<MssqlContextExample2>().Connection;
 
+        private IDbTransaction SqlTransaction2 => ambientAdoContextLocator.GetContext<MssqlContextExample2>().Transaction;
+
         private IDbConnection SqlConnection3 => ambientAdoContextLocator.GetContext<MssqlContextExample3>().Connection;
 
         private IDbTransaction SqlTransaction3 => ambientAdoContextLocator.GetContext<MssqlContextExample3>().Transaction;
@@ -33,19 +35,19 @@ namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess.Mssql
         public void Add(TestEntity entity)
         {
             const string query = "INSERT INTO TestEntity (Name, Description, Quantity) VALUES (@Name, @Description, @Quantity)";
-            SqlConnection1.Execute(query, entity);
+            SqlConnection1.Execute(query, entity, SqlTransaction1);
         }
 
         public void AddWithDifferentContext(TestEntity entity)
         {
             const string query = "INSERT INTO TestEntity (Name, Description, Quantity) VALUES (@Name, @Description, @Quantity)";
-            SqlConnection2.Execute(query, entity);
+            SqlConnection2.Execute(query, entity, SqlTransaction2);
         }
 
         public TestEntity? GetEntityByName(string name)
         {
             const string query = "SELECT * FROM TestEntity WHERE Name = @Name";
-            return SqlConnection1.QuerySingleOrDefault<TestEntity>(query, new { Name = name });
+            return SqlConnection1.QuerySingleOrDefault<TestEntity>(query, new { Name = name }, SqlTransaction1);
         }
 
         public IEnumerable<TestEntity> GetEntities()
@@ -63,7 +65,7 @@ namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess.Mssql
         public int GetEntityCount()
         {
             const string query = "SELECT COUNT(*) FROM TestEntity";
-            return SqlConnection1.ExecuteScalar<int>(query);
+            return SqlConnection1.ExecuteScalar<int>(query, SqlTransaction1);
         }
 
         public void DivideByZero()
@@ -75,8 +77,8 @@ namespace Promethix.Framework.Ado.Tests.TestSupport.DataAccess.Mssql
         public void DeleteAll()
         {
             const string query = "DELETE FROM TestEntity";
-            SqlConnection1.Execute(query);
-            SqlConnection2.Execute(query);
+            SqlConnection1.Execute(query, SqlTransaction1);
+            SqlConnection2.Execute(query, SqlTransaction2);
         }
     }
 }
