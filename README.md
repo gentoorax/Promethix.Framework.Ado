@@ -186,11 +186,11 @@ _ = services.AddScoped<IMultiTestRepository, MultiTestRepository>();
 var adoContextConfiguration = new AdoContextConfigurationBuilder()
 .AddAdoContext<SqliteContextExample1>(options =>
 {
-    _ = options.WithNamedConnection("SqliteContextExample");
-    _ = options.WithConnectionString("Data Source=mydatabase.db");
-    _ = options.WithProviderName("Microsoft.Data.Sqlite");
-    _ = options.WithExecutionOption(AdoContextExecutionOption.Transactional);
-    _ = options.WithDefaultIsolationLevel(IsolationLevel.ReadCommitted);
+    _ = options.WithNamedConnection("SqliteContextExample")
+        .WithConnectionString("Data Source=mydatabase4.db")
+        .WithProviderName("Microsoft.Data.Sqlite")
+        .WithExecutionOption(AdoContextExecutionOption.Transactional)
+        .WithDefaultIsolationLevel(IsolationLevel.ReadCommitted);
 })
 .Build();
 
