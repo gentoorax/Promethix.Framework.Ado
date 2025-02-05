@@ -91,11 +91,11 @@ namespace Promethix.Framework.Ado.Tests.DependencyInjection
                 .AddAdoContext<SqliteContextExample4>(options =>
                 {
                     // Fluent AdoContext Configuration File Example 4
-                    _ = options.WithNamedContext("SqliteContextExample4");
-                    _ = options.WithConnectionString("Data Source=mydatabase4.db");
-                    _ = options.WithProviderName("Microsoft.Data.Sqlite");
-                    _ = options.WithExecutionOption(AdoContextExecutionOption.Transactional);
-                    _ = options.WithDefaultIsolationLevel(IsolationLevel.ReadCommitted);
+                    _ = options.WithNamedContext("SqliteContextExample4")
+                            .WithConnectionString("Data Source=mydatabase4.db")
+                            .WithProviderName("Microsoft.Data.Sqlite")
+                            .WithExecutionOption(AdoContextExecutionOption.Transactional)
+                            .WithDefaultIsolationLevel(IsolationLevel.ReadCommitted);
                 })
                 .Build();
 
