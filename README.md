@@ -1,258 +1,281 @@
-﻿# AdoScope (Official Release)
+﻿# AdoScope
 
-[![Build and Test 0.1.x-alpha](https://github.com/gentoorax/Promethix.Framework.Ado/actions/workflows/adoscope-nuget-build.yaml/badge.svg)](https://github.com/gentoorax/Promethix.Framework.Ado/actions/workflows/adoscope-nuget-build.yaml)
-[![Published to nuget.org 0.1.x-x-alpha](https://github.com/gentoorax/Promethix.Framework.Ado/actions/workflows/adoscope-nuget-publish-prerelease.yaml/badge.svg)](https://github.com/gentoorax/Promethix.Framework.Ado/actions/workflows/adoscope-nuget-publish-prerelease.yaml)
+[![Build and Test](https://github.com/gentoorax/Promethix.Framework.Ado/actions/workflows/adoscope-nuget-build.yaml/badge.svg)](https://github.com/gentoorax/Promethix.Framework.Ado/actions/workflows/adoscope-nuget-build.yaml)
+[![Published to NuGet](https://github.com/gentoorax/Promethix.Framework.Ado/actions/workflows/adoscope-nuget-publish-prerelease.yaml/badge.svg)](https://github.com/gentoorax/Promethix.Framework.Ado/actions/workflows/adoscope-nuget-publish-prerelease.yaml)
 
-**Recently promoted to v1.0.0 official stable release.**
+---
 
-**Now incldues .NET 8.0 support**
+## 🚀 What is AdoScope?
 
-AdoScope offers a simple and flexible solution for managing your ADO.NET connections and transactions. It draws inspiration
-from the remarkable work in DbContextScope by Mehdime El Gueddari, whose DbContextScope library has been a source of
-great inspiration for the creation of AdoScope.
+**AdoScope** is a lightweight and flexible library for Dapper and ADO.NET that manages DbConnection and DbTransaction lifecycles, while providing clean, scoped transactions through an ambient context pattern.
 
-While AdoScope is compatible with any ADO.NET provider, it was specifically designed with Dapper in mind. Having extensive
-experience with Entity Framework and DbContextScope, the goal was to provide a similar solution tailored to the requirements
-of Dapper.
+It provides a **minimal-effort Unit of Work pattern**, inspired by [DbContextScope](https://github.com/mehdime/DbContextScope) for Entity Framework — but tailored for Dapper and raw ADO.NET.
 
-Unlike Entity Framework, Dapper lacks a DbContext, which can lead to challenges in managing DbConnection and DbTransaction.
-To address this, AdoScope introduces the concept of an AdoContext—a wrapper around DbConnection and DbTransaction, simplifying their management.
+It has been used in enterprise-scale applications and production systems, giving it a thorough shake-down in complex, high-volume scenarios.
 
-If you are seeking a Unit of Work pattern for Dapper with minimal coding overhead, AdoScope provides an elegant solution.
+No need to manually manage transactions, connection lifetimes, or implement repetitive unit of work classes. AdoScope wraps all of this with clean Dependency Injection (DI) support and allows:
 
-## Supported Features
+- Transparent ambient scoping (no passing around context)
+- Cross-database transaction coordination
+- **Distributed transactions** (via MSDTC on supported platforms)
+- Fine-grained **control per scope or per context**
 
-- [x] Simple and flexible configuration
-- [x] Database provider agnostic
-- [x] Support for nested transactions
-- [x] Support for multiple database connections
-- [x] Support for explicit database transactions
-- [x] Context specific execution options (transactional, non-transactional)
-- [x] Support for specific isolation levels per context and per (explicit) transaction
-- [x] Support for multiple databases in a single distributed transaction
-- [x] Support for explicit distributed transactions
-- [x] Support for asynchronous operations
-- [x] Support for default distributed transactions
+---
 
-## Future Features
+## ✨ Features
 
-- [ ] Support for read only transactions
+- ✅ Lightweight ambient scope for ADO.NET
+- ✅ Provider-agnostic (works with MSSQL, SQLite, PostgreSQL, etc.)
+- ✅ Minimal effort Unit of Work via scoped transactions
+- ✅ Nested scope support
+- ✅ Support for **multiple databases** in the same transaction
+- ✅ **Distributed transaction** support across databases
+- ✅ Asynchronous-safe usage
+- ✅ Configurable per context and per scope (transactional / non-transactional)
+- ✅ Isolation level configuration per context or scope
 
-## Release Notes
+---
 
-### v1.0.0
+## 📦 Installation
 
-Promoted from rc4. Official stable release.
-
-### v1.0.0-rc4
-
-Allow for null transaction when "NonTransactional" execution option is used. Prevents exception when using Dapper Query methods.
-
-### v1.0.0-rc3
-
-Expose context transaction for compatibility with some Dapper queries. All major features implemented.
-
-### v1.0.0-rc2
-
-As a result of targeting for .NET 8 and the latest compiler with existing multi-targeting support for .NET 4.8 - .NET 7, some analyser rule
-adjustments have been made. This is to avoid littering the code with lots of `#if` statements to enable new syntax.
-
-## Please be aware
-
-That when your `AdoContext` is configured in transactional mode, it will hold a transaction open until you call
-`Complete()` or `Dispose()` on the `AdoScope`, this is by design. If you do not want this behavior, configure your `AdoContext` to be non-transactional.
-
-`CreateWithTransaction()` forces the creation of a new ambient `AdoContext` (i.e. does not join the ambient scope if there is one) and wraps all
-`AdoContext` instances created within that scope in an explicit database transaction with the provided isolation level.
-
-`CreateWithDistributedTransaction()` forces the creation of a new ambient `AdoContext` (i.e. does not join the ambient scope if there is one) and wraps all
-`AdoContext` instances created within that scope in an *distributed transaction*.
-
-**Distributed Transactions will not work at all on .NET 5 or 6. They are supported on .NET 7 or better and only on Windows AFAIK** this is a limitation of
-.NET and it's requirement on OS DTC support e.g. MSDTC. MSDTC will of course need to be enabled and running on Windows as well.
-
-## Usage
-
-Install the NuGet package
 ```powershell
-Install-Package Promethix.Framework.Ado -Version 1.0.0-rc4
+Install-Package Promethix.Framework.Ado
 ```
 
-Create an ADO Context
+---
+
+## 🔧 Configuration (Dependency Injection)
+
+### .NET with SQLite (Appsettings Example)
+
 ```csharp
-public class SqliteContextExample1 : AdoContext
-    {
-        public SqliteContextExample1()
-        {
-            // No Implementation
-        }
-    }
-```
-
-Create a Repository making use of this context
-```csharp
-public class SimpleTestRepository : ISimpleTestRepository
-{
-    private readonly IAmbientAdoContextLocator ambientAdoContextLocator;
-
-    public SimpleTestRepository(IAmbientAdoContextLocator ambientAdoContextLocator)
-    {
-        this.ambientAdoContextLocator = ambientAdoContextLocator;
-    }
-
-    private IDbConnection SqliteConnection => ambientAdoContextLocator.GetContext<SqliteContextExample1>().Connection;
-
-    public void Add(TestEntity entity)
-    {
-        const string query = "INSERT INTO TestEntity (Name, Description, Quantity) VALUES (@Name, @Description, @Quantity)";
-        SqliteConnection.Execute(query, entity);
-    }
-
-    public TestEntity GetEntityByName(string name)
-    {
-        const string query = "SELECT * FROM TestEntity WHERE Name = @Name";
-        return SqliteConnection.QuerySingleOrDefault<TestEntity>(query, new { Name = name });
-    }
-}
-```
-
-For Dapper transactions Dapper requires access to the `DbTransaction`, if you need access to the transaction you will need to use the
-following syntax, the transaction is null when configured as non-transactional and Dapper will accept that. This will allow seamless
-configuration of transactional and non-transactional in the AdoScope configuration.
-```csharp
-public class SimpleTestRepository : ISimpleTestRepository
-{
-	private readonly IAmbientAdoContextLocator ambientAdoContextLocator;
-
-	public SimpleTestRepository(IAmbientAdoContextLocator ambientAdoContextLocator)
-	{
-		this.ambientAdoContextLocator = ambientAdoContextLocator;
-	}
-
-	private IDbConnection SqliteConnection => ambientAdoContextLocator.GetContext<SqliteContextExample1>().Connection;
-
-        private IDbTransaction SqliteTransaction => ambientAdoContextLocator.GetContext<SqliteContextExample1>().Transaction;
-
-	public void Add(TestEntity entity)
-	{
-		const string query = "INSERT INTO TestEntity (Name, Description, Quantity) VALUES (@Name, @Description, @Quantity)";
-		SqliteConnection.Execute(query, entity, SqliteTransaction);
-	}
-
-	public TestEntity GetEntityByName(string name)
-	{
-		const string query = "SELECT * FROM TestEntity WHERE Name = @Name";
-		return SqliteConnection.QuerySingleOrDefault<TestEntity>(query, new { Name = name }, SqliteTransaction);
-	}
-}
-```
-
-Create a Service making use of this repository and AdoScope.
-
-When the ADO Context is configured with a transactional execution option, this will behave as a Unit of Work. It will commit when Complete() is called.
-
-You can also configure the ADO Context to be non-transactional, in which case it will behave as a simple connection manager, executing queries as they are called.
-```csharp
-public void ServiceLayerAddTestEntity()
-{
-    using IAdoScope adoScope = adoScopeFactory.Create();
-
-    // Create a test entity
-    var newTestEntity = new TestEntity { Name = "CreateTest", Description = "Test Description", Quantity = 1 };
-
-    // Call our repository to add the entity
-    simpleTestRepository.Add(newTestEntity);
-
-    // Commit the unit of work / transaction (if using ExecutionOption.Transactional)
-    adoScope.Complete();
-}
-```
-
-Configure your DI Container. Just one of many examples of configuration. This example is
-by hand to show the available options. Recommend you use appsettings.json for configuration. 
-See example below this one for that.
-```csharp
-// Still need to register ADO providers you will be using. This is a .NET ADO requirement.
 DbProviderFactories.RegisterFactory("Microsoft.Data.Sqlite", SqliteFactory.Instance);
 
-// Register your repositories et al
-_ = services.AddSingleton<IAmbientAdoContextLocator, AmbientAdoContextLocator>();
-_ = services.AddSingleton<IAdoScopeFactory, AdoScopeFactory>();
-_ = services.AddSingleton<IAdoContextGroupFactory, AdoContextGroupFactory>();
-_ = services.AddScoped<ISimpleTestRepository, SimpleTestRepository>();
-_ = services.AddScoped<IMultiTestRepository, MultiTestRepository>();
+services.AddSingleton<IAmbientAdoContextLocator, AmbientAdoContextLocator>();
+services.AddSingleton<IAdoScopeFactory, AdoScopeFactory>();
+services.AddSingleton<IAdoContextGroupFactory, AdoContextGroupFactory>();
 
-// Register your ADO Contexts
-var adoContextConfiguration = new AdoContextConfigurationBuilder()
-.AddAdoContext<SqliteContextExample1>(options =>
-{
-    _ = options.WithNamedConnection("SqliteContextExample")
-        .WithConnectionString("Data Source=mydatabase4.db")
-        .WithProviderName("Microsoft.Data.Sqlite")
-        .WithExecutionOption(AdoContextExecutionOption.Transactional)
-        .WithDefaultIsolationLevel(IsolationLevel.ReadCommitted);
-})
-.Build();
-
-_ = services.AddScoped(provider => adoContextConfiguration);  
-```
-
-### Recommended Approach
-
-Use appsettings.json for configuration, you can use the following code in your DI composition:
-```csharp
-// AdoScope Configuration
-var adoScopeConfiguration = new AdoScopeConfigurationBuilder()
-.ConfigureScope(options =>
-{
-    _ = options.WithScopeConfiguration(configuration);
-})
-.Build();
-
-// AdoContexts Configuration
-var adoContextConfiguration = new AdoContextConfigurationBuilder()
-    .AddAdoContext<SqliteContextExample1>(options =>
-    {
-        // JSON AdoContext Configuration File Example 1
-        _ = options.WithNamedContext("SqliteContextExample1", configuration);
-    })
-    .AddAdoContext<SqliteContextExample3>(options =>
-    {
-        // JSON AdoContext Configuration File Example 3
-        _ = options.WithNamedContext("SqliteContextExample3", configuration);
-    })
+IConfigurationRoot configuration = new ConfigurationBuilder()
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json")
     .Build();
 
-// Register entire AdoScope configuration in DI
-_ = services.AddScoped(provider => adoScopeConfiguration);
-_ = services.AddScoped(provider => adoContextConfiguration); 
+var adoScopeConfig = new AdoScopeConfigurationBuilder()
+    .ConfigureScope(options => options.WithScopeConfiguration(configuration))
+    .Build();
+
+var adoContextConfig = new AdoContextConfigurationBuilder()
+    .AddAdoContext<SqliteDbContext>(options =>
+        options.WithNamedContext("SqliteDbContext", configuration))
+    .Build();
+
+services.AddScoped(_ => adoScopeConfig);
+services.AddScoped(_ => adoContextConfig);
 ```
 
-For most use cases you want the following configuration:
-- Distributed Transactions Off.
-- AdoContext Transactions On - provides Unit of Work behaviour.
+### .NET with MSSQL (Appsettings Example)
 
-appsettings.json as follows (see unit test project for more examples):
+```csharp
+DbProviderFactories.RegisterFactory("Microsoft.Data.SqlClient", SqlClientFactory.Instance);
+
+services.AddSingleton<IAmbientAdoContextLocator, AmbientAdoContextLocator>();
+services.AddSingleton<IAdoScopeFactory, AdoScopeFactory>();
+services.AddSingleton<IAdoContextGroupFactory, AdoContextGroupFactory>();
+
+IConfigurationRoot configuration = new ConfigurationBuilder()
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json")
+    .Build();
+
+var adoScopeConfig = new AdoScopeConfigurationBuilder()
+    .ConfigureScope(options => options.WithScopeConfiguration(configuration))
+    .Build();
+
+var adoContextConfig = new AdoContextConfigurationBuilder()
+    .AddAdoContext<MyDbContext>(options =>
+        options.WithNamedContext("MyDbContext", configuration))
+    .Build();
+
+services.AddScoped(_ => adoScopeConfig);
+services.AddScoped(_ => adoContextConfig);
+```
+
+### appsettings.json Example
+
 ```json
 {
   "AdoScopeOptions": {
-    "ScopeExecutionOption": "Standard",
+    "ScopeExecutionOption": "Standard"
   },
   "AdoContextOptions": {
-    "SqliteContextExample1": {
+    "SqliteDbContext": {
       "ProviderName": "Microsoft.Data.Sqlite",
       "ConnectionString": "Data Source=mydatabase.db",
       "ExecutionOption": "Transactional"
     },
-    "SqliteContextExample3": {
-      "ProviderName": "Microsoft.Data.Sqlite",
-      "ConnectionString": "Data Source=mydatabase3.db",
+    "MyDbContext": {
+      "ProviderName": "Microsoft.Data.SqlClient",
+      "ConnectionString": "Server=localhost;Database=MyDb;Trusted_Connection=True;",
       "ExecutionOption": "Transactional"
     }
   }
 }
 ```
 
-For MS SQL Server the Provider Name should be `Microsoft.Data.SqlClient`
-e.g.
-`DbProviderFactories.RegisterFactory("Microsoft.Data.SqlClient", SqlClientFactory.Instance);`
+### .NET Framework Example (Ninject + Fluent Configuration)
+
+```csharp
+// Register AdoScope services
+kernel.Bind<IAmbientAdoContextLocator>().To<AmbientAdoContextLocator>().InSingletonScope();
+kernel.Bind<IAdoScopeFactory>().To<AdoScopeFactory>().InSingletonScope();
+kernel.Bind<IAdoContextGroupFactory>().To<AdoContextGroupFactory>().InSingletonScope();
+
+// Register the ADO.NET provider for MSSQL
+DbProviderFactory sqlFactory = DbProviderFactories.GetFactory("Microsoft.Data.SqlClient");
+kernel.Bind<DbProviderFactory>().ToConstant(sqlFactory);
+
+// Configure AdoScope globally (application-wide scope behavior)
+var adoScopeConfig = new AdoScopeConfigurationBuilder()
+    .ConfigureScope(options =>
+    {
+        options.WithScopeExecutionOption(AdoContextGroupExecutionOption.Standard);
+    })
+    .Build();
+
+// Configure multiple AdoContexts using fluent API
+var adoContextConfig = new AdoContextConfigurationBuilder()
+    .AddAdoContext<PrimaryDbContext>(options =>
+    {
+        options.WithNamedContext("PrimaryDbContext")
+            .WithConnectionString(ConfigurationManager.ConnectionStrings["PrimaryDb"].ConnectionString)
+            .WithProviderName("Microsoft.Data.SqlClient")
+            .WithExecutionOption(AdoContextExecutionOption.Transactional)
+            .WithDefaultIsolationLevel(IsolationLevel.ReadCommitted);
+    })
+    .AddAdoContext<AuditDbContext>(options =>
+    {
+        options.WithNamedContext("AuditDbContext")
+            .WithConnectionString(ConfigurationManager.ConnectionStrings["AuditDb"].ConnectionString)
+            .WithProviderName("Microsoft.Data.SqlClient")
+            .WithExecutionOption(AdoContextExecutionOption.Transactional)
+            .WithDefaultIsolationLevel(IsolationLevel.ReadCommitted);
+    })
+    .Build();
+
+// Register configurations into DI container
+kernel.Bind<AdoScopeOptionsBuilder>().ToConstant(adoScopeConfig).InRequestScope();
+kernel.Bind<IAdoContextOptionsRegistry>().ToConstant(adoContextConfig).InRequestScope();
+
+```
+---
+
+## 🧪 Usage
+
+### 1. Define Your Context
+
+```csharp
+public class MyDbContext : AdoContext { }
+public class SqliteDbContext : AdoContext { }
+```
+
+---
+
+### 2. Create a Repository
+
+```csharp
+public class MyRepository : IMyRepository
+{
+    private readonly IAmbientAdoContextLocator locator;
+
+    public MyRepository(IAmbientAdoContextLocator locator)
+    {
+        this.locator = locator;
+    }
+
+    private IDbConnection Connection => locator.GetContext<MyDbContext>().Connection;
+    private IDbTransaction Transaction => locator.GetContext<MyDbContext>().Transaction;
+
+    public int UpdateSomething(string code)
+    {
+        const string sql = "UPDATE MyTable SET Processed = 1 WHERE Code = @Code";
+        return Connection.Execute(sql, new { Code = code }, Transaction);
+    }
+}
+```
+
+---
+
+### 3. Use AdoScope in a Service
+
+```csharp
+public class MyService(IAdoScopeFactory adoScopeFactory, IMyRepository repository) : IMyService
+{
+    public int ProcessItem(string code)
+    {
+        using IAdoScope adoScope = adoScopeFactory.Create();
+        int affected = repository.UpdateSomething(code);
+        adoScope.Complete();
+        return affected;
+    }
+}
+```
+
+---
+
+### 4. Unit of Work Style Usage with Multiple Repositories
+
+```csharp
+using IAdoScope scope = adoScopeFactory.Create();
+
+repository1.DoSomething();
+repository2.DoSomethingElse();
+repository3.BulkInsert(records);
+repository4.MarkAsProcessed(ids);
+
+scope.Complete();
+```
+
+---
+
+## ⚠️ Notes and Gotchas
+
+- ✅ You **must call `.Complete()`** to commit a transactional scope. If not called, the transaction will automatically roll back on dispose.
+- ✅ If you forget to declare an ambient scope (i.e. no `adoScopeFactory.Create()`), an explicit and helpful exception will be thrown.
+- ✅ `CreateWithTransaction()` and `CreateWithDistributedTransaction()` allow full per-scope control of transaction behavior.
+- ✅ When using **Distributed Transactions**, ensure:
+  - .NET 7+ is used
+  - Windows OS with **MSDTC** service is enabled and running
+  - ADO.NET provider supports distributed transactions
+
+---
+
+## 🔄 Release Notes
+
+### Stable Releases
+- Support for nested scopes, async operations, multiple DBs, and distributed transactions
+- Latest release supports .NET 8
+
+---
+
+## 🛣️ Roadmap / Future Features
+
+- [ ] Support for read-only transactions
+- [ ] Improved exception messages for missing ambient scopes
+
+---
+
+## ❤️ Credits
+
+Inspired by Mehdime El Gueddari’s [DbContextScope](https://github.com/mehdime/DbContextScope) project.
+
+---
+
+## 🙌 Contributing
+
+Pull requests and suggestions welcome! Feel free to open an issue for bugs, ideas, or questions.
+
+---
+
+## 📄 License
+
+MIT
