@@ -260,7 +260,6 @@ scope.Complete();
 ## 🛣️ Roadmap / Future Features
 
 - [ ] Support for read-only transactions
-- [ ] Improved exception messages for missing ambient scopes
 
 ---
 
