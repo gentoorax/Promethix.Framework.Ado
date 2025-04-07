@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestPlatform.Utilities;
+using Promethix.Framework.Ado.Exceptions;
 using Promethix.Framework.Ado.Interfaces;
 using Promethix.Framework.Ado.Tests.DependencyInjection;
 using Promethix.Framework.Ado.Tests.TestSupport.DataAccess.Sqlite;
@@ -47,6 +48,27 @@ namespace Promethix.Framework.Ado.Tests.IntegrationTests
             adoScope.Complete();
 
             Assert.IsNotNull(adoScope);
+        }
+
+        [TestCategory("IntegrationTestsOnCI"), TestMethod]
+        public void RepositoryThrowsMissingAdoScopeException_WhenScopeNotCreated()
+        {
+            // Arrange
+            var newTestEntity = new TestEntity
+            {
+                Name = "ShouldFailWithoutScope",
+                Description = "Expected to throw",
+                Quantity = 1
+            };
+
+            // Act & Assert
+            var ex = Assert.ThrowsException<MissingAdoScopeException>(() =>
+            {
+                // This call should fail because there's no adoScopeFactory.Create() wrapping it
+                simpleTestRepository.Add(newTestEntity);
+            });
+
+            StringAssert.Contains(ex.Message, "AdoScope was not detected");
         }
 
         [TestCategory("IntegrationTestsOnCI"), TestMethod]

@@ -3,6 +3,7 @@
  * Copyright (c) 2023 Christopher Law
  * https://chrislaw.me
  */
+using Promethix.Framework.Ado.Exceptions;
 using Promethix.Framework.Ado.Interfaces;
 
 namespace Promethix.Framework.Ado.Implementation
@@ -12,7 +13,13 @@ namespace Promethix.Framework.Ado.Implementation
         public TAdoContext GetContext<TAdoContext>() where TAdoContext : AdoContext
         {
             AdoScope ambientAdoScope = AdoScope.GetAmbientScope();
-            return ambientAdoScope?.AdoContexts.GetContext<TAdoContext>();
+
+            if (ambientAdoScope == null)
+            {
+                throw new MissingAdoScopeException(typeof(TAdoContext));
+            }
+
+            return ambientAdoScope.AdoContexts.GetContext<TAdoContext>();
         }
     }
 }
