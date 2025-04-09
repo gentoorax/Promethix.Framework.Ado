@@ -1,11 +1,28 @@
 ﻿# AdoScope
 
 [![Build and Test](https://github.com/gentoorax/Promethix.Framework.Ado/actions/workflows/adoscope-nuget-build.yaml/badge.svg)](https://github.com/gentoorax/Promethix.Framework.Ado/actions/workflows/adoscope-nuget-build.yaml)
-[![Published to NuGet](https://github.com/gentoorax/Promethix.Framework.Ado/actions/workflows/adoscope-nuget-publish-prerelease.yaml/badge.svg)](https://github.com/gentoorax/Promethix.Framework.Ado/actions/workflows/adoscope-nuget-publish-prerelease.yaml)
 
 ---
 
-## 🚀 What is AdoScope?
+## 💡 What This Looks Like in Practice
+
+Here’s how you can structure a clean, scoped unit of work across multiple repositories using AdoScope:
+
+```csharp
+using IAdoScope scope = adoScopeFactory.Create();
+
+repository1.DoSomething();
+repository2.DoSomethingElse();
+repository3.BulkInsert(records);
+repository4.MarkAsProcessed(ids);
+
+scope.Complete();
+```
+no manual transaction handling, no passing connections around, just clean and maintainable code.
+
+---
+
+## 📘 What is AdoScope?
 
 **AdoScope** is a lightweight and flexible library for Dapper and ADO.NET that manages DbConnection and DbTransaction lifecycles, while providing clean, scoped transactions through an ambient context pattern.
 
@@ -36,6 +53,21 @@ No need to manually manage transactions, connection lifetimes, or implement repe
 
 ---
 
+### 🧩 What is a Context?
+
+In **Entity Framework**, a `DbContext` represents a session with the database. It tracks changes to entities, handles LINQ queries, and manages both the **connection** and **transaction** lifecycle. It's tightly coupled to EF’s change tracking and object-relational mapping features.
+
+In **AdoScope**, a context plays a simpler, but still important role. Since **Dapper** and **raw ADO.NET** do not provide entity tracking, a context in AdoScope is essentially just:
+
+- A managed **`DbConnection`**
+- An optional **`DbTransaction`**, depending on configuration
+
+AdoScope handles the lifecycle of these objects for you, allowing each context to be used ambiently across repositories and services. This enables a **Unit of Work** pattern with minimal effort, without needing to manually pass around or manage connections and transactions.
+
+So while an AdoScope context doesn't track entities, it **does** provide the other key half of what EF’s `DbContext` offers — structured and scoped connection and transaction management.
+
+---
+
 ## 📦 Installation
 
 ```powershell
@@ -45,6 +77,17 @@ Install-Package Promethix.Framework.Ado
 ---
 
 ## 🔧 Configuration (Dependency Injection)
+
+### Configuration Options
+
+| Configuration Type             | Option            | Description                                                                  |
+|--------------------------------|-------------------|------------------------------------------------------------------------------|
+| AdoContextExecutionOption      | `Transactional`   | Default. Wraps the context in a transaction. Recommended for most use cases.|
+|                                | `NonTransactional`| Executes commands immediately without a transaction.                                     |
+| AdoContextGroupExecutionOption | Standard | Default. Creates a separate DbTransaction per context. Best-effort coordination without escalation — no automatic rollback across contexts. |
+| AdoContextGroupExecutionOption | `Distributed` | Wraps all contexts in a `TransactionScope`. If multiple database connections are involved, this may escalate to a **distributed transaction**, which requires **MSDTC** (or a compatible DTC service), ADO.NET provider support, and an OS that supports distributed transactions (e.g. Windows). |
+
+---
 
 ### .NET with SQLite (Appsettings Example)
 
