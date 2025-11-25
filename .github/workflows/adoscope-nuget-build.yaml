@@ -52,6 +52,6 @@ jobs:
     uses: gentoorax/Promethix.Framework.Ado/.github/workflows/adoscope-reusable-build.yaml@main
     with:
       buildVersion: ${{ needs.versionprepare.outputs.buildVersion }}
-      dotnetVersion: '8.0.x'
+      dotnetVersion: '10.0.x'
     secrets:
       repoToken: ${{ secrets.REPO_ACCESS_TOKEN }}

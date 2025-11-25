@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<OutputType>Library</OutputType>
 		<LangVersion>latest</LangVersion>
-		<TargetFrameworks>net48;net8.0</TargetFrameworks>
+		<TargetFrameworks>net48;net8.0;net10.0</TargetFrameworks>
 		<NoWarn>IDE0005</NoWarn>
 		<AnalysisMode>AllEnabledByDefault</AnalysisMode>
 		<CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
