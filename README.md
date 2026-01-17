@@ -26,7 +26,7 @@ no manual transaction handling, no passing connections around, just clean and ma
 
 **AdoScope** is a lightweight and flexible library for Dapper and ADO.NET that manages DbConnection and DbTransaction lifecycles, while providing clean, scoped transactions through an ambient context pattern.
 
-It provides a **minimal-effort Unit of Work pattern**, inspired by [DbContextScope](https://github.com/mehdime/DbContextScope) for Entity Framework — but tailored for Dapper and raw ADO.NET.
+It provides a **minimal-effort Unit of Work pattern**, inspired by [DbContextScope](https://github.com/mehdime/DbContextScope) for Entity Framework, but tailored for Dapper and raw ADO.NET.
 
 It has been used in enterprise-scale applications and production systems, giving it a thorough shake-down in complex, high-volume scenarios.
 
@@ -94,6 +94,7 @@ Install-Package Promethix.Framework.Ado
 ```csharp
 DbProviderFactories.RegisterFactory("Microsoft.Data.Sqlite", SqliteFactory.Instance);
 
+// Factories are singletons; their dependencies should be singletons too.
 services.AddSingleton<IAmbientAdoContextLocator, AmbientAdoContextLocator>();
 services.AddSingleton<IAdoScopeFactory, AdoScopeFactory>();
 services.AddSingleton<IAdoContextGroupFactory, AdoContextGroupFactory>();
@@ -112,8 +113,9 @@ var adoContextConfig = new AdoContextConfigurationBuilder()
         options.WithNamedContext("SqliteDbContext", configuration))
     .Build();
 
-services.AddScoped(_ => adoScopeConfig);
-services.AddScoped(_ => adoContextConfig);
+// Register the built options as singletons (they are created once at startup)
+services.AddSingleton(adoScopeConfig);
+services.AddSingleton<IAdoContextOptionsRegistry>(adoContextConfig);
 ```
 
 ### .NET with MSSQL (Appsettings Example)
@@ -139,8 +141,8 @@ var adoContextConfig = new AdoContextConfigurationBuilder()
         options.WithNamedContext("MyDbContext", configuration))
     .Build();
 
-services.AddScoped(_ => adoScopeConfig);
-services.AddScoped(_ => adoContextConfig);
+services.AddSingleton(adoScopeConfig);
+services.AddSingleton<IAdoContextOptionsRegistry>(adoContextConfig);
 ```
 
 ### appsettings.json Example
@@ -206,8 +208,8 @@ var adoContextConfig = new AdoContextConfigurationBuilder()
     .Build();
 
 // Register configurations into DI container
-kernel.Bind<AdoScopeOptionsBuilder>().ToConstant(adoScopeConfig).InRequestScope();
-kernel.Bind<IAdoContextOptionsRegistry>().ToConstant(adoContextConfig).InRequestScope();
+kernel.Bind<AdoScopeOptionsBuilder>().ToConstant(adoScopeConfig).InSingletonScope();
+kernel.Bind<IAdoContextOptionsRegistry>().ToConstant(adoContextConfig).InSingletonScope();
 
 ```
 ---
@@ -297,6 +299,11 @@ scope.Complete();
 ### Stable Releases
 - Support for nested scopes, async operations, multiple DBs, and distributed transactions
 - Latest release supports .NET 8
+
+### Maintenance & Support
+- Actively maintained to track .NET (Core) LTS releases.
+- Issues will be addressed when raised, please file them if you hit problems.
+- Feature surface is intentionally small and stable; it “just works,” so expect few new features unless needed for compatibility or clear value.
 
 ---
 
